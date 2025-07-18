@@ -67,7 +67,7 @@ export default function FAQ() {
     },
     {
       question: "Where can I drop off and pick up my racket?",
-      answer: "We offer convenient pickup and drop-off options at:\n\nWiser Park Tennis Courts\nAngus Glen Community Centre\nDoor-to-door pickup (by appointment)\nYou can select your preferred location and time when booking. We'll coordinate logistics based on your availability and ours.",
+      answer: "We offer convenient pickup and drop-off options at:\n\nWiser Park Tennis Courts\nAngus Glen Community Centre\nDoor-to-door pickup (by appointment)\nYou can select your preferred location and time when booking. We&apos;ll coordinate logistics based on your availability and ours.",
       category: "Service Locations",
       icon: "📍"
     },

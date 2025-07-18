@@ -568,7 +568,7 @@ export default function BookingForm() {
         {/* Status Messages */}
         {status === 'success' && (
           <div style={{ padding: '1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '8px', textAlign: 'center', border: '1px solid #c3e6cb' }}>
-            ✅ Booking submitted successfully! We'll contact you soon to confirm details.
+            ✅ Booking submitted successfully! We&apos;ll contact you soon to confirm details.
           </div>
         )}
         {status === 'error' && (
