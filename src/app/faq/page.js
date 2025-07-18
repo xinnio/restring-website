@@ -37,24 +37,24 @@ export default function FAQ() {
     },
     {
       question: "Can I provide my own string?",
-      answer: "Yes! You're welcome to bring your own string for a $30e. This is a great option if you have a specific preference or want to try a string we don't carry. Simply select \Own String\ when booking and bring the string with your racket.",
+      answer: "Yes! You&apos;re welcome to bring your own string for a $30e. This is a great option if you have a specific preference or want to try a string we don&apos;t carry. Simply select \Own String\ when booking and bring the string with your racket.",
       category: "Service Option",
       icon: "🎯"
     },
     {
       question: "What is grommet replacement, and when is it needed?",
-      answer: "Grommets are small plastic inserts that protect your strings from the racket frame. Over time, they can wear out—especially on older rackets. We charge $0.25t for replacements. We'll inspect your racket and recommend replacements if needed to prevent string breakage.",
+      answer: "Grommets are small plastic inserts that protect your strings from the racket frame. Over time, they can wear out—especially on older rackets. We charge $0.25t for replacements. We&apos;ll inspect your racket and recommend replacements if needed to prevent string breakage.",
       category: "Maintenance",
       icon: "🔧"
     },
     {
       question: "How often should I restring my racket?",
-      answer: "It depends on how frequently you play:\n\nRecreational players (1–2x/week): every 3–6 months\nRegular players (3–4x/week): every 2onths\nCompetitive players: monthly or even weekly\nStrings lose tension and performance over time, even if they don't break.",
+      answer: "It depends on how frequently you play:\n\nRecreational players (1–2x/week): every 3–6 months\nRegular players (3–4x/week): every 2onths\nCompetitive players: monthly or even weekly\nStrings lose tension and performance over time, even if they don&apos;t break.",
       category: "Maintenance",
       icon: "📅"
     },
     {
-      question: "What's the difference between tennis and badminton strings?",
+      question: "What&apos;s the difference between tennis and badminton strings?",
       answer: "Tennis strings are thicker and built for higher tension (40–70s) and larger racket heads. Badminton strings are thinner, designed for lower tension (16–35 lbs), and smaller, more flexible rackets. Using the wrong type of string can damage your racket and hinder performance.",
       category: "String Selection",
       icon: "🏸"
