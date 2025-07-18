@@ -776,7 +776,33 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             position: 'relative'
           }}>
             <button onClick={() => setViewing(null)} style={{ position: 'absolute', top: 18, right: 24, background: 'none', border: 'none', fontSize: '2rem', color: '#6c63ff', cursor: 'pointer' }}>&times;</button>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.5rem', color: '#1a1a1a' }}>Booking Details</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a1a1a', margin: 0 }}>Booking Details</h2>
+              <button
+                onClick={() => {
+                  const printWindow = window.open('', '_blank');
+                  const printContent = generatePrintContent(viewing);
+                  printWindow.document.write(printContent);
+                  printWindow.document.close();
+                  printWindow.print();
+                }}
+                style={{
+                  background: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                🖨️ Print
+              </button>
+            </div>
             {/* Personal Info */}
             <div style={{ marginBottom: '1.25rem' }}>
               <strong>Customer:</strong> {viewing.fullName}<br/>
