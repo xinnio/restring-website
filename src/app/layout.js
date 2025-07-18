@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import './globals.css';
 
 export const metadata = {
@@ -42,7 +43,7 @@ export default function RootLayout({ children }) {
               alignItems: 'center',
               gap: '0.5rem'
             }}>
-              <img src="/logo.png" alt="Markham Restring Studio Logo" style={{ maxHeight: '80px', marginRight: '0.75rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
+              <Image src="/logo.png" alt="Markham Restring Studio Logo" width={80} height={80} style={{ maxHeight: '80px', marginRight: '0.75rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
               <span style={{ 
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 WebkitBackgroundClip: 'text',
