@@ -234,7 +234,7 @@ export default function FAQ() {
           {/* Contact Section */}
           <div style={{ marginTop: 60, background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)', borderRadius: 28, padding: '3rem 1.5rem', color: 'white', boxShadow: '0 8px 32px rgba(102,126,234,0.13)', textAlign: 'center' }}>
             <h2 style={{ fontSize: '2.1rem', fontWeight: 800, marginBottom: '1.2rem', letterSpacing: '-0.01em' }}>Still Have Questions?</h2>
-            <p style={{ fontSize: '1.18rem', color: '#e0e7ff', marginBottom: '2.2rem', fontWeight: 500 }}>Can't find the answer you're looking for? We're here to help!</p>
+            <p style={{ fontSize: '1.18rem', color: '#e0e7ff', marginBottom: '2.2rem', fontWeight: 500 }}>Can&apos;t find the answer you&apos;re looking for? We&apos;re here to help!</p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1.2rem', flexWrap: 'wrap' }}>
               <a
                 href="/locations"
