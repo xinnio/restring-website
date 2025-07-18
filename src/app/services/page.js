@@ -283,7 +283,7 @@ export default function Services() {
                 +$3.00
               </div>
               <p style={{ color: '#666', lineHeight: '1.6' }}>
-                Bring your own string and we'll string it for you. 
+                Bring your own string and we&apos;ll string it for you. 
                 Perfect if you have a specific string preference.
               </p>
             </div>
@@ -304,7 +304,7 @@ export default function Services() {
               </div>
               <p style={{ color: '#666', lineHeight: '1.6' }}>
                 Replace worn grommets to protect your strings. 
-                We'll inspect and recommend if needed.
+                We&apos;ll inspect and recommend if needed.
               </p>
             </div>
           </div>

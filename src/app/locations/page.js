@@ -164,7 +164,7 @@ export default function Locations() {
                     <div>
                       <div style={{ fontWeight: 700, fontSize: '1.08rem', color: '#1a1a1a', marginBottom: 2 }}>Email</div>
                       <div style={{ fontSize: '1.05rem', color: '#6c63ff', fontWeight: 600 }}>markhamrestring@gmail.com</div>
-                      <div style={{ fontSize: '0.92rem', color: '#888' }}>We'll respond within 24 hours</div>
+                      <div style={{ fontSize: '0.92rem', color: '#888' }}>We&apos;ll respond within 24 hours</div>
                     </div>
                   </div>
                   {/* Phone */}
