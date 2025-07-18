@@ -85,7 +85,7 @@ export default function FAQ() {
     },
     {
       question: "How do I know if my racket needs restringing?",
-      answer: "Common signs your racket needs restringing include:\n\nFraying or broken strings\nStrings feeling loose or &quot;dead&quot;\nLoss of control or power\nIt&apos;s been more than 6 months since your last restring,",
+      answer: "Common signs your racket needs restringing include:\n\nFraying or broken strings\nStrings feeling loose or &quot;dead&quot;\nLoss of control or power\nIt&apos;s been more than 6 months since your last restring.",
       category: "Maintenance",
       icon: "🔍"
     }
