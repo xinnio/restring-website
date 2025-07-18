@@ -80,7 +80,7 @@ export default function LoginForm() {
               padding: '0.75rem', 
               border: '1px solid #ddd', 
               borderRadius: '4px',
-              fontSize: '1rem'
+              fontSize: '0.875rem'
             }}
             placeholder="markhamrestring@gmail.com"
           />
@@ -98,7 +98,7 @@ export default function LoginForm() {
               padding: '0.75rem', 
               border: '1px solid #ddd', 
               borderRadius: '4px',
-              fontSize: '1rem'
+              fontSize: '0.875rem'
             }}
             placeholder="Enter your password"
           />
@@ -113,7 +113,7 @@ export default function LoginForm() {
             color: 'white', 
             border: 'none', 
             borderRadius: '4px', 
-            fontSize: '1.1rem',
+            fontSize: '0.975rem',
             cursor: loading ? 'not-allowed' : 'pointer',
             transition: 'background-color 0.2s'
           }}
@@ -151,7 +151,7 @@ export default function LoginForm() {
         padding: '1rem', 
         backgroundColor: '#f8f9fa', 
         borderRadius: '4px',
-        fontSize: '0.9rem',
+        fontSize: '0.875rem',
         color: '#666'
       }}>
         <strong>Demo Credentials:</strong><br />

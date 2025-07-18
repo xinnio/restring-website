@@ -155,13 +155,13 @@ function AnalyticsContent() {
           {/* Key Metrics Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
             <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>Total Bookings</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#007bff' }}>{bookings.length}</div>
+              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.775rem' }}>Total Bookings</h3>
+              <div style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#007bff' }}>{bookings.length}</div>
             </div>
             
             <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>Total Revenue</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#28a745' }}>${totalRevenue.toFixed(2)}</div>
+              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.775rem' }}>Total Revenue</h3>
+              <div style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#28a745' }}>${totalRevenue.toFixed(2)}</div>
             </div>
             
             <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>

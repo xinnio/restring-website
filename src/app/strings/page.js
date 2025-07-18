@@ -85,7 +85,7 @@ export default function Strings() {
         }}></div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h1 style={{ 
-            fontSize: '3rem', 
+            fontSize: '2.875rem', 
             fontWeight: '700', 
             marginBottom: '1rem',
             lineHeight: '1.2'
@@ -93,7 +93,7 @@ export default function Strings() {
             String Options
           </h1>
           <p style={{ 
-            fontSize: '1.25rem', 
+            fontSize: '1.125rem', 
             opacity: 0.9,
             lineHeight: '1.6',
             maxWidth: '600px',
@@ -124,7 +124,7 @@ export default function Strings() {
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             fontWeight: '600',
-            fontSize: '1rem',
+            fontSize: '0.875rem',
             boxShadow: filter === 'all' ? '0 4px 12px rgba(102, 126, 234, 0.3)' : '0 2px 8px rgba(0,0,0,0.1)'
           }}
         >
@@ -141,7 +141,7 @@ export default function Strings() {
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             fontWeight: '600',
-            fontSize: '1rem',
+            fontSize: '0.875rem',
             boxShadow: filter === 'tennis' ? '0 4px 12px rgba(102, 126, 234, 0.3)' : '0 2px 8px rgba(0,0,0,0.1)'
           }}
         >
@@ -158,7 +158,7 @@ export default function Strings() {
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             fontWeight: '600',
-            fontSize: '1rem',
+            fontSize: '0.875rem',
             boxShadow: filter === 'badminton' ? '0 4px 12px rgba(102, 126, 234, 0.3)' : '0 2px 8px rgba(0,0,0,0.1)'
           }}
         >
@@ -185,7 +185,7 @@ export default function Strings() {
             animation: 'spin 1s linear infinite',
             margin: '0 auto 1rem'
           }}></div>
-          <p style={{ fontSize: '1.1rem' }}>Loading string options...</p>
+          <p style={{ fontSize: '0.975rem' }}>Loading string options...</p>
         </div>
       ) : (
         <div style={{ 

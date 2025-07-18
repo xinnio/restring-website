@@ -224,16 +224,16 @@ export default function BookingForm() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Full Name *</label>
-              <input type="text" name="fullName" value={form.fullName} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="Enter your full name" />
+              <input type="text" name="fullName" value={form.fullName} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="Enter your full name" />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Email *</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="your.email@example.com" />
+              <input type="email" name="email" value={form.email} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="your.email@example.com" />
               <small style={{ color: '#888' }}>Confirmation sent here</small>
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Phone Number *</label>
-              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="(123) 456-7890" />
+              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="(123) 456-7890" />
               <small style={{ color: '#888' }}>For pickup/drop-off coordination</small>
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function BookingForm() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Racket Type *</label>
-                  <select name="racketType" value={r.racketType} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+                  <select name="racketType" value={r.racketType} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                     <option value="">Select Racket Type...</option>
                     <option value="tennis">🎾 Tennis</option>
                     <option value="badminton">🏸 Badminton</option>
@@ -254,7 +254,7 @@ export default function BookingForm() {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Type *</label>
-                  <select name="stringName" value={r.stringName} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+                  <select name="stringName" value={r.stringName} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                     <option value="">Select String...</option>
                     {Object.keys(getGroupedStringsForType(r.racketType)).map(name => (
                       <option key={name} value={name}>{name}</option>
@@ -263,7 +263,7 @@ export default function BookingForm() {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Color</label>
-                  <select name="stringColor" value={r.stringColor} onChange={e => handleRacketChange(idx, e)} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+                  <select name="stringColor" value={r.stringColor} onChange={e => handleRacketChange(idx, e)} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                     <option value="">Select Color...</option>
                     {(r.stringName && getAvailableColors(r.racketType, r.stringName)) ? getAvailableColors(r.racketType, r.stringName).map(color => (
                       <option key={color} value={color}>{color}</option>
@@ -273,7 +273,7 @@ export default function BookingForm() {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Tension (lbs) *</label>
-                  <select name="stringTension" value={r.stringTension} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+                  <select name="stringTension" value={r.stringTension} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                     <option value="">Select Tension...</option>
                     <option value="16-20">16-20 lbs : Recreational</option>
                     <option value="19-23">19-23 lbs : Beginner</option>
@@ -284,11 +284,11 @@ export default function BookingForm() {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Quantity *</label>
-                  <input type="number" name="quantity" min={1} value={r.quantity} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }} />
+                  <input type="number" name="quantity" min={1} value={r.quantity} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }} />
                 </div>
               </div>
               {rackets.length > 1 && (
-                <button type="button" onClick={() => handleRemoveRacket(idx)} style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', marginTop: '0.5rem' }}>Remove</button>
+                <button type="button" onClick={() => handleRemoveRacket(idx)} style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.825rem', marginTop: '0.5rem' }}>Remove</button>
               )}
             </div>
           ))}
@@ -439,7 +439,7 @@ export default function BookingForm() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Drop-Off Location *</label>
-              <select name="dropoffLocation" value={form.dropoffLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+              <select name="dropoffLocation" value={form.dropoffLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                 <option value="">Select Location...</option>
                 <option value="Markham Studio">🏠 Markham Studio</option>
                 <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts</option>
@@ -449,7 +449,7 @@ export default function BookingForm() {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Pick-up Location *</label>
-              <select name="pickupLocation" value={form.pickupLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', backgroundColor: 'white' }}>
+              <select name="pickupLocation" value={form.pickupLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
                 <option value="">Select Location...</option>
                 <option value="Markham Studio">🏠 Markham Studio</option>
                 <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts</option>
@@ -469,7 +469,7 @@ export default function BookingForm() {
                 value={form.deliveryAddress || ''}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}
                 placeholder="Enter your address for Door-to-Door service"
               />
             </div>
@@ -491,7 +491,7 @@ export default function BookingForm() {
                   required
                   min={getAvailableDatesForLocation(form.dropoffLocation)[0]}
                   max={getAvailableDatesForLocation(form.dropoffLocation).slice(-1)[0]}
-                  style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', backgroundColor: 'white' }}
+                  style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}
                   list="available-dates"
                 />
               )}
@@ -509,7 +509,7 @@ export default function BookingForm() {
                 getSlotsForDate(form.dropoffLocation, form.dropoffDate).length === 0 ? (
                   <div style={{ color: '#b71c1c', fontWeight: 500 }}>No time slots available for this date.</div>
                 ) : (
-                  <select name="dropoffSlotId" value={form.dropoffSlotId} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', backgroundColor: 'white' }}>
+                  <select name="dropoffSlotId" value={form.dropoffSlotId} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
                     <option value="">Select a time slot...</option>
                     {getSlotsForDate(form.dropoffLocation, form.dropoffDate).map(slot => (
                       <option key={slot._id} value={slot._id}>{slot.startTime} - {slot.endTime}</option>
@@ -527,7 +527,7 @@ export default function BookingForm() {
             if (!slot) return null;
             const windows = getThirtyMinWindows(slot.startTime, slot.endTime);
             return (
-              <select name="dropoffWindow" value={form.dropoffWindow || ''} onChange={handleChange} required style={{ width: '100%', marginTop: '0.5rem', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', backgroundColor: 'white' }}>
+              <select name="dropoffWindow" value={form.dropoffWindow || ''} onChange={handleChange} required style={{ width: '100%', marginTop: '0.5rem', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
                 <option value="">Select 30-min window...</option>
                 {windows.map(w => (
                   <option key={w} value={w}>{slot.date} | {w}</option>
@@ -539,7 +539,7 @@ export default function BookingForm() {
         {/* 5. Additional Notes */}
         <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📝 5. Additional Notes</h3>
-          <textarea name="notes" value={form.notes} onChange={handleChange} rows={3} style={{ width: '100%', padding: '1rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '1rem', backgroundColor: 'white', resize: 'vertical' }} placeholder="Any special instructions, requests, or comments? (Optional)" />
+          <textarea name="notes" value={form.notes} onChange={handleChange} rows={3} style={{ width: '100%', padding: '1rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white', resize: 'vertical' }} placeholder="Any special instructions, requests, or comments? (Optional)" />
         </div>
         {/* 6. Summary & Price Estimate */}
         <div style={{ backgroundColor: '#e8f5e8', padding: '1.5rem', borderRadius: '12px', border: '2px solid #4caf50', textAlign: 'center' }}>

@@ -8,6 +8,221 @@ export default function BookingTable({ bookings = [], onUpdate }) {
   const [viewing, setViewing] = useState(null); // booking object or null
   const [filterRange, setFilterRange] = useState('all'); // 'all', 'week', 'month'
 
+  // Function to generate print-friendly content
+  function generatePrintContent(booking) {
+    const rackets = booking.rackets || [
+      {
+        racketType: booking.racketType,
+        stringName: booking.stringName,
+        stringColor: booking.stringColor,
+        stringTension: booking.stringTension,
+        quantity: booking.quantity || 1
+      }
+    ];
+
+    const getBasePrice = (r) => {
+      const t = r.turnaroundTime || booking.turnaroundTime;
+      switch (t) {
+        case 'sameDay': return 35;
+        case 'nextDay': return 30;
+        case '3-5days': return 25;
+        default: return 0;
+      }
+    };
+
+    let racketsSubtotal = 0;
+    const racketDetails = rackets.map((r, idx) => {
+      const basePrice = getBasePrice(r);
+      const qty = parseInt(r.quantity) || 1;
+      racketsSubtotal += basePrice * qty;
+      return `
+        <tr>
+          <td>${qty}</td>
+          <td>${r.racketType === 'tennis' ? 'Tennis' : 'Badminton'}</td>
+          <td>${r.stringName || '-'}</td>
+          <td>${r.stringColor || '-'}</td>
+          <td>${r.stringTension || '-'}</td>
+          <td>$${basePrice}</td>
+          <td>$${(basePrice * qty).toFixed(2)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    let extras = 0;
+    if (booking.ownString) extras += 3;
+    if (booking.grommetReplacement) extras += 0.25;
+    
+    let deliveryFee = 0;
+    const dropoffDelivery = booking.dropoffLocation === 'Door-to-Door (Delivery)';
+    const pickupDelivery = booking.pickupLocation === 'Door-to-Door (Delivery)';
+    if (dropoffDelivery) deliveryFee += 12;
+    if (pickupDelivery) deliveryFee += 12;
+    if (dropoffDelivery && pickupDelivery) deliveryFee -= 4;
+    
+    const total = racketsSubtotal + extras + deliveryFee;
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Booking Details - ${booking.fullName}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+          .section { margin-bottom: 25px; }
+          .section h3 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+          .info-item { margin-bottom: 10px; }
+          .info-label { font-weight: bold; color: #555; }
+          .racket-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+          .racket-table th, .racket-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          .racket-table th { background-color: #f5f5f5; font-weight: bold; }
+          .total-section { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; }
+          .total-amount { font-size: 1.2em; font-weight: bold; color: #2e7d32; }
+          .footer { margin-top: 30px; text-align: center; color: #666; font-size: 0.9em; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Markham Restring Studio</h1>
+          <h2>Booking Details</h2>
+          <p>Booking ID: ${booking._id}</p>
+          <p>Created: ${booking.createdAt ? new Date(booking.createdAt).toLocaleString() : '-'}</p>
+        </div>
+
+        <div class="section">
+          <h3>Customer Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Name:</span> ${booking.fullName}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Email:</span> ${booking.email || '-'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Phone:</span> ${booking.phone || '-'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Status:</span> ${booking.status || 'Pending'}
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Racket & String Details</h3>
+          <table class="racket-table">
+            <thead>
+              <tr>
+                <th>Qty</th>
+                <th>Type</th>
+                <th>String</th>
+                <th>Color</th>
+                <th>Tension</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${racketDetails}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <h3>Service Options</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Turnaround Time:</span> 
+              ${booking.turnaroundTime === 'sameDay' ? 'Same Day' : 
+                booking.turnaroundTime === 'nextDay' ? 'Next Day' : 
+                booking.turnaroundTime === '3-5days' ? '3-5 Days' : '-'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Own String:</span> ${booking.ownString ? 'Yes' : 'No'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Grommet Replacement:</span> ${booking.grommetReplacement ? 'Yes' : 'No'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Payment Status:</span> ${booking.paymentStatus || 'Pending'}
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Scheduling</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Drop-Off Location:</span> ${booking.dropoffLocation || '-'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Drop-Off Slot:</span> ${booking.dropoffSlotId || '-'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Pick-up Location:</span> ${booking.pickupLocation || '-'}
+            </div>
+            ${booking.deliveryAddress ? `
+            <div class="info-item">
+              <span class="info-label">Delivery Address:</span> ${booking.deliveryAddress}
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        ${booking.notes ? `
+        <div class="section">
+          <h3>Notes</h3>
+          <p>${booking.notes}</p>
+        </div>
+        ` : ''}
+
+        <div class="total-section">
+          <h3>Price Breakdown</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Rackets Subtotal:</span> $${racketsSubtotal.toFixed(2)}
+            </div>
+            ${booking.ownString ? `
+            <div class="info-item">
+              <span class="info-label">Own String Fee:</span> +$3.00
+            </div>
+            ` : ''}
+            ${booking.grommetReplacement ? `
+            <div class="info-item">
+              <span class="info-label">Grommet Replacement:</span> +$0.25
+            </div>
+            ` : ''}
+            ${dropoffDelivery ? `
+            <div class="info-item">
+              <span class="info-label">Drop-off Delivery:</span> +$12.00
+            </div>
+            ` : ''}
+            ${pickupDelivery ? `
+            <div class="info-item">
+              <span class="info-label">Pick-up Delivery:</span> +$12.00
+            </div>
+            ` : ''}
+            ${dropoffDelivery && pickupDelivery ? `
+            <div class="info-item">
+              <span class="info-label">Both Delivery Discount:</span> -$4.00
+            </div>
+            ` : ''}
+          </div>
+          <div class="total-amount">
+            Total: $${total.toFixed(2)}
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>Thank you for choosing Markham Restring Studio!</p>
+          <p>For questions, contact us at markhamrestring@gmail.com</p>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
   // Helper to get start of week/month
   function getStartOfWeek(date) {
     const d = new Date(date);

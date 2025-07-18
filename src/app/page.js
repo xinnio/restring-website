@@ -23,14 +23,14 @@ export default function Home() {
         }}></div>
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
           <h1 style={{
-            fontSize: '3.375rem',
+            fontSize: '3.25rem',
             fontWeight: '700',
             marginBottom: '1.5rem',
             lineHeight: '1.2'
           }}>
             Professional Racket Stringing
             <br />
-            <span style={{ fontSize: '2.375rem', opacity: 0.9 }}>in Markham</span>
+            <span style={{ fontSize: '2.25rem', opacity: 0.9 }}>in Markham</span>
           </h1>
           <p style={{
             fontSize: '1.125rem',
@@ -81,7 +81,7 @@ export default function Home() {
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.375rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2.25rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '1rem' }}>
               Our Services
             </h2>
             <p style={{ fontSize: '0.975rem', color: '#666' }}>
@@ -101,7 +101,7 @@ export default function Home() {
               textAlign: 'center',
               transition: 'all 0.2s ease'
             }}>
-              <div style={{ fontSize: '2.375rem', marginBottom: '1rem' }}>🎾</div>
+              <div style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>🎾</div>
               <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Tennis Rackets
               </h3>
@@ -118,7 +118,7 @@ export default function Home() {
               textAlign: 'center',
               transition: 'all 0.2s ease'
             }}>
-              <div style={{ fontSize: '2.375rem', marginBottom: '1rem' }}>🏸</div>
+              <div style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>🏸</div>
               <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Badminton Rackets
               </h3>
@@ -135,7 +135,7 @@ export default function Home() {
               textAlign: 'center',
               transition: 'all 0.2s ease'
             }}>
-              <div style={{ fontSize: '2.375rem', marginBottom: '1rem' }}>🔧</div>
+              <div style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>🔧</div>
               <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Grommet Replacement
               </h3>
@@ -151,7 +151,7 @@ export default function Home() {
       {/* Features Section */}
       <section style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '2.375rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '1rem' }}>
             Why Choose Us?
           </h2>
           <p style={{ fontSize: '0.975rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
@@ -173,7 +173,7 @@ export default function Home() {
             textAlign: 'center',
             transition: 'transform 0.2s ease'
           }}>
-            <div style={{ fontSize: '1.875rem', marginBottom: '1rem' }}>⚡</div>
+            <div style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>⚡</div>
             <h3 style={{ fontSize: '1.325rem', fontWeight: '600', marginBottom: '1rem', color: '#1a1a1a' }}>
               Same Day Service
             </h3>
@@ -190,7 +190,7 @@ export default function Home() {
             textAlign: 'center',
             transition: 'transform 0.2s ease'
           }}>
-            <div style={{ fontSize: '1.875rem', marginBottom: '1rem' }}>🏆</div>
+            <div style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>🏆</div>
             <h3 style={{ fontSize: '1.325rem', fontWeight: '600', marginBottom: '1rem', color: '#1a1a1a' }}>
               Professional Quality
             </h3>
@@ -207,7 +207,7 @@ export default function Home() {
             textAlign: 'center',
             transition: 'transform 0.2s ease'
           }}>
-            <div style={{ fontSize: '1.875rem', marginBottom: '1rem' }}>📍</div>
+            <div style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>📍</div>
             <h3 style={{ fontSize: '1.325rem', fontWeight: '600', marginBottom: '1rem', color: '#1a1a1a' }}>
               Convenient Locations
             </h3>
@@ -225,7 +225,7 @@ export default function Home() {
         borderTop: '1px solid #eee'
       }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2.375em', fontWeight: 700, color: '#1a1a1', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '2.25em', fontWeight: 700, color: '#1a1a1', marginBottom: '1rem' }}>
             Contact Us
           </h2>
           <p style={{ fontSize: '0.975rem', color: '#666', marginBottom: '2rem' }}>
@@ -238,7 +238,7 @@ export default function Home() {
             marginTop: '2rem'
           }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.875rem', marginBottom: '1rem' }}>📧</div>
+              <div style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>📧</div>
               <h3 style={{ fontSize: '1.075em', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Email
               </h3>
@@ -247,7 +247,7 @@ export default function Home() {
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.875rem', marginBottom: '1rem' }}>📞</div>
+              <div style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>📞</div>
               <h3 style={{ fontSize: '1.075em', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Phone
               </h3>
@@ -256,7 +256,7 @@ export default function Home() {
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.875rem', marginBottom: '1rem' }}>🏠</div>
+              <div style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>🏠</div>
               <h3 style={{ fontSize: '1.075em', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Location
               </h3>
@@ -276,7 +276,7 @@ export default function Home() {
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2.375rem', fontWeight: '700', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: '700', marginBottom: '1.5rem' }}>
             Ready to Get Started?
           </h2>
           <p style={{ fontSize: '0.975rem', marginBottom: '2rem', opacity: 0.9, lineHeight: '1.6' }}>
