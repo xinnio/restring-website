@@ -79,7 +79,7 @@ export default function FAQ() {
     },
     {
       question: "How do I know if my racket needs restringing?",
-      answer: "You may need to restring your racket if you notice:\n\nFraying or broken strings\nStrings feeling loose or \"dead\"\nA loss of control or power during play\nIt's been more than 6 months since your last restring",
+      answer: "You may need to restring your racket if you notice:\n\nFraying or broken strings\nStrings feeling loose or \"dead\"\nA loss of control or power during play\nIt&apos;s been more than 6 months since your last restring",
       category: "Maintenance",
       icon: "🔍"
     }
