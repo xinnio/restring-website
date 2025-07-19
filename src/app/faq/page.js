@@ -43,7 +43,7 @@ export default function FAQ() {
     },
     {
       question: "Can I bring my own string?",
-      answer: "Yes! You can bring your own string for a $5 discount. This is perfect if you have a specific string preference or brand loyalty. We'll string your racket with your string using the same professional techniques.",
+      answer: "Yes! You can bring your own string for a $5 discount. This is perfect if you have a specific string preference or brand loyalty. We&apos;ll string your racket with your string using the same professional techniques.",
       category: "Services",
       icon: "🎯"
     },
@@ -61,7 +61,7 @@ export default function FAQ() {
     },
     {
       question: "Where can I drop off and pick up my racket?",
-      answer: "We offer convenient pickup and drop-off options at:\n\n🏠 Markham Studio\n🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1\n🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8\n🚗 Door-to-Door (Delivery) - by appointment (+$12.00)\n\nYou can select your preferred location and time when booking. We'll coordinate the logistics in consideration of both your availability and ours.",
+      answer: "We offer convenient pickup and drop-off options at:\n\n🏠 Markham Studio\n🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1\n🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8\n🚗 Door-to-Door (Delivery) - by appointment (+$12.00)\n\nYou can select your preferred location and time when booking. We&apos;ll coordinate the logistics in consideration of both your availability and ours.",
       category: "Service Locations",
       icon: "📍"
     },

@@ -724,7 +724,7 @@ export default function Locations() {
               textAlign: 'center',
               border: '1px solid #4caf50'
             }}>
-              Message sent successfully! We'll get back to you soon.
+              Message sent successfully! We&apos;ll get back to you soon.
             </div>
           )}
           
