@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Strings() {
   const [strings, setStrings] = useState([]);
@@ -261,12 +262,11 @@ export default function Strings() {
                   }}>
 
                     {first.imageUrl ? (
-                      <img 
+                      <Image 
                         src={first.imageUrl} 
                         alt={`${name} string`} 
+                        fill
                         style={{ 
-                          width: '100%', 
-                          height: '100%', 
                           objectFit: 'cover',
                           borderRadius: '12px'
                         }} 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Sidebar from '../../components/Sidebar';
 import StringForm from '../../components/StringForm';
 import StringEditForm from '../../components/StringEditForm';
@@ -118,12 +119,12 @@ export default function InventoryManager() {
                             <tr key={name} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
                                 {first.imageUrl ? (
-                                  <img 
+                                  <Image 
                                     src={first.imageUrl} 
                                     alt={`${name} string`} 
+                                    width={60}
+                                    height={60}
                                     style={{ 
-                                      width: '60px', 
-                                      height: '60px', 
                                       objectFit: 'cover',
                                       borderRadius: '8px',
                                       border: '1px solid #e9ecef'

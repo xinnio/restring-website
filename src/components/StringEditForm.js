@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function StringEditForm({ string, variants, onSuccess }) {
   const [form, setForm] = useState({
@@ -169,9 +170,11 @@ export default function StringEditForm({ string, variants, onSuccess }) {
             textAlign: 'center',
             position: 'relative'
           }}>
-            <img 
+            <Image 
               src={imagePreview} 
               alt="String preview" 
+              width={400}
+              height={150}
               style={{ 
                 maxWidth: '100%', 
                 maxHeight: '150px', 

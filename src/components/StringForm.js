@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 export default function StringForm({ string = null, onSuccess }) {
   const [form, setForm] = useState({
@@ -122,9 +123,11 @@ export default function StringForm({ string = null, onSuccess }) {
             textAlign: 'center',
             position: 'relative'
           }}>
-            <img 
+            <Image 
               src={imagePreview} 
               alt="String preview" 
+              width={400}
+              height={200}
               style={{ 
                 maxWidth: '100%', 
                 maxHeight: '200px', 
