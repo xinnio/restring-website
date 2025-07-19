@@ -241,6 +241,34 @@ export default function BookingForm() {
         {/* 2. Racket & String Details */}
         <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>🔍 2. Racket & String Details</h3>
+          
+          {/* Own String Option */}
+          <div style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+              <input type="checkbox" name="ownString" checked={form.ownString} onChange={handleChange} style={{ marginRight: '0.75rem' }} />
+              <label style={{ fontWeight: '600', color: '#333', fontSize: '1.1rem', cursor: 'pointer' }}>
+                I will provide my own string (-$5.00 discount)
+              </label>
+            </div>
+            {form.ownString && (
+              <div style={{ 
+                background: 'linear-gradient(90deg, #e8f5e8 60%, #f0f9ff 100%)', 
+                border: '1.5px solid #4caf50', 
+                borderRadius: 12, 
+                padding: '1rem 1.5rem', 
+                marginBottom: '1rem', 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12 
+              }}>
+                <span style={{ fontSize: '1.2rem', color: '#4caf50', marginTop: '0.1rem' }}>ℹ️</span>
+                <div style={{ fontSize: '0.95rem', color: '#2e7d32', lineHeight: '1.5' }}>
+                  <strong>Important:</strong> If you provide your own string, we will only charge for the labor. In the event that the string breaks during the stringing process, we will replace it free of charge using a similar string from our inventory with comparable performance and color.
+                </div>
+              </div>
+            )}
+          </div>
+          
           {rackets.map((r, idx) => (
             <div key={idx} style={{ marginBottom: '2rem', borderBottom: idx < rackets.length - 1 ? '1px solid #e9ecef' : 'none', paddingBottom: '1.5rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
@@ -419,18 +447,12 @@ export default function BookingForm() {
               <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.28rem', marginBottom: '0.18rem' }}>$25</div>
             </div>
           </div>
-          {/* Keep other service options as-is */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Own String?</label>
-              <input type="checkbox" name="ownString" checked={form.ownString} onChange={handleChange} />
-              <span style={{ marginLeft: '0.5rem', color: '#666' }}>I will provide my own string (-$5.00 discount)</span>
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Grommet Replacement?</label>
-              <input type="checkbox" name="grommetReplacement" checked={form.grommetReplacement} onChange={handleChange} />
-              <span style={{ marginLeft: '0.5rem', color: '#666' }}>Add grommet replacement (4 FREE per racket, +$0.25 each additional)</span>
-            </div>
+          {/* Grommet Replacement Option */}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <input type="checkbox" name="grommetReplacement" checked={form.grommetReplacement} onChange={handleChange} style={{ marginRight: '0.75rem' }} />
+            <label style={{ fontWeight: '500', color: '#333', fontSize: '0.95rem', cursor: 'pointer' }}>
+              Add grommet replacement (4 FREE per racket, +$0.25 each additional)
+            </label>
           </div>
         </div>
         {/* 4. Drop-Off / Pick-Up Scheduling */}
