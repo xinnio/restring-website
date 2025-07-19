@@ -49,7 +49,7 @@ export default function FAQ() {
     },
     {
       question: "What tension should I use?",
-      answer: "Tension recommendations vary by skill level and playing style:\n\nBadminton:\n• Beginner: 19-23 lbs\n• Intermediate: 22-26 lbs\n• Advanced: 25-29 lbs\n\nTennis:\n• Beginner: 50-60 lbs\n• Intermediate: 55-65 lbs\n• Advanced: 60-70 lbs\n\nWe can help you choose the right tension based on your experience and preferences.",
+      answer: "🎾 Tennis String Tension Recommendations\n\nTypical Range: 45–65 lbs (20–30 kg)\nPlayer Type\tRecommended Tension\tBenefits\nBeginners\t50–54 lbs\tMore power, comfort, less shock\nIntermediate Players\t52–58 lbs\tBalanced control and power\nAdvanced Players\t55–62 lbs\tMore control and spin\nArm Sensitivity\t45–52 lbs\tLess vibration, softer feel\n\nGeneral Rule:\n\nLower tension = more power, comfort, and forgiveness\nHigher tension = more control and precision\n\n🏸 Badminton String Tension Recommendations\n\nTypical Range: 18–30 lbs (8–13.5 kg)\nPlayer Level\tRecommended Tension\tBenefits\nBeginners\t18–22 lbs\tLarger sweet spot, easy power\nIntermediate Players\t22–26 lbs\tBetter control and feel\nAdvanced Players\t26–30 lbs\tMore accuracy and power transfer\nArm Comfort Focus\t20–24 lbs\tSofter impact, less stress",
       category: "Technical",
       icon: "⚖️"
     },
@@ -61,7 +61,7 @@ export default function FAQ() {
     },
     {
       question: "Where can I drop off and pick up my racket?",
-      answer: "We offer convenient pickup and drop-off options at:\n\nWiser Park Tennis Courts\nAngus Glen Community Centre\nDoor-to-door pickup (by appointment)\nYou can select your preferred location and time when booking. We&apos;ll coordinate logistics based on your availability and ours.",
+      answer: "We offer convenient pickup and drop-off options at:\n\n🏠 Markham Studio\n🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1\n🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8\n🚗 Door-to-Door (Delivery) - by appointment (+$12.00)\n\nYou can select your preferred location and time when booking. We'll coordinate the logistics in consideration of both your availability and ours.",
       category: "Service Locations",
       icon: "📍"
     },
@@ -79,7 +79,7 @@ export default function FAQ() {
     },
     {
       question: "How do I know if my racket needs restringing?",
-      answer: "Common signs your racket needs restringing include:\n\nFraying or broken strings\nStrings feeling loose or &quot;dead&quot;\nLoss of control or power\nIt&apos;s been more than 6 months since your last restring.",
+      answer: "You may need to restring your racket if you notice:\n\nFraying or broken strings\nStrings feeling loose or \"dead\"\nA loss of control or power during play\nIt's been more than 6 months since your last restring",
       category: "Maintenance",
       icon: "🔍"
     }
@@ -228,7 +228,7 @@ export default function FAQ() {
           {/* Contact Section */}
           <div style={{ marginTop: 60, background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)', borderRadius: 28, padding: '3rem 1.5rem', color: 'white', boxShadow: '0 8px 32px rgba(102,126,234,0.13)', textAlign: 'center' }}>
             <h2 style={{ fontSize: '1.975rem', fontWeight: 800, marginBottom: '1.2rem', letterSpacing: '-0.01em' }}>Still Have Questions?</h2>
-            <p style={{ fontSize: '1.055rem', color: '#e0e7ff', marginBottom: '2.2rem', fontWeight: 500 }}>Can&apos;t find the answer you&apos;re looking for? We&apos;re here to help!</p>
+            <p style={{ fontSize: '1.055rem', color: '#e0e7ff', marginBottom: '2.2rem', fontWeight: 500 }}>Can't find the answer you're looking for? We're here to help!</p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1.2rem', flexWrap: 'wrap' }}>
               <a
                 href="/locations"

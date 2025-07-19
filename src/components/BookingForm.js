@@ -28,10 +28,12 @@ export default function BookingForm() {
   const [availabilityLoading, setAvailabilityLoading] = useState(true);
   const [showPickupFields, setShowPickupFields] = useState(false);
   const [showDeliveryFields, setShowDeliveryFields] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   // Add state for multiple racket/string combos
   const [rackets, setRackets] = useState([
-    { racketType: '', stringName: '', stringColor: '', stringTension: '', quantity: 1 }
+    { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1 }
   ]);
 
   // --- Fetch inventory and availability ---
@@ -92,10 +94,38 @@ export default function BookingForm() {
     setRackets(rackets => rackets.map((r, i) => i === idx ? { ...r, [name]: value } : r));
   }
   function handleAddRacket() {
-    setRackets(rackets => [...rackets, { racketType: '', stringName: '', stringColor: '', stringTension: '', quantity: 1 }]);
+    setRackets(rackets => [...rackets, { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1 }]);
   }
   function handleRemoveRacket(idx) {
     setRackets(rackets => rackets.filter((_, i) => i !== idx));
+  }
+
+  function handleTensionMethodChange(idx, method) {
+    setRackets(rackets => rackets.map((r, i) => {
+      if (i === idx) {
+        return { ...r, tensionMethod: method, stringTension: '' };
+      }
+      return r;
+    }));
+  }
+
+  function getTensionOptions(racketType) {
+    if (racketType === 'tennis') {
+      return [
+        { value: 'beginner', label: 'Beginner (50-54 lbs)', description: 'More power, comfort, less shock' },
+        { value: 'intermediate', label: 'Intermediate (52-58 lbs)', description: 'Balanced control and power' },
+        { value: 'advanced', label: 'Advanced (55-62 lbs)', description: 'More control and spin' },
+        { value: 'arm_sensitive', label: 'Arm Sensitive (45-52 lbs)', description: 'Less vibration, softer feel' }
+      ];
+    } else if (racketType === 'badminton') {
+      return [
+        { value: 'beginner', label: 'Beginner (18-22 lbs)', description: 'Larger sweet spot, easy power' },
+        { value: 'intermediate', label: 'Intermediate (22-26 lbs)', description: 'Better control and feel' },
+        { value: 'advanced', label: 'Advanced (26-30 lbs)', description: 'More accuracy and power transfer' },
+        { value: 'arm_comfort', label: 'Arm Comfort (20-24 lbs)', description: 'Softer impact, less stress' }
+      ];
+    }
+    return [];
   }
 
   // --- Inventory Filtering ---
@@ -191,7 +221,7 @@ export default function BookingForm() {
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, rackets }),
+        body: JSON.stringify({ ...form, rackets, agreeToTerms }),
       });
       if (res.ok) {
         setStatus('success');
@@ -301,14 +331,108 @@ export default function BookingForm() {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Tension (lbs) *</label>
-                  <select name="stringTension" value={r.stringTension} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                    <option value="">Select Tension...</option>
-                    <option value="16-20">16-20 lbs : Recreational</option>
-                    <option value="19-23">19-23 lbs : Beginner</option>
-                    <option value="22-26">22-26 lbs : Intermediate</option>
-                    <option value="25-29">25-29 lbs : Advanced</option>
-                    <option value="27-35">27-35 lbs : Professional</option>
-                  </select>
+                  
+                  {/* Tension Method Selection */}
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.9rem' }}>
+                        <input 
+                          type="radio" 
+                          name={`tensionMethod-${idx}`} 
+                          checked={r.tensionMethod === 'custom'} 
+                          onChange={() => handleTensionMethodChange(idx, 'custom')}
+                          style={{ marginRight: '0.5rem' }}
+                        />
+                        Custom Tension
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.9rem' }}>
+                        <input 
+                          type="radio" 
+                          name={`tensionMethod-${idx}`} 
+                          checked={r.tensionMethod === 'level'} 
+                          onChange={() => handleTensionMethodChange(idx, 'level')}
+                          style={{ marginRight: '0.5rem' }}
+                        />
+                        Choose by Play Level
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Custom Tension Input */}
+                  {r.tensionMethod === 'custom' && (
+                    <div>
+                      <input 
+                        type="text" 
+                        name="stringTension" 
+                        value={r.stringTension} 
+                        onChange={e => handleRacketChange(idx, e)} 
+                        required 
+                        placeholder="e.g., 25, 28-30, 22 lbs"
+                        style={{ 
+                          width: '100%', 
+                          padding: '0.875rem', 
+                          border: '2px solid #e9ecef', 
+                          borderRadius: '8px', 
+                          fontSize: '0.875rem', 
+                          transition: 'border-color 0.2s ease', 
+                          backgroundColor: 'white', 
+                          boxSizing: 'border-box' 
+                        }} 
+                      />
+                      <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
+                        Enter your desired tension (e.g., 25 lbs, 28-30 lbs, or specific range)
+                      </small>
+                    </div>
+                  )}
+
+                  {/* Play Level Selection */}
+                  {r.tensionMethod === 'level' && r.racketType && (
+                    <div>
+                      <select 
+                        name="stringTension" 
+                        value={r.stringTension} 
+                        onChange={e => handleRacketChange(idx, e)} 
+                        required
+                        style={{ 
+                          width: '100%', 
+                          padding: '0.875rem', 
+                          border: '2px solid #e9ecef', 
+                          borderRadius: '8px', 
+                          fontSize: '0.875rem', 
+                          transition: 'border-color 0.2s ease', 
+                          backgroundColor: 'white', 
+                          boxSizing: 'border-box' 
+                        }}
+                      >
+                        <option value="">Select your play level...</option>
+                        {getTensionOptions(r.racketType).map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {r.stringTension && (
+                        <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
+                          {getTensionOptions(r.racketType).find(opt => opt.value === r.stringTension)?.description}
+                        </small>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Message when no racket type selected for level method */}
+                  {r.tensionMethod === 'level' && !r.racketType && (
+                    <div style={{ 
+                      padding: '0.875rem', 
+                      border: '2px solid #e9ecef', 
+                      borderRadius: '8px', 
+                      backgroundColor: '#f8f9fa',
+                      color: '#666',
+                      fontSize: '0.875rem',
+                      textAlign: 'center'
+                    }}>
+                      Please select a racket type first to see play level options
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Quantity *</label>
@@ -464,8 +588,8 @@ export default function BookingForm() {
               <select name="dropoffLocation" value={form.dropoffLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                 <option value="">Select Location...</option>
                 <option value="Markham Studio">🏠 Markham Studio</option>
-                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts</option>
-                <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre</option>
+                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1</option>
+                <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
                 <option value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
               </select>
             </div>
@@ -474,8 +598,8 @@ export default function BookingForm() {
               <select name="pickupLocation" value={form.pickupLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
                 <option value="">Select Location...</option>
                 <option value="Markham Studio">🏠 Markham Studio</option>
-                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts</option>
-                <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre</option>
+                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1</option>
+                <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
                 <option value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
               </select>
               <div style={{ color: '#666', fontSize: '1rem', marginTop: '0.5rem' }}>We will contact you once your order is finished for pick-up coordination.</div>
@@ -581,16 +705,118 @@ export default function BookingForm() {
             {form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Pickup Delivery: +$12.00</li>}
             {form.dropoffLocation === 'Door-to-Door (Delivery)' && form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Both Delivery Discount: -$4.00</li>}
           </ul>
-          <p style={{ color: '#2e7d32', fontSize: '0.9rem', marginTop: '0.5rem' }}>Payment is due at pick-up/delivery. We accept cash, e-transfer, and credit cards.</p>
+          <p style={{ color: '#2e7d32', fontSize: '0.9rem', marginTop: '0.5rem' }}>Payment is due at pick-up/delivery. We currently accept cash only.</p>
         </div>
+        
+        {/* 7. Terms and Conditions */}
+        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 7. Terms and Conditions</h3>
+          
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <input 
+                type="checkbox" 
+                checked={agreeToTerms} 
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                required
+                style={{ marginTop: '0.2rem' }}
+              />
+              <div>
+                <label style={{ fontWeight: '600', color: '#333', fontSize: '1rem', cursor: 'pointer' }}>
+                  I agree to the Terms and Conditions <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <div style={{ color: '#666', fontSize: '0.9rem', marginTop: '0.5rem', lineHeight: '1.4' }}>
+                  By placing an order, you agree to our Terms and Conditions including booking, service, liability, and cancellation policies.
+                  <button 
+                    type="button"
+                    onClick={() => setShowTerms(!showTerms)}
+                    style={{ 
+                      background: 'none', 
+                      border: 'none', 
+                      color: '#6c63ff', 
+                      textDecoration: 'underline', 
+                      cursor: 'pointer', 
+                      fontSize: '0.9rem',
+                      marginLeft: '0.5rem'
+                    }}
+                  >
+                    {showTerms ? '[Hide Terms]' : '[View Terms]'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {showTerms && (
+            <div style={{ 
+              border: '1px solid #ccc', 
+              padding: '1rem', 
+              maxHeight: '300px', 
+              overflow: 'auto', 
+              fontSize: '0.875rem',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              lineHeight: '1.6'
+            }}>
+              <strong>Terms & Conditions</strong><br/><br/>
+
+              <strong>1. Booking & Payment</strong><br/>
+              • All orders must be placed online and confirmed before drop-off or pickup.<br/>
+              • Payment is due at the time of drop-off or delivery. We currently accept cash only.<br/>
+              • Same-day and next-day orders may include a small rush fee.<br/><br/>
+
+              <strong>2. Providing Your Own String</strong><br/>
+              • If you bring your own string, we only charge for labor (+$3).<br/>
+              • If your string breaks during stringing, we&apos;ll replace it free of charge using a similar string from our inventory (similar color and performance).<br/>
+              • However, we are not responsible for replacing it with the original string you provided.<br/><br/>
+
+              <strong>3. Turnaround Time</strong><br/>
+              • Choose from: Same-Day, Next-Day, or 3–5 Business Days.<br/>
+              • We always aim to meet your requested turnaround, but delays may occur during busy times. Thanks for your understanding!<br/><br/>
+
+              <strong>4. Pickup & Delivery</strong><br/>
+              • Pickup and delivery services are available for $12 each way.<br/>
+              • You may mix and match your drop-off and pickup locations (e.g., home, park, community centre).<br/>
+              • Please be on time for your appointment. Missed pickups or drop-offs may result in rescheduling.<br/><br/>
+
+              <strong>5. Liability & Damages</strong><br/>
+              • We handle every racket with care, but we are not responsible for damage caused by pre-existing cracks, worn grommets, or weakened frames.<br/>
+              • If we notice any issues before stringing, we&apos;ll contact you. Grommet replacement may involve an extra fee.<br/>
+              • We&apos;re not responsible for string breakage after service unless it&apos;s clearly due to our workmanship.<br/>
+              • Please inspect your racket when you pick it up or receive it. Once the racket has been returned to you, we are not responsible for any issues reported afterward.<br/><br/>
+
+              <strong>6. Cancellations</strong><br/>
+              • Please cancel or reschedule your appointment at least 12 hours in advance.<br/>
+              • Last-minute cancellations or no-shows may result in a fee.
+            </div>
+          )}
+        </div>
+        
         {/* Submit Button */}
-        <button type="submit" disabled={status === 'loading'} style={{ padding: '1rem 2rem', backgroundColor: status === 'loading' ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', background: status === 'loading' ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: '600', cursor: status === 'loading' ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', boxShadow: status === 'loading' ? 'none' : '0 4px 12px rgba(102, 126, 234, 0.3)' }}>
+        <button 
+          type="submit" 
+          disabled={status === 'loading' || !agreeToTerms} 
+          style={{ 
+            padding: '1rem 2rem', 
+            backgroundColor: status === 'loading' || !agreeToTerms ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+            background: status === 'loading' || !agreeToTerms ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '8px', 
+            fontSize: '1.1rem', 
+            fontWeight: '600', 
+            cursor: status === 'loading' || !agreeToTerms ? 'not-allowed' : 'pointer', 
+            transition: 'all 0.2s ease', 
+            boxShadow: status === 'loading' || !agreeToTerms ? 'none' : '0 4px 12px rgba(102, 126, 234, 0.3)' 
+          }}
+        >
           {status === 'loading' ? '📤 Submitting...' : '📤 Submit Booking'}
         </button>
         {/* Status Messages */}
         {status === 'success' && (
           <div style={{ padding: '1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '8px', textAlign: 'center', border: '1px solid #c3e6cb' }}>
-            ✅ Booking submitted successfully! We&apos;ll contact you soon to confirm details.
+            ✅ Booking submitted successfully! 📧 A copy has been sent to markhamrestring@gmail.com<br/>
+            We&apos;ll contact you soon to confirm details and arrange pickup/drop-off.
           </div>
         )}
         {status === 'error' && (

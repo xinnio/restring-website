@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Markham Restring Studio
 
-## Getting Started
+A Next.js-based racket stringing service website with booking management, inventory tracking, and admin dashboard.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Booking System**: Complete booking form with multiple racket support
+- **Inventory Management**: Track strings and availability
+- **Admin Dashboard**: Manage bookings, inventory, and availability
+- **Email Notifications**: Automatic email alerts for new bookings
+- **Responsive Design**: Mobile-friendly interface
+- **Real-time Updates**: Live availability and booking status
+
+## Email Setup
+
+The booking system automatically sends detailed booking notifications to `markhamrestring@gmail.com` when customers submit bookings.
+
+### Option 1: EmailJS (Recommended - No Server Setup)
+
+1. Sign up at [EmailJS](https://www.emailjs.com/)
+2. Create an email service (Gmail, Outlook, etc.)
+3. Create an email template
+4. Add environment variables to your `.env.local`:
+
+```env
+EMAILJS_SERVICE_ID=your_service_id
+EMAILJS_TEMPLATE_ID=your_template_id
+EMAILJS_USER_ID=your_user_id
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Uncomment the EmailJS code in `src/app/api/email/route.js`
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Option 2: SendGrid
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Sign up at [SendGrid](https://sendgrid.com/)
+2. Get your API key
+3. Add to `.env.local`:
 
-## Learn More
+```env
+SENDGRID_API_KEY=your_api_key
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Update the email route to use SendGrid
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Option 3: Mailgun
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Sign up at [Mailgun](https://www.mailgun.com/)
+2. Get your API key and domain
+3. Add to `.env.local`:
 
-## Deploy on Vercel
+```env
+MAILGUN_API_KEY=your_api_key
+MAILGUN_DOMAIN=your_domain
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm install
+npm run dev
+```
+
+## Production
+
+```bash
+npm run build
+npm start
+```
+
+## Environment Variables
+
+Create a `.env.local` file with:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+# Email service variables (see Email Setup above)
+```
+
+## Email Content
+
+The booking notification email includes:
+
+- Customer information (name, email, phone)
+- Complete racket and string details
+- Service options (turnaround time, locations)
+- Pricing breakdown
+- Additional notes
+- Booking ID and status
+
+The email is sent to `markhamrestring@gmail.com` with a subject line like:
+`🎾 New Booking - John Doe - Same Day`

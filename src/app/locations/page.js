@@ -1,37 +1,154 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function Locations() {
+  const [availability, setAvailability] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    serviceType: '',
+    message: ''
+  });
+  const [formStatus, setFormStatus] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(0); // 0 = this week, 1 = next week, etc.
+
+  // Fetch availability data
+  useEffect(() => {
+    async function fetchAvailability() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/availability');
+        const data = await res.json();
+        setAvailability(data);
+      } catch (error) {
+        console.error('Error fetching availability:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAvailability();
+  }, []);
+
+  // Helper function to get week dates
+  function getWeekDates(startDate) {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  }
+
+  // Get week dates based on selection
+  const today = new Date();
+  const currentWeekStart = new Date(today);
+  currentWeekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+  
+  const selectedWeekStart = new Date(currentWeekStart);
+  selectedWeekStart.setDate(currentWeekStart.getDate() + (selectedWeek * 7));
+
+  const selectedWeekDates = getWeekDates(selectedWeekStart);
+  
+  // Get week label
+  function getWeekLabel(weekOffset) {
+    if (weekOffset === 0) return 'This Week';
+    if (weekOffset === 1) return 'Next Week';
+    if (weekOffset === -1) return 'Last Week';
+    return `Week ${weekOffset > 0 ? '+' : ''}${weekOffset}`;
+  }
+
+  // Helper function to get availability for a specific date
+  function getAvailabilityForDate(date) {
+    const dateStr = date.toISOString().slice(0, 10);
+    return availability.filter(slot => slot.date === dateStr && slot.available !== false);
+  }
+
+  // Helper function to format time
+  function formatTime(time) {
+    if (!time) return '';
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  }
+
+  // Contact form handlers
+  function handleContactFormChange(e) {
+    const { name, value } = e.target;
+    setContactForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  async function handleContactFormSubmit(e) {
+    e.preventDefault();
+    setFormStatus('loading');
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...contactForm,
+          to: '0xinniliu0@gmail.com'
+        }),
+      });
+
+      if (response.ok) {
+        setFormStatus('success');
+        setContactForm({
+          name: '',
+          email: '',
+          phone: '',
+          serviceType: '',
+          message: ''
+        });
+      } else {
+        setFormStatus('error');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setFormStatus('error');
+    }
+  }
   const businessHours = [
-    { day: 'Monday', hours: '9:00 AM - 6:00 PM', status: 'open' },
-    { day: 'Tuesday', hours: '9:00 AM - 6:00 PM', status: 'open' },
-    { day: 'Wednesday', hours: '9:00 AM - 6:00 PM', status: 'open' },
-    { day: 'Thursday', hours: '9:00 AM - 6:00 PM', status: 'open' },
-    { day: 'Friday', hours: '9:00 AM - 6:00 PM', status: 'open' },
-    { day: 'Saturday', hours: '10:00 AM - 4:00 PM', status: 'open' },
+    { day: 'Monday', hours: '10:00 AM - 7:00 PM', status: 'open' },
+    { day: 'Tuesday', hours: '10:00 AM - 7:00 PM', status: 'open' },
+    { day: 'Wednesday', hours: '10:00 AM - 7:00 PM', status: 'open' },
+    { day: 'Thursday', hours: '10:00 AM - 7:00 PM', status: 'open' },
+    { day: 'Friday', hours: '10:00 AM - 7:00 PM', status: 'open' },
+    { day: 'Saturday', hours: 'Closed', status: 'closed' },
     { day: 'Sunday', hours: 'Closed', status: 'closed' }
   ];
 
   const pickupLocations = [
     {
       name: 'Wiser Park Tennis Courts',
-      address: '123 Wiser Park Drive, Markham, ON L3R 1A1',
-      hours: 'Mon-Fri: 9AM-6PM, Sat: 10AM-4PM',
+      address: '980 Bur Oak Avenue, Markham, ON L6E 0E1',
+      hours: 'Mon-Fri: 10AM-7PM',
       distance: '5 min from Markham Centre',
       icon: '🎾'
     },
     {
-      name: 'Angus Glen Community Centre',
-      address: '3990 Major Mackenzie Dr E, Markham, ON L6C 1P8',
-      hours: 'Mon-Fri: 9AM-6PM, Sat: 10AM-4PM',
+      name: 'Angus Glen Community Centre (Library)',
+      address: '3970 Major Mackenzie Dr E, Markham, ON L6C 1P8',
+      hours: 'Mon-Fri: 10AM-7PM',
       distance: '8 min from Markham Centre',
       icon: '🏢'
     },
     {
-      name: 'Door-to-Door Pickup',
-      address: 'Available for orders over $50 or by special arrangement',
-      hours: 'By appointment',
+      name: 'Door-to-Door (Delivery)',
+      address: 'Available for orders over $100 (free) or by special arrangement',
+      hours: 'Mon-Fri: By appointment',
       distance: 'Contact us to arrange',
       icon: '🚗'
     }
@@ -127,93 +244,12 @@ export default function Locations() {
             textAlign: 'left',
             transition: 'transform 0.2s ease'
           }}>
-            <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#4f46e5', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ fontSize: '1.175rem' }}>🏢</span> Studio Address</div>
-            <div style={{ fontSize: '0.955rem', color: '#1a1a1a', fontWeight: 600, marginBottom: 2 }}>Markham Restring Studio</div>
-            <div style={{ fontSize: '0.875rem', color: '#333', marginBottom: 2 }}>123 Example Street<br />Markham, ON L3R 1A1</div>
-            <div style={{ fontSize: '0.825rem', color: '#888', fontStyle: 'italic', marginBottom: 8 }}>(Replace with real address)</div>
+            <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#4f46e5', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ fontSize: '1.175rem' }}>📍</span> Studio Location</div>
+            <div style={{ fontSize: '0.955rem', color: '#1a1a1a', fontWeight: 600, marginBottom: 2 }}>See Drop-off and Pick-up locations</div>
+            <div style={{ fontSize: '0.875rem', color: '#333', marginBottom: 2 }}>Multiple convenient locations available<br />throughout Markham</div>
+            <div style={{ fontSize: '0.825rem', color: '#888', fontStyle: 'italic', marginBottom: 8 }}>Scroll down to view all locations</div>
             <div style={{ display: 'flex', alignItems: 'center', color: '#6c63ff', fontWeight: 700, fontSize: '0.925rem', cursor: 'pointer', gap: 8 }}>
-              <span style={{ fontSize: '1.075rem' }}>📍</span> Get Directions
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Information */}
-      <section style={{ 
-        backgroundColor: 'white', 
-        padding: '4rem 2rem',
-        borderTop: '1px solid #eee'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: '1.875rem' }}>📞</span> Contact Information
-            </h2>
-          </div>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-            gap: '2rem'
-          }}>
-            <div style={{
-              padding: '2rem',
-              borderRadius: '12px',
-              border: '2px solid #f0f0f0',
-              textAlign: 'center',
-              transition: 'all 0.2s ease'
-            }}>
-              <div style={{ fontSize: '1.875rem', color: '#6c63ff' }}>📧</div>
-              <div style={{ marginTop: '1rem' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Email</div>
-                <div style={{ fontSize: '0.925rem', color: '#6c63ff', fontWeight: 600 }}>markhamrestring@gmail.com</div>
-                <div style={{ fontSize: '0.795rem', color: '#888' }}>We&apos;ll respond within 24 hours</div>
-              </div>
-            </div>
-            
-            <div style={{
-              padding: '2rem',
-              borderRadius: '12px',
-              border: '2px solid #f0f0f0',
-              textAlign: 'center',
-              transition: 'all 0.2s ease'
-            }}>
-              <div style={{ fontSize: '1.875rem', color: '#059669' }}>📱</div>
-              <div style={{ marginTop: '1rem' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Phone</div>
-                <div style={{ fontSize: '0.925rem', color: '#059669', fontWeight: 600 }}>(123) 456-7890</div>
-                <div style={{ fontSize: '0.795rem', color: '#888' }}>Call during business hours</div>
-              </div>
-            </div>
-            
-            <div style={{
-              padding: '2rem',
-              borderRadius: '12px',
-              border: '2px solid #f0f0f0',
-              textAlign: 'center',
-              transition: 'all 0.2s ease'
-            }}>
-              <div style={{ fontSize: '1.875rem', color: '#a78bfa' }}>💬</div>
-              <div style={{ marginTop: '1rem' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>WhatsApp</div>
-                <div style={{ fontSize: '0.925rem', color: '#a78bfa', fontWeight: 600 }}>+1 (123) 456-7890</div>
-                <div style={{ fontSize: '0.795rem', color: '#888' }}>Quick responses, any time</div>
-              </div>
-            </div>
-            
-            <div style={{
-              padding: '2rem',
-              borderRadius: '12px',
-              border: '2px solid #f0f0f0',
-              textAlign: 'center',
-              transition: 'all 0.2s ease'
-            }}>
-              <div style={{ fontSize: '1.875rem', color: '#f59e42' }}>📱</div>
-              <div style={{ marginTop: '1rem' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Text Message</div>
-                <div style={{ fontSize: '0.925rem', color: '#f59e42', fontWeight: 600 }}>+1 (123) 456-7890</div>
-                <div style={{ fontSize: '0.795rem', color: '#888' }}>SMS for quick questions</div>
-              </div>
+              <span style={{ fontSize: '1.075rem' }}>👇</span> View Locations Below
             </div>
           </div>
         </div>
@@ -223,7 +259,7 @@ export default function Locations() {
       <section style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: '1.875rem' }}>📍</span> Pick-up & Drop-off Locations
+            <span style={{ fontSize: '1.875rem' }}>📍</span> Drop-off & Pick-up Locations
           </h2>
         </div>
         
@@ -271,7 +307,7 @@ export default function Locations() {
             gap: '1rem'
           }}>
             <span style={{ fontSize: '1.175rem', color: '#f59e42' }}>⚠️</span>
-            <div style={{ fontSize: '0.885rem', color: '#b45309', fontWeight: 600 }}><strong>Note:</strong> Door-to-door pick-up available for orders over $50 or by special arrangement.</div>
+            <div style={{ fontSize: '0.885rem', color: '#b45309', fontWeight: 600 }}><strong>Note:</strong> Door-to-door pick-up available for orders over $100 (free) or by special arrangement.</div>
           </div>
           
           <div style={{
@@ -289,7 +325,7 @@ export default function Locations() {
         </div>
       </section>
 
-      {/* Business Hours */}
+      {/* Contact Information */}
       <section style={{ 
         backgroundColor: 'white', 
         padding: '4rem 2rem',
@@ -298,33 +334,226 @@ export default function Locations() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: '1.875rem' }}>🕒</span> Business Hours
+              <span style={{ fontSize: '1.875rem' }}>📞</span> Contact Information
             </h2>
           </div>
           
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-            gap: '1rem',
-            maxWidth: '600px',
-            margin: '0 auto'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            gap: '2rem'
           }}>
-            {businessHours.map((item, index) => (
-              <div key={index} style={{
-                padding: '0.8rem 1.2rem',
-                borderRadius: '8px',
-                backgroundColor: item.status === 'closed' ? '#fee2e2' : '#f0f9ff',
-                border: `1px solid ${item.status === 'closed' ? '#fecaca' : '#bae6fd'}`,
-                textAlign: 'center'
+            <div style={{
+              padding: '2rem',
+              borderRadius: '12px',
+              border: '2px solid #f0f0f0',
+              textAlign: 'center',
+              transition: 'all 0.2s ease'
+            }}>
+              <div style={{ fontSize: '1.875rem', color: '#6c63ff' }}>📧</div>
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Email</div>
+                <div style={{ fontSize: '0.925rem', color: '#6c63ff', fontWeight: 600 }}>markhamrestring@gmail.com</div>
+                <div style={{ fontSize: '0.795rem', color: '#888' }}>We&apos;ll respond within 24 hours</div>
+              </div>
+            </div>
+            
+            <div style={{
+              padding: '2rem',
+              borderRadius: '12px',
+              border: '2px solid #f0f0f0',
+              textAlign: 'center',
+              transition: 'all 0.2s ease'
+            }}>
+              <div style={{ fontSize: '1.875rem', color: '#059669' }}>📱</div>
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Phone</div>
+                <div style={{ fontSize: '0.925rem', color: '#059669', fontWeight: 600 }}>(647) 655-3658</div>
+                <div style={{ fontSize: '0.795rem', color: '#888' }}>Call for urgent matters only</div>
+              </div>
+            </div>
+            
+            <div style={{
+              padding: '2rem',
+              borderRadius: '12px',
+              border: '2px solid #f0f0f0',
+              textAlign: 'center',
+              transition: 'all 0.2s ease'
+            }}>
+              <div style={{ fontSize: '1.875rem', color: '#f59e42' }}>📱</div>
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Text Message</div>
+                <div style={{ fontSize: '0.925rem', color: '#f59e42', fontWeight: 600 }}>(647) 655-3658</div>
+                <div style={{ fontSize: '0.795rem', color: '#888' }}>SMS for quick questions</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ 
+            backgroundColor: '#fef3c7', 
+            padding: '1.5rem', 
+            borderRadius: '12px', 
+            marginTop: '2rem',
+            border: '1px solid #f59e42',
+            textAlign: 'center'
+          }}>
+            <p style={{ fontSize: '0.885rem', color: '#b45309', fontWeight: 600 }}>
+              <strong>Note:</strong> Please contact us via email or text message for general inquiries. Call us only for urgent matters.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Availability Calendar */}
+      <section style={{ 
+        backgroundColor: 'white', 
+        padding: '4rem 2rem',
+        borderTop: '1px solid #eee'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: '1.875rem' }}>📅</span> Availability Calendar
+            </h2>
+          </div>
+          
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+              <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #667eea', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 1rem' }}></div>
+              <p style={{ fontSize: '1.1rem' }}>Loading availability...</p>
+            </div>
+          ) : (
+            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+              {/* Week Selection Controls */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '1rem', 
+                marginBottom: '2rem',
+                flexWrap: 'wrap'
               }}>
-                <div style={{ fontWeight: 600, fontSize: '0.925rem', color: item.status === 'closed' ? '#b91c1c' : '#1a1a1a' }}>
-                  {item.day}
+                <button
+                  onClick={() => setSelectedWeek(prev => prev - 1)}
+                  style={{
+                    background: 'none',
+                    border: '2px solid #667eea',
+                    color: '#667eea',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  ← Previous Week
+                </button>
+                
+                <div style={{ 
+                  backgroundColor: '#667eea', 
+                  color: 'white', 
+                  padding: '0.75rem 1.5rem', 
+                  borderRadius: '8px', 
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  minWidth: '150px',
+                  textAlign: 'center'
+                }}>
+                  {getWeekLabel(selectedWeek)}
                 </div>
-                <div style={{ fontSize: '0.875rem', color: item.status === 'closed' ? '#dc2626' : '#0369a1' }}>
-                  {item.hours}
+                
+                <button
+                  onClick={() => setSelectedWeek(prev => prev + 1)}
+                  style={{
+                    background: 'none',
+                    border: '2px solid #667eea',
+                    color: '#667eea',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  Next Week →
+                </button>
+              </div>
+
+              {/* Calendar */}
+              <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '16px', border: '1px solid #e9ecef' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem' }}>
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} style={{ textAlign: 'center', fontWeight: 600, fontSize: '0.875rem', color: '#666', padding: '0.5rem' }}>
+                      {day}
+                    </div>
+                  ))}
+                  {selectedWeekDates.map((date, index) => {
+                    const dateStr = date.toISOString().slice(0, 10);
+                    const daySlots = getAvailabilityForDate(date);
+                    const isToday = date.toDateString() === today.toDateString();
+                    const isPast = date < today;
+                    
+                    return (
+                      <div key={index} style={{
+                        padding: '0.75rem',
+                        borderRadius: '8px',
+                        backgroundColor: isToday ? '#e3eafe' : isPast ? '#f3f4f6' : 'white',
+                        border: isToday ? '2px solid #667eea' : '1px solid #e9ecef',
+                        textAlign: 'center',
+                        minHeight: '80px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'
+                      }}>
+                        <div style={{ 
+                          fontWeight: 600, 
+                          fontSize: '0.875rem', 
+                          color: isToday ? '#667eea' : isPast ? '#9ca3af' : '#333' 
+                        }}>
+                          {date.getDate()}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#666' }}>
+                          {daySlots.length > 0 ? (
+                            <div>
+                              {daySlots.slice(0, 2).map((slot, idx) => (
+                                <div key={idx} style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.25rem' }}>
+                                  <div>{formatTime(slot.startTime)}-{formatTime(slot.endTime)}</div>
+                                  <div style={{ fontSize: '0.65rem', color: '#888', marginTop: '0.1rem' }}>
+                                    {slot.location}
+                                  </div>
+                                </div>
+                              ))}
+                              {daySlots.length > 2 && (
+                                <div style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 600 }}>
+                                  +{daySlots.length - 2} more
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div style={{ color: '#dc2626', fontWeight: 600 }}>No slots</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            ))}
+            </div>
+          )}
+          
+          <div style={{ 
+            backgroundColor: '#e0e7ff', 
+            padding: '1.5rem', 
+            borderRadius: '12px', 
+            marginTop: '2rem',
+            border: '1px solid #6c63ff',
+            textAlign: 'center'
+          }}>
+            <p style={{ fontSize: '0.885rem', color: '#4f46e5', fontWeight: 600 }}>
+              <strong>Note:</strong> This calendar shows available time slots. For booking, please use the booking form above.
+            </p>
           </div>
         </div>
       </section>
@@ -348,11 +577,15 @@ export default function Locations() {
           </div>
         </div>
         
-        <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <form onSubmit={handleContactFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Name</label>
             <input
               type="text"
+              name="name"
+              value={contactForm.name}
+              onChange={handleContactFormChange}
+              required
               style={{ 
                 width: '100%', 
                 padding: '1.1rem 1.2rem', 
@@ -372,6 +605,10 @@ export default function Locations() {
             <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Email</label>
             <input
               type="email"
+              name="email"
+              value={contactForm.email}
+              onChange={handleContactFormChange}
+              required
               style={{ 
                 width: '100%', 
                 padding: '1.1rem 1.2rem', 
@@ -391,6 +628,9 @@ export default function Locations() {
             <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Phone</label>
             <input
               type="tel"
+              name="phone"
+              value={contactForm.phone}
+              onChange={handleContactFormChange}
               style={{ 
                 width: '100%', 
                 padding: '1.1rem 1.2rem', 
@@ -409,6 +649,9 @@ export default function Locations() {
           <div>
             <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Service Type</label>
             <select
+              name="serviceType"
+              value={contactForm.serviceType}
+              onChange={handleContactFormChange}
               style={{ 
                 width: '100%', 
                 padding: '1.1rem 1.2rem', 
@@ -432,6 +675,10 @@ export default function Locations() {
           <div>
             <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Message</label>
             <textarea
+              name="message"
+              value={contactForm.message}
+              onChange={handleContactFormChange}
+              required
               rows="4"
               style={{ 
                 width: '100%', 
@@ -451,8 +698,9 @@ export default function Locations() {
           
           <button
             type="submit"
+            disabled={formStatus === 'loading'}
             style={{ 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              background: formStatus === 'loading' ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
               color: 'white', 
               padding: '1.2rem 2rem', 
               borderRadius: 16, 
@@ -460,12 +708,38 @@ export default function Locations() {
               fontSize: '1.055rem', 
               boxShadow: '0 2px 12px rgba(102,126,234,0.10)', 
               border: 'none', 
-              cursor: 'pointer', 
+              cursor: formStatus === 'loading' ? 'not-allowed' : 'pointer', 
               transition: 'background 0.18s, color 0.18s, transform 0.13s' 
             }}
           >
-            Send Message
+            {formStatus === 'loading' ? 'Sending...' : 'Send Message'}
           </button>
+          
+          {formStatus === 'success' && (
+            <div style={{ 
+              backgroundColor: '#e8f5e9', 
+              color: '#2e7d32', 
+              padding: '1rem', 
+              borderRadius: '8px', 
+              textAlign: 'center',
+              border: '1px solid #4caf50'
+            }}>
+              Message sent successfully! We'll get back to you soon.
+            </div>
+          )}
+          
+          {formStatus === 'error' && (
+            <div style={{ 
+              backgroundColor: '#ffebee', 
+              color: '#c62828', 
+              padding: '1rem', 
+              borderRadius: '8px', 
+              textAlign: 'center',
+              border: '1px solid #f44336'
+            }}>
+              Error sending message. Please try again or contact us directly.
+            </div>
+          )}
         </form>
       </section>
 

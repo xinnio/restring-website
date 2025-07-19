@@ -147,6 +147,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             <div class="info-item">
               <span class="info-label">Payment Status:</span> ${booking.paymentStatus || 'Pending'}
             </div>
+            <div class="info-item">
+              <span class="info-label">Terms & Conditions:</span> ${booking.agreeToTerms ? '✅ Agreed' : '❌ Not Agreed'}
+            </div>
           </div>
         </div>
 
@@ -176,6 +179,32 @@ export default function BookingTable({ bookings = [], onUpdate }) {
           <p>${booking.notes}</p>
         </div>
         ` : ''}
+
+        <div class="section">
+          <h3>Terms & Conditions Agreement</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Agreement Status:</span> 
+              <span style="color: ${booking.agreeToTerms ? '#28a745' : '#dc3545'}; font-weight: bold;">
+                ${booking.agreeToTerms ? '✅ AGREED' : '❌ NOT AGREED'}
+              </span>
+            </div>
+            ${booking.agreeToTerms ? `
+            <div class="info-item">
+              <span class="info-label">Agreement Date:</span> ${booking.createdAt ? new Date(booking.createdAt).toLocaleDateString() : '-'}
+            </div>
+            ` : ''}
+          </div>
+          ${booking.agreeToTerms ? `
+          <p style="margin-top: 10px; font-style: italic; color: #666;">
+            Customer has agreed to all terms and conditions including booking, service, liability, and cancellation policies.
+          </p>
+          ` : `
+          <p style="margin-top: 10px; font-style: italic; color: #dc3545;">
+            ⚠️ Customer has NOT agreed to the terms and conditions. This booking may not be valid.
+          </p>
+          `}
+        </div>
 
         <div class="total-section">
           <h3>Price Breakdown</h3>
@@ -902,6 +931,27 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             <div style={{ marginBottom: '1.25rem' }}>
               <strong>Status:</strong> {viewing.status || '-'}<br/>
               <strong>Payment:</strong> {viewing.paymentStatus || '-'}
+            </div>
+            {/* Terms and Conditions Agreement */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <strong>Terms & Conditions:</strong> 
+              <span style={{ 
+                color: viewing.agreeToTerms ? '#28a745' : '#dc3545', 
+                fontWeight: '600',
+                marginLeft: '0.5rem'
+              }}>
+                {viewing.agreeToTerms ? '✅ Agreed' : '❌ Not Agreed'}
+              </span>
+              {viewing.agreeToTerms && (
+                <div style={{ 
+                  marginTop: '0.5rem', 
+                  fontSize: '0.9rem', 
+                  color: '#666',
+                  fontStyle: 'italic'
+                }}>
+                  Customer has agreed to all terms and conditions including booking, service, liability, and cancellation policies.
+                </div>
+              )}
             </div>
             {/* Notes */}
             {viewing.notes && (

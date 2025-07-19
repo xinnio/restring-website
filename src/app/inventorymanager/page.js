@@ -3,11 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import StringForm from '../../components/StringForm';
+import StringEditForm from '../../components/StringEditForm';
 
 export default function InventoryManager() {
   const [strings, setStrings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
+  const [editing, setEditing] = useState(null); // string object being edited
+  const [editingVariants, setEditingVariants] = useState([]); // all variants for the string being edited
+  const [showEditModal, setShowEditModal] = useState(false);
 
   async function fetchStrings() {
     setLoading(true);
@@ -42,6 +46,18 @@ export default function InventoryManager() {
     }
   }
 
+  function handleEdit(string, allVariants) {
+    setEditing(string);
+    setEditingVariants(allVariants);
+    setShowEditModal(true);
+  }
+
+  function handleCloseEdit() {
+    setEditing(null);
+    setEditingVariants([]);
+    setShowEditModal(false);
+  }
+
   useEffect(() => {
     fetchStrings();
   }, []);
@@ -69,6 +85,7 @@ export default function InventoryManager() {
                   <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: 'white', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Image</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Name</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Type</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Colors & Quantities</th>
@@ -86,7 +103,7 @@ export default function InventoryManager() {
                         if (names.length === 0) {
                           return (
                             <tr>
-                              <td colSpan="4" style={{ padding: '3rem', textAlign: 'center', color: '#888', background: '#f8f9fa', borderRadius: '12px' }}>
+                              <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#888', background: '#f8f9fa', borderRadius: '12px' }}>
                                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🧵</div>
                                 <div style={{ fontSize: '1.25rem', fontWeight: 600 }}>No strings in inventory.</div>
                                 <div style={{ color: '#aaa', marginTop: '0.5rem' }}>Add your first string to get started!</div>
@@ -99,6 +116,36 @@ export default function InventoryManager() {
                           const first = variants[0];
                           return (
                             <tr key={name} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
+                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                                {first.imageUrl ? (
+                                  <img 
+                                    src={first.imageUrl} 
+                                    alt={`${name} string`} 
+                                    style={{ 
+                                      width: '60px', 
+                                      height: '60px', 
+                                      objectFit: 'cover',
+                                      borderRadius: '8px',
+                                      border: '1px solid #e9ecef'
+                                    }} 
+                                  />
+                                ) : (
+                                  <div style={{ 
+                                    width: '60px', 
+                                    height: '60px', 
+                                    backgroundColor: '#f8f9fa',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e9ecef',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: '#999',
+                                    fontSize: '1.5rem'
+                                  }}>
+                                    📷
+                                  </div>
+                                )}
+                              </td>
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
                                 <strong style={{ fontSize: '1.1rem', color: '#222' }}>{name}</strong>
                                 {first.description && (
@@ -133,6 +180,29 @@ export default function InventoryManager() {
                               </td>
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                  {/* Edit button for the string name/type/description */}
+                                  <button
+                                    onClick={() => handleEdit(first, variants)}
+                                    style={{
+                                      fontSize: '1rem',
+                                      padding: '8px 16px',
+                                      backgroundColor: '#28a745',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      cursor: 'pointer',
+                                      marginBottom: '0.5rem',
+                                      fontWeight: 600,
+                                      boxShadow: '0 2px 8px rgba(40,167,69,0.08)',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.5rem',
+                                      transition: 'background 0.2s',
+                                    }}
+                                  >
+                                    ✏️ Edit String
+                                  </button>
+                                  {/* Delete buttons for each variant */}
                                   {variants.map(v => (
                                     <button
                                       key={v._id}
@@ -172,6 +242,59 @@ export default function InventoryManager() {
           </div>
         </div>
       </main>
+
+      {/* Edit Modal */}
+      {showEditModal && editing && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '2rem'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            padding: '2.5rem',
+            minWidth: '500px',
+            maxWidth: '95vw',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            position: 'relative'
+          }}>
+            <button 
+              onClick={handleCloseEdit} 
+              style={{ 
+                position: 'absolute', 
+                top: 18, 
+                right: 24, 
+                background: 'none', 
+                border: 'none', 
+                fontSize: '2rem', 
+                color: '#6c63ff', 
+                cursor: 'pointer' 
+              }}
+            >
+              &times;
+            </button>
+            <StringEditForm 
+              string={editing} 
+              variants={editingVariants}
+              onSuccess={() => {
+                fetchStrings();
+                handleCloseEdit();
+              }} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
