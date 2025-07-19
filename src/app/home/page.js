@@ -139,10 +139,13 @@ export default function Home() {
               <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Grommet Replacement
               </h3>
-              <p style={{ color: '#666', marginBottom: '1rem' }}>
+              <p style={{ color: '#666', marginBottom: '0.5rem' }}>
                 Protect your strings with new grommets
               </p>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#667eea' }}>$0.25 each</div>
+              <p style={{ color: '#28a745', fontSize: '0.875rem', fontWeight: '500', marginBottom: '1rem' }}>
+                4 grommets FREE per racket
+              </p>
+              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#667eea' }}>$0.25 each additional</div>
             </div>
           </div>
         </div>

@@ -429,7 +429,7 @@ export default function BookingForm() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Grommet Replacement?</label>
               <input type="checkbox" name="grommetReplacement" checked={form.grommetReplacement} onChange={handleChange} />
-              <span style={{ marginLeft: '0.5rem', color: '#666' }}>Add grommet replacement (+$0.25)</span>
+              <span style={{ marginLeft: '0.5rem', color: '#666' }}>Add grommet replacement (4 FREE per racket, +$0.25 each additional)</span>
             </div>
           </div>
         </div>
@@ -554,7 +554,7 @@ export default function BookingForm() {
             ))}
             <li style={{ marginTop: '0.5rem' }}><strong>Subtotal:</strong> ${priceDetails.racketsSubtotal.toFixed(2)}</li>
             {form.ownString && <li>Own string: +$3.00</li>}
-            {form.grommetReplacement && <li>Grommet replacement: +$0.25</li>}
+            {form.grommetReplacement && <li>Grommet replacement: 4 FREE per racket, +$0.25 each additional</li>}
             {form.dropoffLocation === 'Door-to-Door (Delivery)' && <li>Drop-off Delivery: +$12.00</li>}
             {form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Pickup Delivery: +$12.00</li>}
             {form.dropoffLocation === 'Door-to-Door (Delivery)' && form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Both Delivery Discount: -$4.00</li>}

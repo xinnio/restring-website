@@ -190,7 +190,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             ` : ''}
             ${booking.grommetReplacement ? `
             <div class="info-item">
-              <span class="info-label">Grommet Replacement:</span> +$0.25
+              <span class="info-label">Grommet Replacement:</span> 4 FREE per racket, +$0.25 each additional
             </div>
             ` : ''}
             ${dropoffDelivery ? `
@@ -979,7 +979,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         {breakdownLines}
                         <li><strong>Subtotal:</strong> ${racketsSubtotal.toFixed(2)}</li>
                         {viewing.ownString && <li>Own string: +$3.00</li>}
-                        {viewing.grommetReplacement && <li>Grommet replacement: +$0.25</li>}
+                        {viewing.grommetReplacement && <li>Grommet replacement: 4 FREE per racket, +$0.25 each additional</li>}
                         {dropoffDelivery && <li>Drop-off Delivery: +$12.00</li>}
                         {pickupDelivery && <li>Pick-up Delivery: +$12.00</li>}
                         {dropoffDelivery && pickupDelivery && <li>Both Delivery Discount: -$4.00</li>}
