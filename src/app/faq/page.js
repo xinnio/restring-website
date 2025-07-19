@@ -19,13 +19,13 @@ export default function FAQ() {
   const faqData = [
     {
       question: "What stringing services do you offer?",
-      answer: "We offer professional stringing for both tennis and badminton rackets. Our services include:\n\n• Same-day service (book before 2:00 AM)\n• Next-day service\n• 3-5 day standard service\n• Own string service (+$3)\n• Grommet replacement (4 FREE per racket, $0.25 each additional)\n\nAll services include professional stringing with quality strings from our inventory.",
+      answer: "We offer professional stringing for both tennis and badminton rackets. Our services include:\n\n• Same-day service (book before 2:00 AM)\n• Next-day service\n• 3-5 day standard service\n• Own string service (-$5 discount)\n• Grommet replacement (4 FREE per racket, $0.25 each additional)\n\nAll services include professional stringing with quality strings from our inventory.",
       category: "Services",
       icon: "🎾"
     },
     {
       question: "How much does stringing cost?",
-      answer: "Our pricing is based on turnaround time:\n\n• Same-day service: $35\n• Next-day service: $30\n• 3-5 day service: $25\n\nAdditional services:\n• Own string: +$3\n• Grommet replacement: 4 FREE per racket, $0.25 each additional\n\nAll prices include quality strings and professional stringing.",
+      answer: "Our pricing is based on turnaround time:\n\n• Same-day service: $35\n• Next-day service: $30\n• 3-5 day service: $25\n\nAdditional services:\n• Own string: -$5 discount\n• Grommet replacement: 4 FREE per racket, $0.25 each additional\n\nAll prices include quality strings and professional stringing.",
       category: "Pricing",
       icon: "💰"
     },
@@ -43,7 +43,7 @@ export default function FAQ() {
     },
     {
       question: "Can I bring my own string?",
-      answer: "Yes! You can bring your own string for an additional $3 fee. This is perfect if you have a specific string preference or brand loyalty. We'll string your racket with your string using the same professional techniques.",
+      answer: "Yes! You can bring your own string for a $5 discount. This is perfect if you have a specific string preference or brand loyalty. We'll string your racket with your string using the same professional techniques.",
       category: "Services",
       icon: "🎯"
     },

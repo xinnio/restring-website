@@ -204,8 +204,8 @@ export default function Services() {
               <p style={{ color: '#666', marginBottom: '1rem' }}>
                 Bring your own string and we'll string it for you
               </p>
-              <div style={{ fontSize: '1.375rem', fontWeight: '700', color: '#667eea', marginBottom: '1rem' }}>
-                $3
+              <div style={{ fontSize: '1.375rem', fontWeight: '700', color: '#28a745', marginBottom: '1rem' }}>
+                -$5 discount
               </div>
             </div>
             

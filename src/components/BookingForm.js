@@ -162,7 +162,7 @@ export default function BookingForm() {
     let racketsSubtotal = rackets.reduce((sum, r) => sum + (basePrice * (parseInt(r.quantity) || 1)), 0);
     // Extras (apply to whole order)
     let extras = 0;
-    if (form.ownString) extras += 3;
+    if (form.ownString) extras -= 5; // $5 discount for own string
     if (form.grommetReplacement) extras += 0.25;
     let deliveryFee = 0;
     const dropoffDelivery = form.dropoffLocation === 'Door-to-Door (Delivery)';
@@ -424,7 +424,7 @@ export default function BookingForm() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Own String?</label>
               <input type="checkbox" name="ownString" checked={form.ownString} onChange={handleChange} />
-              <span style={{ marginLeft: '0.5rem', color: '#666' }}>I will provide my own string (+$3.00)</span>
+              <span style={{ marginLeft: '0.5rem', color: '#666' }}>I will provide my own string (-$5.00 discount)</span>
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Grommet Replacement?</label>
@@ -553,7 +553,7 @@ export default function BookingForm() {
               </li>
             ))}
             <li style={{ marginTop: '0.5rem' }}><strong>Subtotal:</strong> ${priceDetails.racketsSubtotal.toFixed(2)}</li>
-            {form.ownString && <li>Own string: +$3.00</li>}
+            {form.ownString && <li>Own string: -$5.00 discount</li>}
             {form.grommetReplacement && <li>Grommet replacement: 4 FREE per racket, +$0.25 each additional</li>}
             {form.dropoffLocation === 'Door-to-Door (Delivery)' && <li>Drop-off Delivery: +$12.00</li>}
             {form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Pickup Delivery: +$12.00</li>}

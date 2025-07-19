@@ -185,7 +185,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             </div>
             ${booking.ownString ? `
             <div class="info-item">
-              <span class="info-label">Own String Fee:</span> +$3.00
+              <span class="info-label">Own String Discount:</span> -$5.00
             </div>
             ` : ''}
             ${booking.grommetReplacement ? `
@@ -960,7 +960,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   );
                 });
                 let extras = 0;
-                if (viewing.ownString) extras += 3;
+                if (viewing.ownString) extras -= 5; // $5 discount for own string
                 if (viewing.grommetReplacement) extras += 0.25;
                 let deliveryFee = 0;
                 const dropoffDelivery = viewing.dropoffLocation === 'Door-to-Door (Delivery)';
@@ -978,7 +978,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                       <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
                         {breakdownLines}
                         <li><strong>Subtotal:</strong> ${racketsSubtotal.toFixed(2)}</li>
-                        {viewing.ownString && <li>Own string: +$3.00</li>}
+                        {viewing.ownString && <li>Own string: -$5.00 discount</li>}
                         {viewing.grommetReplacement && <li>Grommet replacement: 4 FREE per racket, +$0.25 each additional</li>}
                         {dropoffDelivery && <li>Drop-off Delivery: +$12.00</li>}
                         {pickupDelivery && <li>Pick-up Delivery: +$12.00</li>}
