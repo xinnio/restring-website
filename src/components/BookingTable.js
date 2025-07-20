@@ -453,7 +453,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
       if (res.ok) {
         alert('Booking deleted successfully!');
         if (onUpdate) {
-          onUpdate();
+        onUpdate();
         }
       } else if (res.status === 404) {
         // Booking was already deleted or doesn't exist
@@ -615,14 +615,14 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         border: '1px solid rgba(0,0,0,0.08)'
       }}>
         <div>
-          <h2 style={{ 
+        <h2 style={{ 
             fontSize: '2rem', 
-            fontWeight: '700', 
-            color: '#1a1a1a',
+          fontWeight: '700', 
+          color: '#1a1a1a',
             margin: '0 0 0.5rem 0'
-          }}>
-            📋 Bookings Management
-          </h2>
+        }}>
+          📋 Bookings Management
+        </h2>
           <p style={{ 
             color: '#666', 
             fontSize: '1rem',
@@ -924,31 +924,31 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                       </td>
                       <td style={{ padding: '1.25rem 1rem' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <select 
-                            value={b.status || 'Pending'} 
+                        <select 
+                          value={b.status || 'Pending'} 
                             onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
                             disabled={updating === b.id || isCancelled}
-                            style={{ 
-                              backgroundColor: statusColors.bg,
-                              color: statusColors.color,
+                          style={{ 
+                            backgroundColor: statusColors.bg,
+                            color: statusColors.color,
                               border: `2px solid ${statusColors.border}`,
                               padding: '0.75rem 1rem',
                               borderRadius: '8px',
-                              fontSize: '0.9rem',
+                            fontSize: '0.9rem',
                               fontWeight: '600',
-                              cursor: isCancelled ? 'not-allowed' : 'pointer',
+                            cursor: isCancelled ? 'not-allowed' : 'pointer',
                               minWidth: '140px',
                               transition: 'all 0.2s ease'
-                            }}
-                          >
-                            <option value="Pending">⏳ Pending</option>
-                            <option value="In Progress">🔄 In Progress</option>
-                            <option value="Completed">✅ Completed</option>
-                            <option value="Cancelled">❌ Cancelled</option>
-                          </select>
+                          }}
+                        >
+                          <option value="Pending">⏳ Pending</option>
+                          <option value="In Progress">🔄 In Progress</option>
+                          <option value="Completed">✅ Completed</option>
+                          <option value="Cancelled">❌ Cancelled</option>
+                        </select>
                           {updating === b.id && (
-                            <div style={{ 
-                              fontSize: '0.8rem',
+                          <div style={{ 
+                            fontSize: '0.8rem',
                               color: '#666',
                               textAlign: 'center',
                               padding: '0.25rem',
@@ -956,35 +956,35 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               borderRadius: '4px'
                             }}>
                               ⏳ Updating...
-                            </div>
-                          )}
+                          </div>
+                        )}
                         </div>
                       </td>
                       <td style={{ padding: '1.25rem 1rem' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <select 
-                            value={b.paymentStatus || 'Pending'} 
+                        <select 
+                          value={b.paymentStatus || 'Pending'} 
                             onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
                             disabled={updating === b.id || isCancelled}
-                            style={{ 
-                              backgroundColor: paymentColors.bg,
-                              color: paymentColors.color,
+                          style={{ 
+                            backgroundColor: paymentColors.bg,
+                            color: paymentColors.color,
                               border: `2px solid ${paymentColors.border}`,
                               padding: '0.75rem 1rem',
                               borderRadius: '8px',
-                              fontSize: '0.9rem',
+                            fontSize: '0.9rem',
                               fontWeight: '600',
-                              cursor: isCancelled ? 'not-allowed' : 'pointer',
+                            cursor: isCancelled ? 'not-allowed' : 'pointer',
                               minWidth: '120px',
                               transition: 'all 0.2s ease'
-                            }}
-                          >
-                            <option value="Pending">⏳ Pending</option>
-                            <option value="Paid">💰 Paid</option>
-                          </select>
-                          {b.paymentReceivedAt && (
-                            <div style={{ 
-                              fontSize: '0.8rem', 
+                          }}
+                        >
+                          <option value="Pending">⏳ Pending</option>
+                          <option value="Paid">💰 Paid</option>
+                        </select>
+                        {b.paymentReceivedAt && (
+                          <div style={{ 
+                            fontSize: '0.8rem', 
                               color: '#28a745', 
                               textAlign: 'center',
                               padding: '0.25rem',
@@ -993,8 +993,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               fontWeight: '500'
                             }}>
                               💰 {new Date(b.paymentReceivedAt).toLocaleDateString()}
-                            </div>
-                          )}
+                          </div>
+                        )}
                         </div>
                       </td>
                       <td style={{ padding: '1.25rem 1rem' }}>
@@ -1008,7 +1008,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           borderRadius: '8px',
                           border: '2px solid #c8e6c9'
                         }}>
-                          ${calculateBookingTotal(b).toFixed(2)}
+                        ${calculateBookingTotal(b).toFixed(2)}
                         </div>
                       </td>
                       <td style={{ padding: '1.25rem 1rem' }}>
@@ -1054,11 +1054,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                             ✅ Complete
                           </button>
                           <div style={{ position: 'relative' }} data-email-dropdown={b.id}>
-                            <button 
+                          <button 
                               onClick={() => setEmailDropdown(emailDropdown === b.id ? null : b.id)}
                               disabled={sendingEmail === b.id || isCancelled || !b.email}
                               className="email-dropdown-button"
-                              style={{ 
+                            style={{ 
                                 fontSize: '0.85rem', 
                                 padding: '0.75rem 1rem',
                                 backgroundColor: sendingEmail === b.id ? '#6c757d' : '#ff6b35',

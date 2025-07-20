@@ -18,4 +18,4 @@ if (process.env.AWS_ROLE_ARN && process.env.VERCEL) {
 }
 
 const ddbClient = new DynamoDBClient(clientConfig);
-export const docClient = DynamoDBDocumentClient.from(ddbClient); 
+export const docClient = DynamoDBDocumentClient.from(ddbClient);
