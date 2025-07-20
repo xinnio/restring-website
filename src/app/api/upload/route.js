@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import * as S3 from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { awsCredentialsProvider } from '@vercel/functions/oidc';
 
-// Initialize S3 client
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
+const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
+const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
+const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'markham-restring-uploads';
+
+// Initialize S3 client with OIDC credentials
+const s3Client = new S3.S3Client({
+  region: AWS_REGION,
+  credentials: awsCredentialsProvider({
+    roleArn: AWS_ROLE_ARN,
+  }),
 });
-
-const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'markham-restring-uploads';
 
 export async function POST(request) {
   try {
@@ -44,8 +46,8 @@ export async function POST(request) {
     const buffer = Buffer.from(bytes);
 
     // Upload to S3
-    const uploadCommand = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
+    const uploadCommand = new S3.PutObjectCommand({
+      Bucket: AWS_S3_BUCKET,
       Key: fileName,
       Body: buffer,
       ContentType: file.type,
@@ -54,8 +56,8 @@ export async function POST(request) {
     await s3Client.send(uploadCommand);
 
     // Generate a presigned URL for reading the image (valid for 1 week - max allowed)
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
+    const getObjectCommand = new S3.GetObjectCommand({
+      Bucket: AWS_S3_BUCKET,
       Key: fileName,
     });
 
