@@ -50,15 +50,15 @@ export default function BookingForm() {
 
   // --- Fetch inventory and availability ---
   const fetchStrings = useCallback(async () => {
-    try {
-      const res = await fetch('/api/strings');
-      const data = await res.json();
-      setStrings(data);
-    } catch (error) {
-      console.error('Error fetching strings:', error);
-    } finally {
-      setLoading(false);
-    }
+      try {
+        const res = await fetch('/api/strings');
+        const data = await res.json();
+        setStrings(data);
+      } catch (error) {
+        console.error('Error fetching strings:', error);
+      } finally {
+        setLoading(false);
+      }
   }, []);
 
   useEffect(() => {
