@@ -155,16 +155,18 @@ async function sendBookingEmails(booking) {
       };
 
       // Format rackets details for admin email
-      const racketsDetails = booking.rackets.map((racket, index) => `
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd;">${index + 1}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${racket.racketType}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${booking.ownString ? 'Own String' : racket.stringName}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${booking.ownString ? 'N/A' : (racket.stringColor || 'Any')}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${racket.stringTension}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${racket.quantity}</td>
-        </tr>
-      `).join('');
+      const racketsDetails = booking.rackets && Array.isArray(booking.rackets) 
+        ? booking.rackets.map((racket, index) => `
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;">${index + 1}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${racket.racketType}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${booking.ownString ? 'Own String' : racket.stringName}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${booking.ownString ? 'N/A' : (racket.stringColor || 'Any')}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${racket.stringTension}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${racket.quantity}</td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="6" style="padding: 8px; border: 1px solid #ddd; text-align: center;">No rackets data available</td></tr>';
 
       const priceDetails = calculateBookingCost(booking);
 
