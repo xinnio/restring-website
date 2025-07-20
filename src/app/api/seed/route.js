@@ -1,12 +1,12 @@
-import { docClient, getBookingsTable, getStringsTable, getAvailabilityTable, generateId } from '../../../lib/dynamodb';
+import { docClient, generateId } from '../../../lib/dynamodb';
 import { PutCommand, ScanCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    const bookingsTable = await getBookingsTable();
-    const stringsTable = await getStringsTable();
-    const availabilityTable = await getAvailabilityTable();
+    const bookingsTable = process.env.BOOKINGS_TABLE;
+    const stringsTable = process.env.STRINGS_TABLE;
+    const availabilityTable = process.env.AVAILABILITY_TABLE;
 
     // Sample strings
     const sampleStrings = [

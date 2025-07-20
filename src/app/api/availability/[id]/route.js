@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { docClient, getAvailabilityTable } from '../../../../lib/dynamodb';
+import { docClient } from '../../../../lib/dynamodb';
 import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
 export async function DELETE(request, { params }) {
@@ -16,7 +16,7 @@ export async function DELETE(request, { params }) {
       }, { status: 400 });
     }
     
-    const tableName = await getAvailabilityTable();
+    const tableName = process.env.AVAILABILITY_TABLE;
     console.log('Attempting to delete from table:', tableName, 'with key:', { id });
 
     const deleteCommand = new DeleteCommand({
