@@ -63,74 +63,94 @@ export default function Banner() {
 
   return (
     <div style={{
-      backgroundColor: '#fff3cd',
-      border: '1px solid #ffeeba',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      background: 'linear-gradient(90deg, #ffe259 0%, #ffa751 100%)',
+      border: '2px solid #ffc107',
+      borderRadius: '0 0 16px 16px',
+      boxShadow: '0 4px 24px rgba(255,193,7,0.18)',
       margin: '0 auto',
-      maxWidth: '1200px',
-      padding: '12px 16px',
-      marginBottom: '16px'
+      width: '100vw',
+      left: 0,
+      right: 0,
+      top: 0,
+      position: 'sticky',
+      zIndex: 2000,
+      padding: '20px 0',
+      marginBottom: '24px',
+      animation: 'banner-pop 0.7s cubic-bezier(0.23, 1, 0.32, 1)'
     }}>
+      <style>{`
+        @keyframes banner-pop {
+          0% { transform: translateY(-40px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '12px'
+        gap: '18px',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 24px',
       }}>
         {/* Lightning Bolt Icon */}
         <div style={{
           flexShrink: 0,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          fontSize: '2.2rem',
         }}>
           <svg 
-            width="20" 
-            height="20" 
+            width="32" 
+            height="32" 
             viewBox="0 0 24 24" 
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
             style={{
-              filter: 'drop-shadow(0 1px 2px rgba(255, 193, 7, 0.3))'
+              filter: 'drop-shadow(0 2px 4px rgba(255, 193, 7, 0.4))'
             }}
           >
             <path 
               d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" 
               fill="#ffc107" 
               stroke="#ff8c00" 
-              strokeWidth="1"
+              strokeWidth="1.5"
             />
           </svg>
         </div>
-        
         {/* Text Content */}
         <div style={{
           flex: 1,
-          color: '#856404',
-          fontSize: '14px',
-          fontWeight: '500',
-          lineHeight: '1.4'
+          color: '#7a4f01',
+          fontSize: '1.25rem',
+          fontWeight: '700',
+          lineHeight: '1.5',
+          letterSpacing: '0.01em',
+          textShadow: '0 1px 2px #fffbe6',
         }}>
-          <span style={{ fontWeight: '600' }}>
+          <span style={{ fontWeight: '800', fontSize: '1.35rem', color: '#7a4f01' }}>
             {notice.message}
           </span>
           {discountText && (
             <span style={{ 
-              marginLeft: '8px', 
-              fontWeight: '700',
-              color: '#664d03'
+              marginLeft: '14px', 
+              fontWeight: '800',
+              color: '#b26a00',
+              fontSize: '1.15rem',
+              textShadow: '0 1px 2px #fffbe6',
             }}>
               💰 {discountText}
               {notice.discountCode && (
-                <span style={{ marginLeft: '4px' }}>
+                <span style={{ marginLeft: '8px' }}>
                   - Use code: <span style={{
-                    background: '#856404',
-                    color: '#fff3cd',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
+                    background: '#7a4f01',
+                    color: '#ffe259',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
                     fontFamily: 'monospace',
-                    fontSize: '12px',
-                    fontWeight: '600'
+                    fontSize: '1rem',
+                    fontWeight: '800',
+                    letterSpacing: '0.03em',
                   }}>
                     {notice.discountCode}
                   </span>
@@ -139,26 +159,26 @@ export default function Banner() {
             </span>
           )}
         </div>
-        
         {/* Close Button */}
         <button
           onClick={() => setIsVisible(false)}
           style={{
             background: 'none',
             border: 'none',
-            color: '#856404',
+            color: '#7a4f01',
             cursor: 'pointer',
-            padding: '4px',
-            borderRadius: '4px',
+            padding: '8px',
+            borderRadius: '6px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            fontSize: '1.5rem',
             transition: 'background-color 0.2s'
           }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(133, 100, 4, 0.1)'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+          onMouseEnter={e => e.target.style.backgroundColor = 'rgba(122, 79, 1, 0.12)'}
+          onMouseLeave={e => e.target.style.backgroundColor = 'transparent'}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
           </svg>
         </button>
