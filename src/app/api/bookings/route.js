@@ -1,6 +1,22 @@
 import { getBookingsCollection } from '../../../lib/mongodb';
 import { NextResponse } from 'next/server';
 
+// Function to generate the next booking number
+async function generateBookingNumber() {
+  const collection = await getBookingsCollection();
+  
+  // Find the highest booking number
+  const lastBooking = await collection.findOne(
+    { bookingNumber: { $exists: true } },
+    { sort: { bookingNumber: -1 } }
+  );
+  
+  // Start from 1000 if no bookings exist, otherwise increment
+  const nextNumber = lastBooking ? lastBooking.bookingNumber + 1 : 1000;
+  
+  return nextNumber;
+}
+
 export async function GET() {
   try {
     const collection = await getBookingsCollection();
@@ -18,8 +34,12 @@ export async function POST(request) {
     const collection = await getBookingsCollection();
     const body = await request.json();
     
+    // Generate booking number
+    const bookingNumber = await generateBookingNumber();
+    
     const booking = {
       ...body,
+      bookingNumber,
       status: 'Pending',
       paymentStatus: 'Pending',
       createdAt: new Date(),
@@ -36,7 +56,11 @@ export async function POST(request) {
       // Don't fail the booking if email fails
     }
     
-    return NextResponse.json({ message: 'Booking created!', id: result.insertedId }, { status: 201 });
+    return NextResponse.json({ 
+      message: 'Booking created!', 
+      id: result.insertedId,
+      bookingNumber: bookingNumber 
+    }, { status: 201 });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
@@ -66,8 +90,8 @@ async function sendBookingNotification(booking) {
       <tr>
         <td style="padding: 8px; border: 1px solid #ddd;">${index + 1}</td>
         <td style="padding: 8px; border: 1px solid #ddd;">${racket.racketType}</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${racket.stringName}</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${racket.stringColor || 'Any'}</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">${booking.ownString ? 'Own String' : racket.stringName}</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">${booking.ownString ? 'N/A' : (racket.stringColor || 'Any')}</td>
         <td style="padding: 8px; border: 1px solid #ddd;">${racket.stringTension}</td>
         <td style="padding: 8px; border: 1px solid #ddd;">${racket.quantity}</td>
       </tr>
@@ -154,6 +178,7 @@ async function sendBookingNotification(booking) {
 
           <div class="section">
             <h3>📅 Booking Information</h3>
+            <p><strong>Booking Number:</strong> #${booking.bookingNumber}</p>
             <p><strong>Booking ID:</strong> ${booking._id || 'Pending'}</p>
             <p><strong>Status:</strong> ${booking.status}</p>
             <p><strong>Created:</strong> ${new Date(booking.createdAt).toLocaleString()}</p>
@@ -172,7 +197,7 @@ Email: ${booking.email}
 Phone: ${booking.phone}
 
 RACKET & STRING DETAILS:
-${booking.rackets.map((racket, index) => `${index + 1}. ${racket.racketType} - ${racket.stringName} (${racket.stringColor || 'Any'}) - ${racket.stringTension} - Qty: ${racket.quantity}`).join('\n')}
+${booking.rackets.map((racket, index) => `${index + 1}. ${racket.racketType} - ${booking.ownString ? 'Own String' : racket.stringName} (${booking.ownString ? 'N/A' : (racket.stringColor || 'Any')}) - ${racket.stringTension} - Qty: ${racket.quantity}`).join('\n')}
 
 ${booking.ownString ? 'CUSTOMER PROVIDING OWN STRING (-$5.00 discount)' : ''}
 ${booking.grommetReplacement ? 'GROMMET REPLACEMENT REQUESTED (+$0.25 per grommet)' : ''}
@@ -193,6 +218,7 @@ TOTAL: $${priceDetails.total}
 
 ${booking.notes ? `ADDITIONAL NOTES: ${booking.notes}` : ''}
 
+Booking Number: #${booking.bookingNumber}
 Booking ID: ${booking._id || 'Pending'}
 Status: ${booking.status}
 Created: ${new Date(booking.createdAt).toLocaleString()}
@@ -251,6 +277,7 @@ Created: ${new Date(booking.createdAt).toLocaleString()}
 
           <div class="section">
             <h3>📋 Booking Summary</h3>
+            <p><strong>Booking Number:</strong> #${booking.bookingNumber}</p>
             <p><strong>Booking ID:</strong> ${booking._id || 'Pending'}</p>
             <p><strong>Status:</strong> ${booking.status}</p>
             <p><strong>Turnaround Time:</strong> ${formatTurnaroundTime(booking.turnaroundTime)}</p>
@@ -318,12 +345,13 @@ Dear ${booking.fullName},
 Thank you for choosing Markham Restring Studio! We have received your booking and will begin processing it shortly.
 
 BOOKING SUMMARY:
+Booking Number: #${booking.bookingNumber}
 Booking ID: ${booking._id || 'Pending'}
 Status: ${booking.status}
 Turnaround Time: ${formatTurnaroundTime(booking.turnaroundTime)}
 
 RACKET & STRING DETAILS:
-${booking.rackets.map((racket, index) => `${index + 1}. ${racket.racketType} - ${racket.stringName} (${racket.stringColor || 'Any'}) - ${racket.stringTension} - Qty: ${racket.quantity}`).join('\n')}
+${booking.rackets.map((racket, index) => `${index + 1}. ${racket.racketType} - ${booking.ownString ? 'Own String' : racket.stringName} (${booking.ownString ? 'N/A' : (racket.stringColor || 'Any')}) - ${racket.stringTension} - Qty: ${racket.quantity}`).join('\n')}
 
 SERVICE DETAILS:
 Drop-off Location: ${formatLocation(booking.dropoffLocation)}

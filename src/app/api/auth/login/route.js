@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 // Hardcoded admin user (in production, this should be in the database)
 const ADMIN_USER = {
   email: 'markhamrestring@gmail.com',
-  password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // "password"
+  password: '$2b$10$8mnI/p2a8TR3ISvPAGgVN.FTMuSeRgweCsXDEH1EHAXISu53bEB/.', // "lxm4344557"
   id: 'admin-1'
 };
 

@@ -175,8 +175,8 @@ export default function Locations() {
           opacity: 0.3
         }}></div>
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '2.675rem', fontWeight: 800, marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>Find Us & Get in Touch</h1>
-          <p style={{ fontSize: '1.125rem', color: '#e0e7ff', marginBottom: '2.2rem', fontWeight: 500 }}>Convenient locations across Markham for all your racket stringing needs</p>
+          <h1 style={{ fontSize: 'var(--font-size-h1)', fontWeight: 800, marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>Find Us & Get in Touch</h1>
+          <p style={{ fontSize: 'var(--font-size-body-large)', color: '#e0e7ff', marginBottom: '2.2rem', fontWeight: 500 }}>Convenient locations across Markham for all your racket stringing needs</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/booking" style={{
               textDecoration: 'none',
@@ -211,8 +211,8 @@ export default function Locations() {
       {/* Main Location */}
       <section style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: '1.875rem' }}>🗺️</span> Our Location
+                      <h2 style={{ fontSize: 'var(--font-size-h2)', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 'var(--font-size-h2)' }}>🗺️</span> Our Location
           </h2>
         </div>
         
@@ -258,8 +258,8 @@ export default function Locations() {
       {/* Pickup & Drop-off Locations */}
       <section style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: '1.875rem' }}>📍</span> Drop-off & Pick-up Locations
+                      <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: '1.875rem' }}>📍</span> Drop-off & Pick-up Locations
           </h2>
         </div>
         
@@ -579,7 +579,7 @@ export default function Locations() {
         
         <form onSubmit={handleContactFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Name</label>
+            <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Name</label>
             <input
               type="text"
               name="name"
@@ -591,7 +591,7 @@ export default function Locations() {
                 padding: '1.1rem 1.2rem', 
                 border: '1.5px solid #e0e7ff', 
                 borderRadius: 14, 
-                fontSize: '0.925rem', 
+                fontSize: 'var(--font-size-input)', 
                 fontWeight: 500, 
                 color: '#1a1a1a', 
                 outline: 'none', 
@@ -602,68 +602,68 @@ export default function Locations() {
           </div>
           
           <div>
-            <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Email</label>
-            <input
-              type="email"
-              name="email"
-              value={contactForm.email}
-              onChange={handleContactFormChange}
-              required
-              style={{ 
-                width: '100%', 
-                padding: '1.1rem 1.2rem', 
-                border: '1.5px solid #e0e7ff', 
-                borderRadius: 14, 
-                fontSize: '0.925rem', 
-                fontWeight: 500, 
-                color: '#1a1a1a', 
-                outline: 'none', 
-                transition: 'border 0.18s' 
-              }}
-              placeholder="your.email@example.com"
-            />
+            <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Email</label>
+                          <input
+                type="email"
+                name="email"
+                value={contactForm.email}
+                onChange={handleContactFormChange}
+                required
+                style={{ 
+                  width: '100%', 
+                  padding: '1.1rem 1.2rem', 
+                  border: '1.5px solid #e0e7ff', 
+                  borderRadius: 14, 
+                  fontSize: 'var(--font-size-input)', 
+                  fontWeight: 500, 
+                  color: '#1a1a1a', 
+                  outline: 'none', 
+                  transition: 'border 0.18s' 
+                }}
+                placeholder="your.email@example.com"
+              />
           </div>
           
           <div>
-            <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Phone</label>
-            <input
-              type="tel"
-              name="phone"
-              value={contactForm.phone}
-              onChange={handleContactFormChange}
-              style={{ 
-                width: '100%', 
-                padding: '1.1rem 1.2rem', 
-                border: '1.5px solid #e0e7ff', 
-                borderRadius: 14, 
-                fontSize: '0.925rem', 
-                fontWeight: 500, 
-                color: '#1a1a1a', 
-                outline: 'none', 
-                transition: 'border 0.18s' 
-              }}
-              placeholder="(123) 456-7890"
-            />
+            <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Phone</label>
+                          <input
+                type="tel"
+                name="phone"
+                value={contactForm.phone}
+                onChange={handleContactFormChange}
+                style={{ 
+                  width: '100%', 
+                  padding: '1.1rem 1.2rem', 
+                  border: '1.5px solid #e0e7ff', 
+                  borderRadius: 14, 
+                  fontSize: 'var(--font-size-input)', 
+                  fontWeight: 500, 
+                  color: '#1a1a1a', 
+                  outline: 'none', 
+                  transition: 'border 0.18s' 
+                }}
+                placeholder="(123) 456-7890"
+              />
           </div>
           
           <div>
-            <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Service Type</label>
-            <select
-              name="serviceType"
-              value={contactForm.serviceType}
-              onChange={handleContactFormChange}
-              style={{ 
-                width: '100%', 
-                padding: '1.1rem 1.2rem', 
-                border: '1.5px solid #e0e7ff', 
-                borderRadius: 14, 
-                fontSize: '0.925rem', 
-                fontWeight: 500, 
-                color: '#1a1a1a', 
-                outline: 'none', 
-                transition: 'border 0.18s' 
-              }}
-            >
+            <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Service Type</label>
+                          <select
+                name="serviceType"
+                value={contactForm.serviceType}
+                onChange={handleContactFormChange}
+                style={{ 
+                  width: '100%', 
+                  padding: '1.1rem 1.2rem', 
+                  border: '1.5px solid #e0e7ff', 
+                  borderRadius: 14, 
+                  fontSize: 'var(--font-size-input)', 
+                  fontWeight: 500, 
+                  color: '#1a1a1a', 
+                  outline: 'none', 
+                  transition: 'border 0.18s' 
+                }}
+              >
               <option value="">Select a service</option>
               <option value="tennis">Tennis Racket Stringing</option>
               <option value="badminton">Badminton Racket Stringing</option>
@@ -673,27 +673,27 @@ export default function Locations() {
           </div>
           
           <div>
-            <label style={{ display: 'block', fontSize: '0.955rem', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Message</label>
-            <textarea
-              name="message"
-              value={contactForm.message}
-              onChange={handleContactFormChange}
-              required
-              rows="4"
-              style={{ 
-                width: '100%', 
-                padding: '1.1rem 1.2rem', 
-                border: '1.5px solid #e0e7ff', 
-                borderRadius: 14, 
-                fontSize: '0.925rem', 
-                fontWeight: 500, 
-                color: '#1a1a1a', 
-                outline: 'none', 
-                transition: 'border 0.18s', 
-                resize: 'none' 
-              }}
-              placeholder="Tell us about your stringing needs..."
-            ></textarea>
+            <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Message</label>
+                          <textarea
+                name="message"
+                value={contactForm.message}
+                onChange={handleContactFormChange}
+                required
+                rows="4"
+                style={{ 
+                  width: '100%', 
+                  padding: '1.1rem 1.2rem', 
+                  border: '1.5px solid #e0e7ff', 
+                  borderRadius: 14, 
+                  fontSize: 'var(--font-size-input)', 
+                  fontWeight: 500, 
+                  color: '#1a1a1a', 
+                  outline: 'none', 
+                  transition: 'border 0.18s', 
+                  resize: 'none' 
+                }}
+                placeholder="Tell us about your stringing needs..."
+              ></textarea>
           </div>
           
           <button
@@ -705,7 +705,7 @@ export default function Locations() {
               padding: '1.2rem 2rem', 
               borderRadius: 16, 
               fontWeight: 700, 
-              fontSize: '1.055rem', 
+              fontSize: 'var(--font-size-button)', 
               boxShadow: '0 2px 12px rgba(102,126,234,0.10)', 
               border: 'none', 
               cursor: formStatus === 'loading' ? 'not-allowed' : 'pointer', 
@@ -751,21 +751,21 @@ export default function Locations() {
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2.375rem', fontWeight: 800, marginBottom: 24 }}>Ready to Book Your Stringing?</h2>
-          <p style={{ fontSize: '1.055rem', color: '#e0e7ff', marginBottom: 32, fontWeight: 500 }}>Get professional stringing service with quick turnaround times</p>
-          <Link href="/booking" style={{
-            textDecoration: 'none',
-            background: 'white', 
-            color: '#6c63ff', 
-            padding: '1.1rem 2.5rem', 
-            borderRadius: 16, 
-            fontWeight: 700, 
-            fontSize: '1.055rem', 
-            boxShadow: '0 2px 12px rgba(102,126,234,0.10)', 
-            textDecoration: 'none', 
-            transition: 'background 0.18s, color 0.18s, transform 0.13s', 
-            display: 'inline-block' 
-          }}>
+          <h2 style={{ fontSize: 'var(--font-size-h1)', fontWeight: 800, marginBottom: 24 }}>Ready to Book Your Stringing?</h2>
+          <p style={{ fontSize: 'var(--font-size-body-large)', color: '#e0e7ff', marginBottom: 32, fontWeight: 500 }}>Get professional stringing service with quick turnaround times</p>
+                      <Link href="/booking" style={{
+              textDecoration: 'none',
+              background: 'white', 
+              color: '#6c63ff', 
+              padding: '1.1rem 2.5rem', 
+              borderRadius: 16, 
+              fontWeight: 700, 
+              fontSize: 'var(--font-size-button)', 
+              boxShadow: '0 2px 12px rgba(102,126,234,0.10)', 
+              textDecoration: 'none', 
+              transition: 'background 0.18s, color 0.18s, transform 0.13s', 
+              display: 'inline-block' 
+            }}>
             Book Your Service Now
           </Link>
         </div>

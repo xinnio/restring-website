@@ -5,11 +5,72 @@ import React, { useState } from 'react';
 export default function BookingTable({ bookings = [], onUpdate }) {
   const [updating, setUpdating] = useState(null);
   const [deleting, setDeleting] = useState(null);
+  const [sendingEmail, setSendingEmail] = useState(null);
   const [viewing, setViewing] = useState(null); // booking object or null
   const [filterRange, setFilterRange] = useState('all'); // 'all', 'week', 'month'
 
+  // Helper function to format date and time
+  const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return '-';
+    
+    // Handle the format: "2025-01-19, 19:30 - 20:00"
+    const [datePart, timePart] = dateTimeString.split(', ');
+    if (!datePart || !timePart) return dateTimeString;
+    
+    const date = new Date(datePart);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    
+    return `${day}/${month}/${year}, ${timePart}`;
+  };
+
+  // Helper function to format slot ID to readable time
+  const formatSlotTime = (slotId, formattedTime) => {
+    if (formattedTime) return formattedTime;
+    if (!slotId) return '-';
+    
+    // If it's already a formatted string (like "19/07/2025, 19:30 - 20:00"), return it
+    if (typeof slotId === 'string' && slotId.includes('/') && slotId.includes(',')) {
+      return slotId;
+    }
+    
+    // If it's a slot ID, return a placeholder
+    return `Slot ID: ${slotId}`;
+  };
+
   // Function to generate print-friendly content
   function generatePrintContent(booking) {
+    // Helper function to format date and time for print
+    const formatDateTime = (dateTimeString) => {
+      if (!dateTimeString) return '-';
+      
+      // Handle the format: "2025-01-19, 19:30 - 20:00"
+      const [datePart, timePart] = dateTimeString.split(', ');
+      if (!datePart || !timePart) return dateTimeString;
+      
+      const date = new Date(datePart);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      
+      return `${day}/${month}/${year}, ${timePart}`;
+    };
+
+    // Helper function to format slot ID to readable time for print
+    const formatSlotTime = (slotId, formattedTime) => {
+      if (formattedTime) return formattedTime;
+      if (!slotId) return '-';
+      
+      // If it's already a formatted string (like "19/07/2025, 19:30 - 20:00"), return it
+      if (typeof slotId === 'string' && slotId.includes('/') && slotId.includes(',')) {
+        return slotId;
+      }
+      
+      // If it's a slot ID, return a placeholder
+      return `Slot ID: ${slotId}`;
+    };
+
     const rackets = booking.rackets || [
       {
         racketType: booking.racketType,
@@ -87,6 +148,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         <div class="header">
           <h1>Markham Restring Studio</h1>
           <h2>Booking Details</h2>
+          <p>Booking Number: #${booking.bookingNumber || 'N/A'}</p>
           <p>Booking ID: ${booking._id}</p>
           <p>Created: ${booking.createdAt ? new Date(booking.createdAt).toLocaleString() : '-'}</p>
         </div>
@@ -160,14 +222,47 @@ export default function BookingTable({ bookings = [], onUpdate }) {
               <span class="info-label">Drop-Off Location:</span> ${booking.dropoffLocation || '-'}
             </div>
             <div class="info-item">
-              <span class="info-label">Drop-Off Slot:</span> ${booking.dropoffSlotId || '-'}
+              <span class="info-label">Drop-Off Time:</span> ${formatSlotTime(booking.dropoffSlotId, booking.dropoffTime)}
             </div>
             <div class="info-item">
               <span class="info-label">Pick-up Location:</span> ${booking.pickupLocation || '-'}
             </div>
+            <div class="info-item">
+              <span class="info-label">Pick-up Time:</span> ${formatSlotTime(booking.pickupSlotId, booking.pickupTime)}
+            </div>
+            ${booking.pickupDate ? `
+            <div class="info-item">
+              <span class="info-label">Pick-up Date:</span> ${new Date(booking.pickupDate).toLocaleDateString('en-GB', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+            ` : ''}
+            ${booking.pickupStartTime && booking.pickupEndTime ? `
+            <div class="info-item">
+              <span class="info-label">Pick-up Time Range:</span> ${booking.pickupStartTime} - ${booking.pickupEndTime}
+            </div>
+            ` : ''}
+            ${booking.pickupWindow ? `
+            <div class="info-item">
+              <span class="info-label">Pick-up Window:</span> ${booking.pickupWindow}
+            </div>
+            ` : ''}
+            ${booking.specialPickupRequest ? `
+            <div class="info-item">
+              <span class="info-label">Special Pickup Request:</span> ${booking.specialPickupRequest}
+            </div>
+            ` : ''}
             ${booking.deliveryAddress ? `
             <div class="info-item">
               <span class="info-label">Delivery Address:</span> ${booking.deliveryAddress}
+            </div>
+            ` : ''}
+            ${booking.pickupScheduledAt ? `
+            <div class="info-item">
+              <span class="info-label">Pickup Scheduled:</span> ${new Date(booking.pickupScheduledAt).toLocaleString()}
             </div>
             ` : ''}
           </div>
@@ -337,6 +432,142 @@ export default function BookingTable({ bookings = [], onUpdate }) {
     }
   }
 
+  async function handleSendCompletionEmail(booking) {
+    setSendingEmail(booking._id);
+    try {
+      const baseUrl = window.location.origin;
+      const pickupUrl = `${baseUrl}/pickup-booking`;
+      
+      const emailData = {
+        to: booking.email,
+        subject: `🎾 Your Racket Stringing is Complete - Booking #${booking.bookingNumber}`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+              .content { padding: 20px; }
+              .section { margin-bottom: 25px; }
+              .section h3 { color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+              .highlight { background-color: #e8f5e8; padding: 15px; border-radius: 5px; border-left: 4px solid #28a745; }
+              .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 10px 0; }
+              .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 0.9rem; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>🎾 Stringing Complete!</h1>
+              <p>Markham Restring Studio</p>
+            </div>
+            
+            <div class="content">
+              <div class="highlight">
+                <h3>✅ Your racket stringing is complete!</h3>
+                <p>Dear ${booking.fullName},</p>
+                <p>Great news! Your racket stringing service has been completed and is ready for pickup.</p>
+              </div>
+
+              <div class="section">
+                <h3>📋 Booking Details</h3>
+                <p><strong>Booking Number:</strong> #${booking.bookingNumber}</p>
+                <p><strong>Customer:</strong> ${booking.fullName}</p>
+                <p><strong>Phone:</strong> ${booking.phone || 'Not provided'}</p>
+                <p><strong>Email:</strong> ${booking.email || 'Not provided'}</p>
+                ${booking.pickupLocation ? `<p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>` : ''}
+                ${booking.pickupTime ? `<p><strong>Pickup Time:</strong> ${booking.pickupTime}</p>` : ''}
+                ${booking.pickupDate ? `<p><strong>Pickup Date:</strong> ${new Date(booking.pickupDate).toLocaleDateString('en-GB', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</p>` : ''}
+                ${booking.pickupWindow ? `<p><strong>Pickup Window:</strong> ${booking.pickupWindow}</p>` : ''}
+                ${booking.specialPickupRequest ? `<p><strong>Special Pickup Request:</strong> ${booking.specialPickupRequest}</p>` : ''}
+              </div>
+
+              <div class="section">
+                <h3>📅 Schedule Your Pickup</h3>
+                <p>Please click the button below to schedule your pickup time:</p>
+                <a href="${pickupUrl}" class="button">📅 Schedule Pickup Time</a>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+                  Or copy and paste this link: <a href="${pickupUrl}">${pickupUrl}</a>
+                </p>
+              </div>
+
+              <div class="section">
+                <h3>📞 Need Help?</h3>
+                <p>If you have any questions or need assistance, please contact us:</p>
+                <p><strong>Phone:</strong> (647) 655-3658</p>
+                <p><strong>Email:</strong> markhamrestring@gmail.com</p>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p>Thank you for choosing Markham Restring Studio!</p>
+              <p>Professional racket stringing with quality strings and expert care.</p>
+            </div>
+          </body>
+          </html>
+        `,
+        text: `
+Stringing Complete - Markham Restring Studio
+
+Dear ${booking.fullName},
+
+Great news! Your racket stringing service has been completed and is ready for pickup.
+
+BOOKING DETAILS:
+Booking Number: #${booking.bookingNumber}
+Customer: ${booking.fullName}
+Phone: ${booking.phone || 'Not provided'}
+Email: ${booking.email || 'Not provided'}
+${booking.pickupLocation ? `Pickup Location: ${booking.pickupLocation}` : ''}
+${booking.pickupTime ? `Pickup Time: ${booking.pickupTime}` : ''}
+${booking.pickupDate ? `Pickup Date: ${new Date(booking.pickupDate).toLocaleDateString('en-GB', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+})}` : ''}
+${booking.pickupWindow ? `Pickup Window: ${booking.pickupWindow}` : ''}
+${booking.specialPickupRequest ? `Special Pickup Request: ${booking.specialPickupRequest}` : ''}
+
+SCHEDULE YOUR PICKUP:
+Please visit the following link to schedule your pickup time:
+${pickupUrl}
+
+NEED HELP?
+If you have any questions or need assistance, please contact us:
+Phone: (647) 655-3658
+Email: markhamrestring@gmail.com
+
+Thank you for choosing Markham Restring Studio!
+        `
+      };
+
+      const res = await fetch('/api/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData)
+      });
+
+      if (res.ok) {
+        alert('Completion email sent successfully!');
+      } else {
+        alert('Failed to send completion email');
+      }
+    } catch (error) {
+      console.error('Error sending completion email:', error);
+      alert('Error sending completion email');
+    } finally {
+      setSendingEmail(null);
+    }
+  }
+
   function getStatusColor(status) {
     switch (status) {
       case 'Pending': return { bg: '#fff3cd', color: '#856404', border: '#ffeaa7' };
@@ -463,6 +694,15 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.9rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
+                }}>Booking #</th>
+                <th style={{ 
+                  padding: '1rem', 
+                  textAlign: 'left', 
+                  fontWeight: '600',
+                  color: '#495057',
+                  fontSize: '0.9rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>Customer</th>
                 <th style={{ 
                   padding: '1rem', 
@@ -514,7 +754,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             <tbody>
               {filteredBookings.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ 
+                  <td colSpan="6" style={{ 
                     padding: '4rem 2rem', 
                     textAlign: 'center', 
                     color: '#6c757d',
@@ -542,6 +782,16 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                       backgroundColor: isCancelled ? '#f8d7da' : undefined,
                       color: isCancelled ? '#888' : undefined
                     }}>
+                      <td style={{ padding: '1rem' }}>
+                        <div style={{ 
+                          fontWeight: '700', 
+                          color: '#667eea',
+                          fontSize: '1.1rem',
+                          textAlign: 'center'
+                        }}>
+                          #{b.bookingNumber || 'N/A'}
+                        </div>
+                      </td>
                       <td style={{ padding: '1rem' }}>
                         <div>
                           <div style={{ 
@@ -583,7 +833,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                                       {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                                     </span>
                                     <span style={{ color: '#333', fontSize: '0.92rem' }}>
-                                      <strong>String:</strong> {r.stringName || '-'} | <strong>Color:</strong> {r.stringColor || '-'} | <strong>Tension:</strong> {r.stringTension || '-'} | <strong>Qty:</strong> {r.quantity || 1}
+                                      <strong>String:</strong> {b.ownString ? 'Own String' : (r.stringName || '-')} | <strong>Color:</strong> {b.ownString ? 'N/A' : (r.stringColor || '-')} | <strong>Tension:</strong> {r.stringTension || '-'} | <strong>Qty:</strong> {r.quantity || 1}
                                     </span>
                                   </div>
                                 </li>
@@ -607,7 +857,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                                     {b.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                                   </span>
                                   <span style={{ color: '#333', fontSize: '0.92rem' }}>
-                                    <strong>String:</strong> {b.stringName || '-'} | <strong>Color:</strong> {b.stringColor || '-'} | <strong>Tension:</strong> {b.stringTension || '-'} | <strong>Qty:</strong> {b.quantity || 1}
+                                    <strong>String:</strong> {b.ownString ? 'Own String' : (b.stringName || '-')} | <strong>Color:</strong> {b.ownString ? 'N/A' : (b.stringColor || '-')} | <strong>Tension:</strong> {b.stringTension || '-'} | <strong>Qty:</strong> {b.quantity || 1}
                                   </span>
                                 </div>
                               </li>
@@ -719,6 +969,25 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                             ✅ Complete
                           </button>
                           <button 
+                            onClick={() => handleSendCompletionEmail(b)}
+                            disabled={sendingEmail === b._id || isCancelled || !b.email}
+                            style={{ 
+                              fontSize: '0.8rem', 
+                              padding: '0.5rem 0.75rem',
+                              backgroundColor: sendingEmail === b._id ? '#6c757d' : '#ff6b35',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: sendingEmail === b._id || isCancelled || !b.email ? 'not-allowed' : 'pointer',
+                              fontWeight: '500',
+                              opacity: isCancelled || !b.email ? 0.5 : 1,
+                              transition: 'all 0.2s ease'
+                            }}
+                            title={!b.email ? 'No email address available' : 'Send completion email to customer'}
+                          >
+                            {sendingEmail === b._id ? '📧 Sending...' : '📧 Email'}
+                          </button>
+                          <button 
                             onClick={() => handlePaymentUpdate(b._id, 'Paid')}
                             disabled={updating === b._id || b.paymentStatus === 'Paid' || isCancelled}
                             style={{ 
@@ -826,7 +1095,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem'
+                  gap: '0.5rem',
+                  marginRight: '2rem'
                 }}
               >
                 🖨️ Print
@@ -834,6 +1104,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             </div>
             {/* Personal Info */}
             <div style={{ marginBottom: '1.25rem' }}>
+              <strong>Booking Number:</strong> #{viewing.bookingNumber || 'N/A'}<br/>
               <strong>Customer:</strong> {viewing.fullName}<br/>
               <strong>Email:</strong> {viewing.email || '-'}<br/>
               <strong>Phone:</strong> {viewing.phone || '-'}
@@ -868,10 +1139,10 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>String:</strong> {r.stringName || '-'}
+                        <strong>String:</strong> {viewing.ownString ? 'Own String' : (r.stringName || '-')}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>Color:</strong> {r.stringColor || '-'}
+                        <strong>Color:</strong> {viewing.ownString ? 'N/A' : (r.stringColor || '-')}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
                         <strong>Tension:</strong> {r.stringTension || '-'}
@@ -898,10 +1169,10 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                     {viewing.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
-                    <strong>String:</strong> {viewing.stringName || '-'}
+                    <strong>String:</strong> {viewing.ownString ? 'Own String' : (viewing.stringName || '-')}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
-                    <strong>Color:</strong> {viewing.stringColor || '-'}
+                    <strong>Color:</strong> {viewing.ownString ? 'N/A' : (viewing.stringColor || '-')}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
                     <strong>Tension:</strong> {viewing.stringTension || '-'}
@@ -923,9 +1194,37 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             <div style={{ marginBottom: '1.25rem' }}>
               <strong>Scheduling:</strong><br/>
               <span>Drop-Off Location: {viewing.dropoffLocation || '-'}</span><br/>
-              <span>Drop-Off Slot: {viewing.dropoffSlotId || '-'}</span><br/>
+              <span>Drop-Off Time: {formatSlotTime(viewing.dropoffSlotId, viewing.dropoffTime)}</span><br/>
               <span>Pick-up Location: {viewing.pickupLocation || '-'}</span><br/>
-              {viewing.deliveryAddress && (<span>Delivery Address: {viewing.deliveryAddress}<br/></span>)}
+              <span>Pick-up Time: {formatSlotTime(viewing.pickupSlotId, viewing.pickupTime)}</span><br/>
+              {viewing.pickupDate && (
+                <span>Pick-up Date: {new Date(viewing.pickupDate).toLocaleDateString('en-GB', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</span>
+              )}
+              {viewing.pickupDate && <br/>}
+              {viewing.pickupStartTime && viewing.pickupEndTime && (
+                <span>Pick-up Time Range: {viewing.pickupStartTime} - {viewing.pickupEndTime}</span>
+              )}
+              {viewing.pickupStartTime && viewing.pickupEndTime && <br/>}
+              {viewing.pickupWindow && (
+                <span>Pick-up Window: {viewing.pickupWindow}</span>
+              )}
+              {viewing.pickupWindow && <br/>}
+              {viewing.specialPickupRequest ? (
+                <span>Special Pickup Request: {viewing.specialPickupRequest}</span>
+              ) : null}
+              {viewing.specialPickupRequest && <br/>}
+              {viewing.deliveryAddress ? (
+                <span>Delivery Address: {viewing.deliveryAddress}</span>
+              ) : null}
+              {viewing.deliveryAddress && <br/>}
+              {viewing.pickupScheduledAt && (
+                <span>Pickup Scheduled: {new Date(viewing.pickupScheduledAt).toLocaleString()}</span>
+              )}
             </div>
             {/* Status & Payment */}
             <div style={{ marginBottom: '1.25rem' }}>

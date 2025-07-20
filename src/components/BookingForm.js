@@ -215,19 +215,48 @@ export default function BookingForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus('loading');
+    
+    // Prepare rackets data - clear string info if own string is selected
+    const processedRackets = form.ownString 
+      ? rackets.map(r => ({ ...r, stringName: '', stringColor: '' }))
+      : rackets;
+    
+    // Get formatted time strings for dropoff and pickup
+    const getFormattedTime = (slotId, location) => {
+      if (!slotId) return '';
+      const slot = getSlotsForLocation(location).find(s => s._id === slotId);
+      if (!slot) return '';
+      
+      // Format as DD/MM/YYYY, HH:mm - HH:mm
+      const date = new Date(slot.date);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      
+      return `${day}/${month}/${year}, ${slot.startTime} - ${slot.endTime}`;
+    };
+    
+    const dropoffTime = getFormattedTime(form.dropoffSlotId, form.dropoffLocation);
+    const pickupTime = getFormattedTime(form.pickupSlotId, form.pickupLocation);
+    
     // DEBUG: Log what is being sent
-    console.log('BookingForm SUBMIT payload:', { ...form, rackets });
+    console.log('BookingForm SUBMIT payload:', { ...form, rackets: processedRackets, dropoffTime, pickupTime });
     try {
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, rackets, agreeToTerms }),
+        body: JSON.stringify({ ...form, rackets: processedRackets, dropoffTime, pickupTime, agreeToTerms }),
       });
       if (res.ok) {
+        const result = await res.json();
         setStatus('success');
         setForm({
           fullName: '', email: '', phone: '', racketType: '', stringName: '', stringColor: '', stringTension: '', ownString: false, grommetReplacement: false, turnaroundTime: '', dropoffLocation: '', dropoffSlotId: '', pickupLocation: '', pickupSlotId: '', notes: '',
         });
+        
+        // Redirect to success page in new window with booking number
+        const successUrl = `/booking-success?email=${encodeURIComponent(form.email)}&bookingNumber=${result.bookingNumber}`;
+        window.open(successUrl, '_blank');
       } else {
         setStatus('error');
       }
@@ -240,43 +269,43 @@ export default function BookingForm() {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.08)' }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: '700', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+        <h2 style={{ fontSize: 'var(--font-size-h2)', fontWeight: '700', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
           Book Your Stringing Service
         </h2>
-        <p style={{ color: '#666', fontSize: '1.1rem', lineHeight: '1.6' }}>
+        <p style={{ color: '#666', fontSize: 'var(--font-size-body-large)', lineHeight: '1.6' }}>
           Professional racket stringing with quality strings and expert care.
         </p>
       </div>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {/* 1. Personal Information */}
         <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 1. Personal Information</h3>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 1. Personal Information</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Full Name *</label>
-              <input type="text" name="fullName" value={form.fullName} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="Enter your full name" />
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: 'var(--font-size-label)' }}>Full Name *</label>
+              <input type="text" name="fullName" value={form.fullName} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: 'var(--font-size-input)', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="Enter your full name" />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Email *</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="your.email@example.com" />
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: 'var(--font-size-label)' }}>Email *</label>
+              <input type="email" name="email" value={form.email} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: 'var(--font-size-input)', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="your.email@example.com" />
               <small style={{ color: '#888' }}>Confirmation sent here</small>
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Phone Number *</label>
-              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="(123) 456-7890" />
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: 'var(--font-size-label)' }}>Phone Number *</label>
+              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: 'var(--font-size-input)', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="(123) 456-7890" />
               <small style={{ color: '#888' }}>For pickup/drop-off coordination</small>
             </div>
           </div>
         </div>
         {/* 2. Racket & String Details */}
         <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>🔍 2. Racket & String Details</h3>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>🔍 2. Racket & String Details</h3>
           
           {/* Own String Option */}
           <div style={{ marginBottom: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
               <input type="checkbox" name="ownString" checked={form.ownString} onChange={handleChange} style={{ marginRight: '0.75rem' }} />
-              <label style={{ fontWeight: '600', color: '#333', fontSize: '1.1rem', cursor: 'pointer' }}>
+              <label style={{ fontWeight: '600', color: '#333', fontSize: 'var(--font-size-body-large)', cursor: 'pointer' }}>
                 I will provide my own string (-$5.00 discount)
               </label>
             </div>
@@ -310,25 +339,46 @@ export default function BookingForm() {
                     <option value="badminton">🏸 Badminton</option>
                   </select>
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Type *</label>
-                  <select name="stringName" value={r.stringName} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                    <option value="">Select String...</option>
-                    {Object.keys(getGroupedStringsForType(r.racketType)).map(name => (
-                      <option key={name} value={name}>{name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Color</label>
-                  <select name="stringColor" value={r.stringColor} onChange={e => handleRacketChange(idx, e)} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                    <option value="">Select Color...</option>
-                    {(r.stringName && getAvailableColors(r.racketType, r.stringName)) ? getAvailableColors(r.racketType, r.stringName).map(color => (
-                      <option key={color} value={color}>{color}</option>
-                    )) : null}
-                  </select>
-                  <small style={{ color: '#888' }}>Optional (based on available stock)</small>
-                </div>
+                {!form.ownString && (
+                  <>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Type *</label>
+                      <select name="stringName" value={r.stringName} onChange={e => handleRacketChange(idx, e)} required={!form.ownString} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+                        <option value="">Select String...</option>
+                        {Object.keys(getGroupedStringsForType(r.racketType)).map(name => (
+                          <option key={name} value={name}>{name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Color</label>
+                      <select name="stringColor" value={r.stringColor} onChange={e => handleRacketChange(idx, e)} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
+                        <option value="">Select Color...</option>
+                        {(r.stringName && getAvailableColors(r.racketType, r.stringName)) ? getAvailableColors(r.racketType, r.stringName).map(color => (
+                          <option key={color} value={color}>{color}</option>
+                        )) : null}
+                      </select>
+                      <small style={{ color: '#888' }}>Optional (based on available stock)</small>
+                    </div>
+                  </>
+                )}
+                {form.ownString && (
+                  <div style={{ 
+                    gridColumn: 'span 2',
+                    background: 'linear-gradient(90deg, #e8f5e8 60%, #f0f9ff 100%)', 
+                    border: '1.5px solid #4caf50', 
+                    borderRadius: 12, 
+                    padding: '1rem 1.5rem', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 12 
+                  }}>
+                    <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>🎾</span>
+                    <div style={{ fontSize: '0.95rem', color: '#2e7d32', lineHeight: '1.5' }}>
+                      <strong>Own String Selected:</strong> You will provide your own string. No string selection needed.
+                    </div>
+                  </div>
+                )}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Tension (lbs) *</label>
                   
@@ -815,7 +865,7 @@ export default function BookingForm() {
         {/* Status Messages */}
         {status === 'success' && (
           <div style={{ padding: '1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '8px', textAlign: 'center', border: '1px solid #c3e6cb' }}>
-            ✅ Booking submitted successfully! 📧 A copy has been sent to markhamrestring@gmail.com<br/>
+            ✅ Booking submitted successfully! 📧 Confirmation emails sent to markhamrestring@gmail.com and {form.email}<br/>
             We&apos;ll contact you soon to confirm details and arrange pickup/drop-off.
           </div>
         )}

@@ -23,17 +23,17 @@ export default function Home() {
         }}></div>
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
           <h1 style={{
-            fontSize: '3.5rem',
+            fontSize: 'var(--font-size-h1)',
             fontWeight: '700',
             marginBottom: '1.5rem',
             lineHeight: '1.2'
           }}>
             Professional Racket Stringing
             <br />
-            <span style={{ fontSize: '2.5rem', opacity: 0.9 }}>in Markham</span>
+            <span style={{ fontSize: 'var(--font-size-h2)', opacity: 0.9 }}>in Markham</span>
           </h1>
           <p style={{
-            fontSize: '1.25rem',
+            fontSize: 'var(--font-size-body-large)',
             marginBottom: '2.5rem',
             opacity: 0.9,
             lineHeight: '1.6'
@@ -49,7 +49,7 @@ export default function Home() {
               padding: '1rem 2rem',
               borderRadius: '8px',
               fontWeight: '600',
-              fontSize: '1.1rem',
+              fontSize: 'var(--font-size-button)',
               transition: 'all 0.2s ease',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
             }}>
@@ -62,7 +62,7 @@ export default function Home() {
               padding: '1rem 2rem',
               borderRadius: '8px',
               fontWeight: '600',
-              fontSize: '1.1rem',
+              fontSize: 'var(--font-size-button)',
               border: '2px solid white',
               transition: 'all 0.2s ease'
             }}>
@@ -81,10 +81,10 @@ export default function Home() {
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: 'var(--font-size-h2)', fontWeight: '700', color: '#1a1a1a', marginBottom: '1rem' }}>
               Our Services
             </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
+            <p style={{ fontSize: 'var(--font-size-body-large)', color: '#666' }}>
               Professional stringing for all your racket needs
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function Home() {
               transition: 'all 0.2s ease'
             }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎾</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
+              <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Tennis Rackets
               </h3>
               <p style={{ color: '#666', marginBottom: '1rem' }}>
@@ -119,7 +119,7 @@ export default function Home() {
               transition: 'all 0.2s ease'
             }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏸</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
+              <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Badminton Rackets
               </h3>
               <p style={{ color: '#666', marginBottom: '1rem' }}>
@@ -136,7 +136,7 @@ export default function Home() {
               transition: 'all 0.2s ease'
             }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔧</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
+              <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                 Grommet Replacement
               </h3>
               <p style={{ color: '#666', marginBottom: '0.5rem' }}>
@@ -255,7 +255,7 @@ export default function Home() {
                 Phone
               </h3>
               <p style={{ color: '#667ea', fontWeight: '500' }}>
-                (905) 555-123
+                (647) 655-3658
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>

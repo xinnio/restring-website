@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
             <Link href="/home" style={{ 
               textDecoration: 'none', 
               color: '#1a1a1a', 
-              fontSize: '1.75rem', 
+              fontSize: 'var(--font-size-h2)', 
               fontWeight: '700',
               display: 'flex',
               alignItems: 'center',
@@ -63,7 +63,7 @@ export default function RootLayout({ children }) {
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: 'var(--font-size-nav)'
               }}>Home</Link>
               <Link href="/booking" style={{ 
                 textDecoration: 'none', 
@@ -72,7 +72,7 @@ export default function RootLayout({ children }) {
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: 'var(--font-size-nav)'
               }}>Booking</Link>
               <Link href="/services" style={{ 
                 textDecoration: 'none', 
@@ -81,7 +81,7 @@ export default function RootLayout({ children }) {
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: 'var(--font-size-nav)'
               }}>Services</Link>
               <Link href="/strings" style={{ 
                 textDecoration: 'none', 
@@ -90,7 +90,7 @@ export default function RootLayout({ children }) {
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: 'var(--font-size-nav)'
               }}>Strings</Link>
               <Link href="/faq" style={{ 
                 textDecoration: 'none', 
@@ -99,7 +99,7 @@ export default function RootLayout({ children }) {
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: 'var(--font-size-nav)'
               }}>FAQ</Link>
               <Link href="/locations" style={{ 
                 textDecoration: 'none', 
@@ -108,8 +108,17 @@ export default function RootLayout({ children }) {
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: 'var(--font-size-nav)'
               }}>Locations</Link>
+              <Link href="/pickup-booking" style={{ 
+                textDecoration: 'none', 
+                color: '#666', 
+                padding: '0.75rem 1.25rem',
+                borderRadius: '8px',
+                transition: 'all 0.2s ease',
+                fontWeight: '500',
+                fontSize: 'var(--font-size-nav)'
+              }}>Schedule Pickup</Link>
               <Link href="/adminlogin" style={{ 
                 textDecoration: 'none', 
                 color: '#bbb', 
@@ -117,7 +126,7 @@ export default function RootLayout({ children }) {
                 padding: '0.5rem 1rem', 
                 borderRadius: '6px', 
                 fontWeight: '400', 
-                fontSize: '0.85rem', 
+                fontSize: 'var(--font-size-small)', 
                 border: '1px solid #eee', 
                 boxShadow: 'none', 
                 transition: 'all 0.2s ease' 
@@ -145,13 +154,13 @@ export default function RootLayout({ children }) {
             marginBottom: '2rem'
           }}>
             <div>
-              <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>🏸 Markham Restring Studio</h3>
+              <h3 style={{ marginBottom: '1rem', fontSize: 'var(--font-size-h3)' }}>🏸 Markham Restring Studio</h3>
               <p style={{ color: '#ccc', lineHeight: '1.6' }}>
                 Professional racket stringing services for tennis and badminton players in Markham and surrounding areas.
               </p>
             </div>
             <div>
-              <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Quick Links</h4>
+              <h4 style={{ marginBottom: '1rem', fontSize: 'var(--font-size-body-large)' }}>Quick Links</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <Link href="/booking" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.2s' }}>Book Service</Link>
                 <Link href="/strings" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.2s' }}>String Options</Link>
@@ -160,10 +169,10 @@ export default function RootLayout({ children }) {
               </div>
             </div>
             <div>
-              <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Contact</h4>
+              <h4 style={{ marginBottom: '1rem', fontSize: 'var(--font-size-body-large)' }}>Contact</h4>
               <p style={{ color: '#ccc', marginBottom: '0.5rem' }}>📍 Markham, ON</p>
               <p style={{ color: '#ccc', marginBottom: '0.5rem' }}>📧 markhamrestring@gmail.com</p>
-              <p style={{ color: '#ccc' }}>📱 (905) 555-0123</p>
+              <p style={{ color: '#ccc' }}>📱 (647) 655-3658</p>
             </div>
           </div>
           <div style={{ 

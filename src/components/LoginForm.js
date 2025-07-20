@@ -146,18 +146,7 @@ export default function LoginForm() {
         )}
       </form>
       
-      <div style={{ 
-        marginTop: '2rem', 
-        padding: '1rem', 
-        backgroundColor: '#f8f9fa', 
-        borderRadius: '4px',
-        fontSize: '0.875rem',
-        color: '#666'
-      }}>
-        <strong>Demo Credentials:</strong><br />
-        Email: markhamrestring@gmail.com<br />
-        Password: password
-      </div>
+
     </div>
   );
 } 

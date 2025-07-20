@@ -255,7 +255,7 @@ export default function Home() {
                 Phone
               </h3>
               <p style={{ color: '#667ea', fontWeight: '500' }}>
-                (905) 555-123
+                (647) 655-3658
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>
