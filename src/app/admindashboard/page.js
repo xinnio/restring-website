@@ -55,7 +55,7 @@ function AdminDashboardContent() {
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar />
       <main style={{ flex: 1, padding: '2rem' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
           {/* Header */}
           <div style={{ marginBottom: '2rem' }}>
             <h1 style={{ 
