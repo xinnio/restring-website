@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Sidebar from '../../components/Sidebar';
 import StringForm from '../../components/StringForm';
@@ -35,7 +35,7 @@ export default function InventoryManager() {
     return null;
   }
 
-  async function fetchStrings() {
+  const fetchStrings = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/strings');
@@ -65,7 +65,7 @@ export default function InventoryManager() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   async function handleDelete(stringId) {
     if (!confirm('Are you sure you want to delete this string?')) {
@@ -131,7 +131,7 @@ export default function InventoryManager() {
 
   useEffect(() => {
     fetchStrings();
-  }, []);
+  }, [fetchStrings]);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>

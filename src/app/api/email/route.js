@@ -50,7 +50,7 @@ const emailTemplates = {
           </div>
           
           <div style="text-align: center; margin-top: 30px;">
-            <p style="color: #6c757d; font-size: 14px;">We'll notify you when your racket is ready for pickup!</p>
+            <p style="color: #6c757d; font-size: 14px;">We&apos;ll notify you when your racket is ready for pickup!</p>
             <p style="color: #6c757d; font-size: 12px;">Thank you for choosing Markham Restring Studio</p>
           </div>
         </div>

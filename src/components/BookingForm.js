@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 export default function BookingForm() {
   // --- State ---
@@ -49,20 +49,21 @@ export default function BookingForm() {
   const [couponDetails, setCouponDetails] = useState(null);
 
   // --- Fetch inventory and availability ---
-  useEffect(() => {
-    async function fetchStrings() {
-      try {
-        const res = await fetch('/api/strings');
-        const data = await res.json();
-        setStrings(data);
-      } catch (error) {
-        console.error('Error fetching strings:', error);
-      } finally {
-        setLoading(false);
-      }
+  const fetchStrings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/strings');
+      const data = await res.json();
+      setStrings(data);
+    } catch (error) {
+      console.error('Error fetching strings:', error);
+    } finally {
+      setLoading(false);
     }
-    fetchStrings();
   }, []);
+
+  useEffect(() => {
+    fetchStrings();
+  }, [fetchStrings]);
 
   useEffect(() => {
     async function fetchAvailability() {
@@ -1243,7 +1244,7 @@ export default function BookingForm() {
                 fontSize: '0.9rem',
                 fontWeight: '600'
               }}>
-                ✅ Discount applied! You'll save {
+                ✅ Discount applied! You&apos;ll save {
                   activeNotice.discountType === 'percentage' 
                     ? `${activeNotice.discountValue}%` 
                     : activeNotice.discountType === 'fixed' 
