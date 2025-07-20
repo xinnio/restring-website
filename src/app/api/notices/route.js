@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { GetCommand, PutCommand, DeleteCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
-import { docClient, getNoticesTable } from '../../../lib/dynamodb';
+import { docClient } from '../../../lib/dynamodb';
 
 // GET - Get all notices or active notice
 export async function GET(request) {
   try {
-    const tableName = await getNoticesTable();
+    const tableName = process.env.NOTICES_TABLE;
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get('active') === 'true';
 
@@ -53,7 +53,7 @@ export async function GET(request) {
 // POST - Create or update notice
 export async function POST(request) {
   try {
-    const tableName = await getNoticesTable();
+    const tableName = process.env.NOTICES_TABLE;
     const body = await request.json();
     const { message, isActive, discountType, discountValue, discountThreshold, discountCode, expiresAt } = body;
 
@@ -103,7 +103,7 @@ export async function POST(request) {
 // DELETE - Remove notice
 export async function DELETE(request) {
   try {
-    const tableName = await getNoticesTable();
+    const tableName = process.env.NOTICES_TABLE;
     const deleteCommand = new DeleteCommand({
       TableName: tableName,
       Key: { id: 'active' }

@@ -1,10 +1,10 @@
-import { docClient, getStringsTable, generateId } from '../../../lib/dynamodb';
+import { docClient, generateId } from '../../../lib/dynamodb';
 import { PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const tableName = await getStringsTable();
+    const tableName = process.env.STRINGS_TABLE;
     
     const scanCommand = new ScanCommand({
       TableName: tableName,
@@ -26,7 +26,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const tableName = await getStringsTable();
+    const tableName = process.env.STRINGS_TABLE;
     const body = await request.json();
     
     const id = await generateId();

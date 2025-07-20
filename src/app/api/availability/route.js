@@ -1,10 +1,10 @@
-import { docClient, getAvailabilityTable, generateId } from '../../../lib/dynamodb';
+import { docClient, generateId } from '../../../lib/dynamodb';
 import { PutCommand, ScanCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const tableName = await getAvailabilityTable();
+    const tableName = process.env.AVAILABILITY_TABLE;
     
     const scanCommand = new ScanCommand({
       TableName: tableName,
@@ -26,7 +26,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const tableName = await getAvailabilityTable();
+    const tableName = process.env.AVAILABILITY_TABLE;
     const body = await request.json();
     
     const id = await generateId();
@@ -55,7 +55,7 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
-    const tableName = await getAvailabilityTable();
+    const tableName = process.env.AVAILABILITY_TABLE;
     
     // Get today's date in YYYY-MM-DD format
     const today = new Date();
