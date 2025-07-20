@@ -133,22 +133,22 @@ export default function Locations() {
   const pickupLocations = [
     {
       name: 'Wiser Park Tennis Courts',
-      address: '980 Bur Oak Avenue, Markham, ON L6E 0E1',
-      hours: 'Mon-Fri: 10AM-7PM',
+      address: 'Markham, ON L6E 1H8',
+      hours: 'By appointment',
       distance: '5 min from Markham Centre',
       icon: '🎾'
     },
     {
       name: 'Angus Glen Community Centre (Library)',
       address: '3970 Major Mackenzie Dr E, Markham, ON L6C 1P8',
-      hours: 'Mon-Fri: 10AM-7PM',
+      hours: 'By appointment',
       distance: '8 min from Markham Centre',
       icon: '🏢'
     },
     {
       name: 'Door-to-Door (Delivery)',
       address: 'Available for orders over $100 (free) or by special arrangement',
-      hours: 'Mon-Fri: By appointment',
+      hours: 'By appointment',
       distance: 'Contact us to arrange',
       icon: '🚗'
     }
@@ -213,7 +213,7 @@ export default function Locations() {
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
                       <h2 style={{ fontSize: 'var(--font-size-h2)', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontSize: 'var(--font-size-h2)' }}>🗺️</span> Our Location
-          </h2>
+              </h2>
         </div>
         
         <div style={{ 
@@ -251,8 +251,8 @@ export default function Locations() {
             <div style={{ display: 'flex', alignItems: 'center', color: '#6c63ff', fontWeight: 700, fontSize: '0.925rem', cursor: 'pointer', gap: 8 }}>
               <span style={{ fontSize: '1.075rem' }}>👇</span> View Locations Below
             </div>
-          </div>
-        </div>
+                </div>
+              </div>
       </section>
 
       {/* Pickup & Drop-off Locations */}
@@ -309,7 +309,7 @@ export default function Locations() {
             <span style={{ fontSize: '1.175rem', color: '#f59e42' }}>⚠️</span>
             <div style={{ fontSize: '0.885rem', color: '#b45309', fontWeight: 600 }}><strong>Note:</strong> Door-to-door pick-up available for orders over $100 (free) or by special arrangement.</div>
           </div>
-          
+
           <div style={{
             backgroundColor: '#e0e7ff',
             padding: '1.5rem',
@@ -325,7 +325,7 @@ export default function Locations() {
         </div>
       </section>
 
-      {/* Contact Information */}
+            {/* Contact Information */}
       <section style={{ 
         backgroundColor: 'white', 
         padding: '4rem 2rem',
@@ -335,7 +335,7 @@ export default function Locations() {
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h2 style={{ fontSize: '1.575rem', fontWeight: 800, color: '#1a1a1a', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontSize: '1.875rem' }}>📞</span> Contact Information
-            </h2>
+                </h2>
           </div>
           
           <div style={{ 
@@ -355,8 +355,8 @@ export default function Locations() {
                 <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Email</div>
                 <div style={{ fontSize: '0.925rem', color: '#6c63ff', fontWeight: 600 }}>markhamrestring@gmail.com</div>
                 <div style={{ fontSize: '0.795rem', color: '#888' }}>We&apos;ll respond within 24 hours</div>
-              </div>
-            </div>
+                    </div>
+                  </div>
             
             <div style={{
               padding: '2rem',
@@ -370,8 +370,8 @@ export default function Locations() {
                 <div style={{ fontWeight: 700, fontSize: '0.955rem', color: '#1a1a1a', marginBottom: 2 }}>Phone</div>
                 <div style={{ fontSize: '0.925rem', color: '#059669', fontWeight: 600 }}>(647) 655-3658</div>
                 <div style={{ fontSize: '0.795rem', color: '#888' }}>Call for urgent matters only</div>
-              </div>
-            </div>
+                    </div>
+                  </div>
             
             <div style={{
               padding: '2rem',
@@ -386,9 +386,9 @@ export default function Locations() {
                 <div style={{ fontSize: '0.925rem', color: '#f59e42', fontWeight: 600 }}>(647) 655-3658</div>
                 <div style={{ fontSize: '0.795rem', color: '#888' }}>SMS for quick questions</div>
               </div>
-            </div>
-          </div>
-          
+                    </div>
+                  </div>
+
           <div style={{ 
             backgroundColor: '#fef3c7', 
             padding: '1.5rem', 
@@ -400,8 +400,8 @@ export default function Locations() {
             <p style={{ fontSize: '0.885rem', color: '#b45309', fontWeight: 600 }}>
               <strong>Note:</strong> Please contact us via email or text message for general inquiries. Call us only for urgent matters.
             </p>
-          </div>
-        </div>
+                    </div>
+                  </div>
       </section>
 
       {/* Availability Calendar */}
@@ -513,7 +513,7 @@ export default function Locations() {
                           color: isToday ? '#667eea' : isPast ? '#9ca3af' : '#333' 
                         }}>
                           {date.getDate()}
-                        </div>
+                </div>
                         <div style={{ fontSize: '0.75rem', color: '#666' }}>
                           {daySlots.length > 0 ? (
                             <div>
@@ -522,26 +522,26 @@ export default function Locations() {
                                   <div>{formatTime(slot.startTime)}-{formatTime(slot.endTime)}</div>
                                   <div style={{ fontSize: '0.65rem', color: '#888', marginTop: '0.1rem' }}>
                                     {slot.location}
-                                  </div>
-                                </div>
+                  </div>
+                </div>
                               ))}
                               {daySlots.length > 2 && (
                                 <div style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 600 }}>
                                   +{daySlots.length - 2} more
-                                </div>
-                              )}
+              </div>
+            )}
                             </div>
                           ) : (
                             <div style={{ color: '#dc2626', fontWeight: 600 }}>No slots</div>
                           )}
                         </div>
-                      </div>
+                    </div>
                     );
                   })}
                 </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
           
           <div style={{ 
             backgroundColor: '#e0e7ff', 
@@ -573,19 +573,19 @@ export default function Locations() {
           }}>
             <p style={{ fontSize: '0.885rem', color: '#b45309', fontWeight: 600 }}>
               <strong>Note:</strong> For immediate assistance, please call or text us directly. Email responses may take up to 24 hours.
-            </p>
+              </p>
+            </div>
           </div>
-        </div>
         
         <form onSubmit={handleContactFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
+              <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Name</label>
-            <input
-              type="text"
-              name="name"
+                <input
+                  type="text"
+                  name="name"
               value={contactForm.name}
               onChange={handleContactFormChange}
-              required
+                  required
               style={{ 
                 width: '100%', 
                 padding: '1.1rem 1.2rem', 
@@ -597,18 +597,18 @@ export default function Locations() {
                 outline: 'none', 
                 transition: 'border 0.18s' 
               }}
-              placeholder="Enter your full name"
-            />
-          </div>
+                  placeholder="Enter your full name"
+                />
+              </div>
           
-          <div>
+              <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Email</label>
-                          <input
-                type="email"
-                name="email"
+                <input
+                  type="email"
+                  name="email"
                 value={contactForm.email}
                 onChange={handleContactFormChange}
-                required
+                  required
                 style={{ 
                   width: '100%', 
                   padding: '1.1rem 1.2rem', 
@@ -620,15 +620,15 @@ export default function Locations() {
                   outline: 'none', 
                   transition: 'border 0.18s' 
                 }}
-                placeholder="your.email@example.com"
-              />
-          </div>
+                  placeholder="your.email@example.com"
+                />
+              </div>
           
-          <div>
+              <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Phone</label>
-                          <input
-                type="tel"
-                name="phone"
+                <input
+                  type="tel"
+                  name="phone"
                 value={contactForm.phone}
                 onChange={handleContactFormChange}
                 style={{ 
@@ -642,13 +642,13 @@ export default function Locations() {
                   outline: 'none', 
                   transition: 'border 0.18s' 
                 }}
-                placeholder="(123) 456-7890"
-              />
-          </div>
+                  placeholder="(123) 456-7890"
+                />
+              </div>
           
-          <div>
+              <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Service Type</label>
-                          <select
+                <select
                 name="serviceType"
                 value={contactForm.serviceType}
                 onChange={handleContactFormChange}
@@ -665,16 +665,16 @@ export default function Locations() {
                 }}
               >
               <option value="">Select a service</option>
-              <option value="tennis">Tennis Racket Stringing</option>
-              <option value="badminton">Badminton Racket Stringing</option>
+                  <option value="tennis">Tennis Racket Stringing</option>
+                  <option value="badminton">Badminton Racket Stringing</option>
               <option value="grommet">Grommet Replacement</option>
               <option value="other">Other</option>
-            </select>
-          </div>
+                </select>
+              </div>
           
           <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-label)', fontWeight: 700, color: '#333', marginBottom: 8 }}>Your Message</label>
-                          <textarea
+              <textarea
                 name="message"
                 value={contactForm.message}
                 onChange={handleContactFormChange}
@@ -694,10 +694,10 @@ export default function Locations() {
                 }}
                 placeholder="Tell us about your stringing needs..."
               ></textarea>
-          </div>
+            </div>
           
-          <button
-            type="submit"
+              <button
+                type="submit"
             disabled={formStatus === 'loading'}
             style={{ 
               background: formStatus === 'loading' ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
@@ -713,7 +713,7 @@ export default function Locations() {
             }}
           >
             {formStatus === 'loading' ? 'Sending...' : 'Send Message'}
-          </button>
+              </button>
           
           {formStatus === 'success' && (
             <div style={{ 
@@ -740,7 +740,7 @@ export default function Locations() {
               Error sending message. Please try again or contact us directly.
             </div>
           )}
-        </form>
+          </form>
       </section>
 
       {/* CTA Section */}
@@ -770,6 +770,6 @@ export default function Locations() {
           </Link>
         </div>
       </section>
-    </div>
+      </div>
   );
 } 

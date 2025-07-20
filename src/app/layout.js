@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import './globals.css';
+import MobileNav from '../components/MobileNav';
 
 export const metadata = {
   title: 'Markham Restring Studio',
@@ -10,6 +11,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
       <body style={{ 
         margin: 0, 
         fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
@@ -43,7 +47,12 @@ export default function RootLayout({ children }) {
               alignItems: 'center',
               gap: '0.5rem'
             }}>
-              <Image src="/logo.png" alt="Markham Restring Studio Logo" width={80} height={80} style={{ maxHeight: '80px', marginRight: '0.75rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
+              <Image src="/logo.png" alt="Markham Restring Studio Logo" width={80} height={80} style={{ 
+                maxHeight: '80px', 
+                marginRight: '0.75rem', 
+                borderRadius: '8px', 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+              }} />
               <span style={{ 
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 WebkitBackgroundClip: 'text',
@@ -55,7 +64,12 @@ export default function RootLayout({ children }) {
               </span>
             </Link>
             
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* Desktop Navigation */}
+            <div className="desktop-nav" style={{ 
+              display: 'flex', 
+              gap: '0.5rem', 
+              alignItems: 'center'
+            }}>
               <Link href="/home" style={{ 
                 textDecoration: 'none', 
                 color: '#666', 
@@ -132,6 +146,9 @@ export default function RootLayout({ children }) {
                 transition: 'all 0.2s ease' 
               }}>Admin</Link>
             </div>
+
+            {/* Mobile Navigation Component */}
+            <MobileNav />
           </div>
         </nav>
         

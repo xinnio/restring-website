@@ -42,15 +42,15 @@ export default function Services() {
             Same-day service available. Professional quality guaranteed.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/booking" style={{
-              textDecoration: 'none',
-              backgroundColor: 'white',
-              color: '#667eea',
+          <Link href="/booking" style={{
+            textDecoration: 'none',
+            backgroundColor: 'white',
+            color: '#667eea',
               padding: '1rem 2rem',
-              borderRadius: '8px',
-              fontWeight: '600',
+            borderRadius: '8px',
+            fontWeight: '600',
               fontSize: '0.975rem',
-              transition: 'all 0.2s ease',
+            transition: 'all 0.2s ease',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
             }}>
               Book Now
@@ -65,9 +65,9 @@ export default function Services() {
               fontSize: '0.975rem',
               border: '2px solid white',
               transition: 'all 0.2s ease'
-            }}>
+          }}>
               View Strings
-            </Link>
+          </Link>
           </div>
         </div>
       </section>
@@ -82,7 +82,7 @@ export default function Services() {
             Choose the service that best fits your schedule and budget
           </p>
         </div>
-        
+
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
@@ -96,7 +96,7 @@ export default function Services() {
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             textAlign: 'center',
             transition: 'transform 0.2s ease'
-          }}>
+            }}>
             <div style={{ fontSize: '2.875rem', marginBottom: '1rem' }}>⚡</div>
             <h3 style={{ fontSize: '1.625rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a1a' }}>
               Same Day Service
@@ -114,7 +114,7 @@ export default function Services() {
               <li style={{ marginBottom: '0.5rem' }}>✓ Perfect for tournaments</li>
             </ul>
           </div>
-          
+
           <div style={{
             backgroundColor: 'white',
             padding: '2rem',
@@ -140,7 +140,7 @@ export default function Services() {
               <li style={{ marginBottom: '0.5rem' }}>✓ Most popular option</li>
             </ul>
           </div>
-          
+
           <div style={{
             backgroundColor: 'white',
             padding: '2rem',
@@ -184,7 +184,7 @@ export default function Services() {
               Enhance your stringing service with these add-ons
             </p>
           </div>
-          
+
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
@@ -208,7 +208,7 @@ export default function Services() {
                 -$5 discount
               </div>
             </div>
-            
+
             <div style={{
               padding: '2rem',
               borderRadius: '12px',
@@ -244,7 +244,7 @@ export default function Services() {
             Professional stringing for all major racket types
           </p>
         </div>
-        
+
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
@@ -257,16 +257,16 @@ export default function Services() {
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             textAlign: 'center',
             transition: 'transform 0.2s ease'
-          }}>
+            }}>
             <span style={{ fontSize: '1.875rem' }}>🏸</span>
             <h3 style={{ fontSize: '1.375rem', fontWeight: '600', color: '#1a1a1a', margin: 0 }}>
               Badminton Rackets
-            </h3>
+              </h3>
             <p style={{ color: '#666', fontSize: '0.825rem', marginTop: '0.5rem' }}>
               All major brands and models
             </p>
           </div>
-          
+
           <div style={{
             backgroundColor: 'white',
             padding: '2rem',
@@ -274,11 +274,11 @@ export default function Services() {
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             textAlign: 'center',
             transition: 'transform 0.2s ease'
-          }}>
+            }}>
             <span style={{ fontSize: '1.875rem' }}>🎾</span>
             <h3 style={{ fontSize: '1.375rem', fontWeight: '600', color: '#1a1a1a', margin: 0 }}>
               Tennis Rackets
-            </h3>
+              </h3>
             <p style={{ color: '#666', fontSize: '0.825rem', marginTop: '0.5rem' }}>
               All major brands and models
             </p>
@@ -301,7 +301,7 @@ export default function Services() {
               We stand behind our work with a quality guarantee
             </p>
           </div>
-          
+
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
@@ -322,7 +322,7 @@ export default function Services() {
                 Every racket is carefully inspected before and after stringing to ensure quality.
               </p>
             </div>
-            
+
             <div style={{
               padding: '2rem',
               borderRadius: '12px',
@@ -356,19 +356,19 @@ export default function Services() {
           <p style={{ fontSize: '0.975rem', marginBottom: '2rem', opacity: 0.9, lineHeight: '1.6' }}>
             Choose your service and get professional stringing with quick turnaround times
           </p>
-          <Link href="/booking" style={{
-            textDecoration: 'none',
-            backgroundColor: '#667eea',
-            color: 'white',
+            <Link href="/booking" style={{
+              textDecoration: 'none',
+              backgroundColor: '#667eea',
+              color: 'white',
             padding: '1rem 2.5rem',
-            borderRadius: '8px',
-            fontWeight: '600',
+              borderRadius: '8px',
+              fontWeight: '600',
             fontSize: '0.975rem',
-            transition: 'all 0.2s ease',
-            display: 'inline-block'
-          }}>
+              transition: 'all 0.2s ease',
+              display: 'inline-block'
+            }}>
             Book Your Service Now
-          </Link>
+            </Link>
         </div>
       </section>
     </div>

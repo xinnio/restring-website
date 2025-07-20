@@ -340,8 +340,8 @@ Created: ${new Date(booking.createdAt).toLocaleString()}
     const customerConfirmationText = `
 Booking Confirmation - Markham Restring Studio
 
-Dear ${booking.fullName},
-
+      Dear ${booking.fullName},
+      
 Thank you for choosing Markham Restring Studio! We have received your booking and will begin processing it shortly.
 
 BOOKING SUMMARY:

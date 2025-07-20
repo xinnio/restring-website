@@ -10,15 +10,38 @@ export default function StringForm({ string = null, onSuccess }) {
     color: string?.color || '',
     quantity: string?.quantity || '',
     description: string?.description || '',
-    imageUrl: string?.imageUrl || ''
+    imageUrl: string?.imageUrl || '',
+    stringBrand: string?.stringBrand || '',
+    stringModel: string?.stringModel || ''
   });
+
+  // Auto-generate string name from brand and model
+  const generateStringName = (brand, model) => {
+    if (brand && model) {
+      return `${brand} ${model}`;
+    } else if (brand) {
+      return brand;
+    } else if (model) {
+      return model;
+    }
+    return '';
+  };
   const [status, setStatus] = useState(null);
   const [imagePreview, setImagePreview] = useState(string?.imageUrl || '');
   const [uploading, setUploading] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+    setForm(f => {
+      const updatedForm = { ...f, [name]: value };
+      
+      // Auto-generate name when brand or model changes
+      if (name === 'stringBrand' || name === 'stringModel') {
+        updatedForm.name = generateStringName(updatedForm.stringBrand, updatedForm.stringModel);
+      }
+      
+      return updatedForm;
+    });
   }
 
   async function handleImageUpload(e) {
@@ -66,6 +89,13 @@ export default function StringForm({ string = null, onSuccess }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus('loading');
+    
+    // Ensure name is generated from brand and model
+    const submissionData = {
+      ...form,
+      name: generateStringName(form.stringBrand, form.stringModel)
+    };
+    
     try {
       const url = string ? `/api/strings/${string._id}` : '/api/strings';
       const method = string ? 'PUT' : 'POST';
@@ -73,13 +103,13 @@ export default function StringForm({ string = null, onSuccess }) {
       const res = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(submissionData),
       });
       if (res.ok) {
         setStatus('success');
         if (!string) {
           // Only reset form if it's a new string (not editing)
-          setForm({ name: '', type: '', color: '', quantity: '', description: '', imageUrl: '' });
+          setForm({ name: '', type: '', color: '', quantity: '', description: '', imageUrl: '', stringBrand: '', stringModel: '' });
           setImagePreview('');
         }
         if (onSuccess) onSuccess();
@@ -219,34 +249,48 @@ export default function StringForm({ string = null, onSuccess }) {
         </div>
       </div>
       
-      <div>
-        <label style={{ 
-          display: 'block', 
-          marginBottom: '0.5rem', 
-          fontWeight: '500', 
-          color: '#333', 
-          fontSize: '0.95rem' 
+      {/* Auto-generated String Name Display */}
+      {form.stringBrand || form.stringModel ? (
+        <div style={{
+          padding: '0.875rem',
+          backgroundColor: '#e8f5e8',
+          border: '2px solid #4caf50',
+          borderRadius: '8px',
+          textAlign: 'center'
         }}>
-          String Name *
-        </label>
-        <input 
-          type="text" 
-          name="name" 
-          value={form.name} 
-          onChange={handleChange} 
-          required 
-          style={{
-            width: '100%',
-            padding: '0.875rem',
-            border: '2px solid #e9ecef',
-            borderRadius: '8px',
-            fontSize: '0.875rem',
-            transition: 'border-color 0.2s ease',
-            boxSizing: 'border-box'
-          }}
-          placeholder="Enter string name"
-        />
-      </div>
+          <div style={{ 
+            fontSize: '0.875rem', 
+            color: '#2e7d32', 
+            fontWeight: '600',
+            marginBottom: '0.25rem'
+          }}>
+            Auto-generated String Name:
+          </div>
+          <div style={{ 
+            fontSize: '1rem', 
+            color: '#1a1a1a', 
+            fontWeight: '700'
+          }}>
+            {form.name || 'Enter brand and model above'}
+          </div>
+        </div>
+      ) : (
+        <div style={{
+          padding: '0.875rem',
+          backgroundColor: '#fff3cd',
+          border: '2px solid #ffc107',
+          borderRadius: '8px',
+          textAlign: 'center'
+        }}>
+          <div style={{ 
+            fontSize: '0.875rem', 
+            color: '#856404', 
+            fontWeight: '600'
+          }}>
+            ⚠️ String name will be auto-generated from brand and model
+          </div>
+        </div>
+      )}
       
       <div>
         <label style={{ 
@@ -280,6 +324,66 @@ export default function StringForm({ string = null, onSuccess }) {
         </select>
       </div>
       
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.5rem', 
+            fontWeight: '500', 
+            color: '#333', 
+            fontSize: '0.95rem' 
+          }}>
+            String Brand *
+          </label>
+          <input 
+            type="text" 
+            name="stringBrand" 
+            value={form.stringBrand} 
+            onChange={handleChange}
+            required
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              border: '2px solid #e9ecef',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              transition: 'border-color 0.2s ease',
+              boxSizing: 'border-box'
+            }}
+            placeholder="e.g., Wilson, Babolat, Yonex"
+          />
+        </div>
+        
+        <div>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.5rem', 
+            fontWeight: '500', 
+            color: '#333', 
+            fontSize: '0.95rem' 
+          }}>
+            String Model *
+      </label>
+          <input 
+            type="text" 
+            name="stringModel" 
+            value={form.stringModel} 
+            onChange={handleChange}
+            required
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              border: '2px solid #e9ecef',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              transition: 'border-color 0.2s ease',
+              boxSizing: 'border-box'
+            }}
+            placeholder="e.g., NXT, RPM Blast, BG80"
+          />
+        </div>
+      </div>
+      
       <div>
         <label style={{ 
           display: 'block', 
@@ -288,8 +392,8 @@ export default function StringForm({ string = null, onSuccess }) {
           color: '#333', 
           fontSize: '0.95rem' 
         }}>
-          Color
-        </label>
+        Color
+      </label>
         <input 
           type="text" 
           name="color" 
@@ -317,7 +421,7 @@ export default function StringForm({ string = null, onSuccess }) {
           fontSize: '0.95rem' 
         }}>
           Quantity *
-        </label>
+      </label>
         <input 
           type="number" 
           name="quantity" 
@@ -346,8 +450,8 @@ export default function StringForm({ string = null, onSuccess }) {
           color: '#333', 
           fontSize: '0.95rem' 
         }}>
-          Description
-        </label>
+        Description
+      </label>
         <textarea 
           name="description" 
           value={form.description} 

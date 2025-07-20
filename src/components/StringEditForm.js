@@ -8,8 +8,22 @@ export default function StringEditForm({ string, variants, onSuccess }) {
     name: string?.name || '',
     type: string?.type || '',
     description: string?.description || '',
-    imageUrl: string?.imageUrl || ''
+    imageUrl: string?.imageUrl || '',
+    stringBrand: string?.stringBrand || '',
+    stringModel: string?.stringModel || ''
   });
+
+  // Auto-generate string name from brand and model
+  const generateStringName = (brand, model) => {
+    if (brand && model) {
+      return `${brand} ${model}`;
+    } else if (brand) {
+      return brand;
+    } else if (model) {
+      return model;
+    }
+    return '';
+  };
   const [variantForms, setVariantForms] = useState([]);
   const [status, setStatus] = useState(null);
   const [imagePreview, setImagePreview] = useState(string?.imageUrl || '');
@@ -21,14 +35,25 @@ export default function StringEditForm({ string, variants, onSuccess }) {
       setVariantForms(variants.map(v => ({
         _id: v._id,
         color: v.color || '',
-        quantity: v.quantity || 0
+        quantity: v.quantity || 0,
+        stringBrand: v.stringBrand || '',
+        stringModel: v.stringModel || ''
       })));
     }
   }, [variants]);
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+    setForm(f => {
+      const updatedForm = { ...f, [name]: value };
+      
+      // Auto-generate name when brand or model changes
+      if (name === 'stringBrand' || name === 'stringModel') {
+        updatedForm.name = generateStringName(updatedForm.stringBrand, updatedForm.stringModel);
+      }
+      
+      return updatedForm;
+    });
   }
 
   function handleVariantChange(index, field, value) {
@@ -38,7 +63,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
   }
 
   function handleAddVariant() {
-    setVariantForms(prev => [...prev, { _id: null, color: '', quantity: 0 }]);
+    setVariantForms(prev => [...prev, { _id: null, color: '', quantity: 0, stringBrand: '', stringModel: '' }]);
   }
 
   function handleRemoveVariant(index) {
@@ -89,12 +114,18 @@ export default function StringEditForm({ string, variants, onSuccess }) {
     e.preventDefault();
     setStatus('loading');
 
+    // Ensure name is generated from brand and model
+    const submissionData = {
+      ...form,
+      name: generateStringName(form.stringBrand, form.stringModel)
+    };
+
     try {
       // First, update the main string properties
       const stringUpdateRes = await fetch(`/api/strings/${string._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(submissionData),
       });
 
       if (!stringUpdateRes.ok) {
@@ -109,12 +140,14 @@ export default function StringEditForm({ string, variants, onSuccess }) {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name: form.name,
+              name: submissionData.name,
               type: form.type,
               description: form.description,
               imageUrl: form.imageUrl,
               color: variant.color,
-              quantity: parseInt(variant.quantity) || 0
+              quantity: parseInt(variant.quantity) || 0,
+              stringBrand: variant.stringBrand,
+              stringModel: variant.stringModel
             }),
           });
         } else {
@@ -123,12 +156,14 @@ export default function StringEditForm({ string, variants, onSuccess }) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name: form.name,
+              name: submissionData.name,
               type: form.type,
               description: form.description,
               imageUrl: form.imageUrl,
               color: variant.color,
-              quantity: parseInt(variant.quantity) || 0
+              quantity: parseInt(variant.quantity) || 0,
+              stringBrand: variant.stringBrand,
+              stringModel: variant.stringModel
             }),
           });
         }
@@ -265,35 +300,34 @@ export default function StringEditForm({ string, variants, onSuccess }) {
         </div>
       </div>
       
+      {/* Auto-generated String Name Display */}
+      <div style={{
+        padding: '0.875rem',
+        backgroundColor: '#e8f5e8',
+        border: '2px solid #4caf50',
+        borderRadius: '8px',
+        textAlign: 'center',
+        marginBottom: '1rem'
+      }}>
+        <div style={{ 
+          fontSize: '0.875rem', 
+          color: '#2e7d32', 
+          fontWeight: '600',
+          marginBottom: '0.25rem'
+        }}>
+          Auto-generated String Name:
+        </div>
+        <div style={{ 
+          fontSize: '1rem', 
+          color: '#1a1a1a', 
+          fontWeight: '700'
+        }}>
+          {form.name || 'Enter brand and model below'}
+        </div>
+      </div>
+
       {/* String Properties */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <div>
-          <label style={{ 
-            display: 'block', 
-            marginBottom: '0.5rem', 
-            fontWeight: '500', 
-            color: '#333', 
-            fontSize: '0.95rem' 
-          }}>
-            String Name *
-          </label>
-          <input 
-            type="text" 
-            name="name" 
-            value={form.name} 
-            onChange={handleChange} 
-            required 
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: '2px solid #e9ecef',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              transition: 'border-color 0.2s ease',
-              boxSizing: 'border-box'
-            }}
-          />
-        </div>
         
         <div>
           <label style={{ 
@@ -325,6 +359,66 @@ export default function StringEditForm({ string, variants, onSuccess }) {
             <option value="tennis">🎾 Tennis</option>
             <option value="badminton">🏸 Badminton</option>
           </select>
+        </div>
+      </div>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.5rem', 
+            fontWeight: '500', 
+            color: '#333', 
+            fontSize: '0.95rem' 
+          }}>
+            String Brand *
+          </label>
+          <input 
+            type="text" 
+            name="stringBrand" 
+            value={form.stringBrand} 
+            onChange={handleChange}
+            required
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              border: '2px solid #e9ecef',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              transition: 'border-color 0.2s ease',
+              boxSizing: 'border-box'
+            }}
+            placeholder="e.g., Wilson, Babolat, Yonex"
+          />
+        </div>
+        
+        <div>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.5rem', 
+            fontWeight: '500', 
+            color: '#333', 
+            fontSize: '0.95rem' 
+          }}>
+            String Model *
+          </label>
+          <input 
+            type="text" 
+            name="stringModel" 
+            value={form.stringModel} 
+            onChange={handleChange}
+            required
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              border: '2px solid #e9ecef',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              transition: 'border-color 0.2s ease',
+              boxSizing: 'border-box'
+            }}
+            placeholder="e.g., NXT, RPM Blast, BG80"
+          />
         </div>
       </div>
       
@@ -476,6 +570,60 @@ export default function StringEditForm({ string, variants, onSuccess }) {
                       boxSizing: 'border-box'
                     }}
                     placeholder="0"
+                  />
+                </div>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+                <div>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '0.25rem', 
+                    fontWeight: '500', 
+                    color: '#333', 
+                    fontSize: '0.875rem' 
+                  }}>
+                    String Brand
+                  </label>
+                  <input 
+                    type="text" 
+                    value={variant.stringBrand} 
+                    onChange={(e) => handleVariantChange(index, 'stringBrand', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '2px solid #e9ecef',
+                      borderRadius: '6px',
+                      fontSize: '0.875rem',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="e.g., Wilson, Babolat"
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '0.25rem', 
+                    fontWeight: '500', 
+                    color: '#333', 
+                    fontSize: '0.875rem' 
+                  }}>
+                    String Model
+                  </label>
+                  <input 
+                    type="text" 
+                    value={variant.stringModel} 
+                    onChange={(e) => handleVariantChange(index, 'stringModel', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '2px solid #e9ecef',
+                      borderRadius: '6px',
+                      fontSize: '0.875rem',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="e.g., NXT, RPM Blast"
                   />
                 </div>
               </div>

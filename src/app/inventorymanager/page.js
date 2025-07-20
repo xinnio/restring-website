@@ -89,6 +89,7 @@ export default function InventoryManager() {
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Image</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Name</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Type</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Brand & Model</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Colors & Quantities</th>
                         <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Actions</th>
                       </tr>
@@ -104,7 +105,7 @@ export default function InventoryManager() {
                         if (names.length === 0) {
                           return (
                             <tr>
-                              <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#888', background: '#f8f9fa', borderRadius: '12px' }}>
+                              <td colSpan="6" style={{ padding: '3rem', textAlign: 'center', color: '#888', background: '#f8f9fa', borderRadius: '12px' }}>
                                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🧵</div>
                                 <div style={{ fontSize: '1.25rem', fontWeight: 600 }}>No strings in inventory.</div>
                                 <div style={{ color: '#aaa', marginTop: '0.5rem' }}>Add your first string to get started!</div>
@@ -154,6 +155,25 @@ export default function InventoryManager() {
                                 )}
                               </td>
                               <td style={{ padding: '16px', textTransform: 'capitalize', verticalAlign: 'top', fontWeight: 500 }}>{first.type}</td>
+                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                  {first.stringBrand && (
+                                    <div style={{ fontSize: '0.95rem', color: '#333', fontWeight: '500' }}>
+                                      <strong>Brand:</strong> {first.stringBrand}
+                                    </div>
+                                  )}
+                                  {first.stringModel && (
+                                    <div style={{ fontSize: '0.95rem', color: '#333', fontWeight: '500' }}>
+                                      <strong>Model:</strong> {first.stringModel}
+                                    </div>
+                                  )}
+                                  {!first.stringBrand && !first.stringModel && (
+                                    <div style={{ fontSize: '0.9rem', color: '#999', fontStyle: 'italic' }}>
+                                      No brand/model info
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                                   {variants.map(v => (

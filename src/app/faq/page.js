@@ -61,7 +61,7 @@ export default function FAQ() {
     },
     {
       question: "Where can I drop off and pick up my racket?",
-      answer: "We offer convenient pickup and drop-off options at:\n\n🏠 Markham Studio\n🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1\n🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8\n🚗 Door-to-Door (Delivery) - by appointment (+$12.00)\n\nYou can select your preferred location and time when booking. We&apos;ll coordinate the logistics in consideration of both your availability and ours.",
+      answer: "We offer convenient pickup and drop-off options at:\n\n🏠 Markham Studio\n🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8\n🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8\n🚗 Door-to-Door (Delivery) - by appointment (+$12.00)\n\nYou can select your preferred location and time when booking. We&apos;ll coordinate the logistics in consideration of both your availability and ours.",
       category: "Service Locations",
       icon: "📍"
     },

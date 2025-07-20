@@ -30,4 +30,29 @@ export async function POST(request) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
+}
+
+export async function DELETE(request) {
+  try {
+    const collection = await getAvailabilityCollection();
+    
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+    
+    // Delete all availability slots with dates before today (not including today)
+    const result = await collection.deleteMany({
+      date: { $lt: todayStr }
+    });
+    
+    console.log(`Deleted ${result.deletedCount} availability slots before ${todayStr}`);
+    
+    return NextResponse.json({ 
+      message: `Deleted ${result.deletedCount} availability slots before ${todayStr}`,
+      deletedCount: result.deletedCount
+    }, { status: 200 });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+  }
 } 

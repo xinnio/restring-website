@@ -374,6 +374,22 @@ export default function Strings() {
                             {getTensionRange(selectedStringObj.type)}
                           </div>
                         </div>
+                        {selectedStringObj.stringBrand && (
+                          <div>
+                            <strong style={{ color: '#333', fontSize: '0.9rem' }}>Brand:</strong>
+                            <div style={{ color: '#666', fontSize: '1rem', marginTop: '0.25rem' }}>
+                              {selectedStringObj.stringBrand}
+                            </div>
+                          </div>
+                        )}
+                        {selectedStringObj.stringModel && (
+                          <div>
+                            <strong style={{ color: '#333', fontSize: '0.9rem' }}>Model:</strong>
+                            <div style={{ color: '#666', fontSize: '1rem', marginTop: '0.25rem' }}>
+                              {selectedStringObj.stringModel}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Stock Status */}

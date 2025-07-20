@@ -9,6 +9,19 @@ export default function BookingTable({ bookings = [], onUpdate }) {
   const [viewing, setViewing] = useState(null); // booking object or null
   const [filterRange, setFilterRange] = useState('all'); // 'all', 'week', 'month'
 
+  // Helper function to format string name to Brand-Model display
+  const formatStringDisplay = (racket) => {
+    if (!racket.stringName) return '-';
+    
+    // If the string has brand and model info, format as Brand-Model
+    if (racket.stringBrand && racket.stringModel) {
+      return `${racket.stringBrand}-${racket.stringModel}`;
+    }
+    
+    // Otherwise return the original string name
+    return racket.stringName;
+  };
+
   // Helper function to format date and time
   const formatDateTime = (dateTimeString) => {
     if (!dateTimeString) return '-';
@@ -96,11 +109,17 @@ export default function BookingTable({ bookings = [], onUpdate }) {
       const basePrice = getBasePrice(r);
       const qty = parseInt(r.quantity) || 1;
       racketsSubtotal += basePrice * qty;
+      
+      // Format string display for print
+      const stringDisplay = r.stringBrand && r.stringModel 
+        ? `${r.stringBrand}-${r.stringModel}` 
+        : (r.stringName || '-');
+        
       return `
         <tr>
           <td>${qty}</td>
           <td>${r.racketType === 'tennis' ? 'Tennis' : 'Badminton'}</td>
-          <td>${r.stringName || '-'}</td>
+          <td>${stringDisplay}</td>
           <td>${r.stringColor || '-'}</td>
           <td>${r.stringTension || '-'}</td>
           <td>$${basePrice}</td>
@@ -619,48 +638,74 @@ Thank you for choosing Markham Restring Studio!
 
   return (
     <div style={{ padding: '2rem' }}>
+      {/* Dashboard Header */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        marginBottom: '2rem'
+        marginBottom: '2rem',
+        padding: '1.5rem',
+        backgroundColor: 'white',
+        borderRadius: '16px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.08)'
       }}>
-        <h2 style={{ 
-          fontSize: '1.75rem', 
-          fontWeight: '700', 
-          color: '#1a1a1a',
-          margin: 0
-        }}>
-          📋 Bookings Management
-        </h2>
+        <div>
+          <h2 style={{ 
+            fontSize: '2rem', 
+            fontWeight: '700', 
+            color: '#1a1a1a',
+            margin: '0 0 0.5rem 0'
+          }}>
+            📋 Bookings Management
+          </h2>
+          <p style={{ 
+            color: '#666', 
+            fontSize: '1rem',
+            margin: 0
+          }}>
+            Manage and track all customer bookings efficiently
+          </p>
+        </div>
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: '1.5rem'
         }}>
           <div style={{ 
-            padding: '0.5rem 1rem', 
+            padding: '0.75rem 1.25rem', 
             backgroundColor: '#e8f5e8', 
             color: '#2e7d32', 
-            borderRadius: '20px', 
-            fontSize: '0.9rem', 
-            fontWeight: '500'
+            borderRadius: '12px', 
+            fontSize: '0.95rem', 
+            fontWeight: '600',
+            border: '1px solid #c8e6c9'
           }}>
-            {filteredBookings.length} Showing
+            📊 {filteredBookings.length} Bookings
           </div>
-          <div>
-            <label style={{ fontWeight: 500, marginRight: 8 }}>Filter:</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <label style={{ 
+              fontWeight: 600, 
+              color: '#495057',
+              fontSize: '0.9rem'
+            }}>
+              Time Filter:
+            </label>
             <select 
               value={filterRange} 
               onChange={e => setFilterRange(e.target.value)} 
               style={{ 
-                padding: '0.4rem 0.8rem', 
-                borderRadius: 6, 
-                border: '1px solid #ccc', 
-                fontSize: '1rem'
+                padding: '0.6rem 1rem', 
+                borderRadius: '8px', 
+                border: '2px solid #e9ecef', 
+                fontSize: '0.9rem',
+                backgroundColor: 'white',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'border-color 0.2s ease'
               }}
             >
-              <option value="all">All</option>
+              <option value="all">All Time</option>
               <option value="week">This Week</option>
               <option value="month">This Month</option>
             </select>
@@ -668,12 +713,13 @@ Thank you for choosing Markham Restring Studio!
         </div>
       </div>
       
+      {/* Bookings Table */}
       <div style={{ 
         backgroundColor: 'white',
-        borderRadius: '12px',
+        borderRadius: '16px',
         overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        border: '1px solid #e9ecef'
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.08)'
       }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ 
@@ -687,85 +733,110 @@ Thank you for choosing Markham Restring Studio!
                 borderBottom: '2px solid #e9ecef'
               }}>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Booking #</th>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Customer</th>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Racket Details</th>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Status</th>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Payment</th>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Total Price</th>
                 <th style={{ 
-                  padding: '1rem', 
+                  padding: '1.25rem 1rem', 
                   textAlign: 'left', 
-                  fontWeight: '600',
-                  color: '#495057',
-                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '1px'
                 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredBookings.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ 
+                  <td colSpan="7" style={{ 
                     padding: '4rem 2rem', 
                     textAlign: 'center', 
                     color: '#6c757d',
                     backgroundColor: 'white'
                   }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#495057' }}>
-                      No bookings yet
+                    <div style={{ 
+                      width: '80px', 
+                      height: '80px', 
+                      margin: '0 auto 1.5rem',
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2.5rem'
+                    }}>
+                      📋
+                    </div>
+                    <h3 style={{ 
+                      fontSize: '1.5rem', 
+                      fontWeight: '700', 
+                      marginBottom: '0.75rem', 
+                      color: '#1a1a1a' 
+                    }}>
+                      No bookings found
                     </h3>
-                    <p style={{ color: '#6c757d' }}>
-                      Bookings will appear here once customers start using your service.
+                    <p style={{ 
+                      color: '#666', 
+                      fontSize: '1rem',
+                      maxWidth: '400px',
+                      margin: '0 auto'
+                    }}>
+                      {filterRange === 'all' 
+                        ? 'No bookings have been created yet. They will appear here once customers start using your service.'
+                        : `No bookings found for ${filterRange === 'week' ? 'this week' : 'this month'}. Try adjusting your time filter.`
+                      }
                     </p>
                   </td>
                 </tr>
@@ -778,38 +849,59 @@ Thank you for choosing Markham Restring Studio!
                   return (
                     <tr key={b._id} style={{ 
                       borderBottom: '1px solid #e9ecef',
-                      transition: 'background-color 0.2s ease',
-                      backgroundColor: isCancelled ? '#f8d7da' : undefined,
-                      color: isCancelled ? '#888' : undefined
+                      transition: 'all 0.2s ease',
+                      backgroundColor: isCancelled ? '#f8d7da' : 'white',
+                      color: isCancelled ? '#888' : '#1a1a1a',
+                      ':hover': {
+                        backgroundColor: isCancelled ? '#f8d7da' : '#f8f9fa'
+                      }
                     }}>
-                      <td style={{ padding: '1rem' }}>
+                      <td style={{ padding: '1.25rem 1rem' }}>
                         <div style={{ 
                           fontWeight: '700', 
                           color: '#667eea',
                           fontSize: '1.1rem',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          padding: '0.5rem',
+                          backgroundColor: '#f8f9fa',
+                          borderRadius: '8px',
+                          border: '1px solid #e9ecef'
                         }}>
                           #{b.bookingNumber || 'N/A'}
                         </div>
                       </td>
-                      <td style={{ padding: '1rem' }}>
+                      <td style={{ padding: '1.25rem 1rem' }}>
                         <div>
                           <div style={{ 
-                            fontWeight: '600', 
+                            fontWeight: '700', 
                             color: '#1a1a1a',
-                            marginBottom: '0.25rem'
+                            marginBottom: '0.5rem',
+                            fontSize: '1rem'
                           }}>
                             {b.fullName}
                           </div>
                           <div style={{ 
-                            color: '#6c757d', 
+                            color: '#666', 
                             fontSize: '0.9rem',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.5rem'
+                            gap: '0.5rem',
+                            padding: '0.25rem 0.5rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '6px',
+                            width: 'fit-content'
                           }}>
-                            📞 {b.contactInfo}
+                            📞 {b.phone || b.contactInfo || 'No contact info'}
                           </div>
+                          {b.email && (
+                            <div style={{ 
+                              color: '#667eea', 
+                              fontSize: '0.85rem',
+                              marginTop: '0.25rem'
+                            }}>
+                              ✉️ {b.email}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td style={{ padding: '1rem' }}>
@@ -833,7 +925,7 @@ Thank you for choosing Markham Restring Studio!
                                       {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                                     </span>
                                     <span style={{ color: '#333', fontSize: '0.92rem' }}>
-                                      <strong>String:</strong> {b.ownString ? 'Own String' : (r.stringName || '-')} | <strong>Color:</strong> {b.ownString ? 'N/A' : (r.stringColor || '-')} | <strong>Tension:</strong> {r.stringTension || '-'} | <strong>Qty:</strong> {r.quantity || 1}
+                                      <strong>String:</strong> {b.ownString ? 'Own String' : formatStringDisplay(r)} | <strong>Color:</strong> {b.ownString ? 'N/A' : (r.stringColor || '-')} | <strong>Tension:</strong> {r.stringTension || '-'} | <strong>Qty:</strong> {r.quantity || 1}
                                     </span>
                                   </div>
                                 </li>
@@ -857,7 +949,7 @@ Thank you for choosing Markham Restring Studio!
                                     {b.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                                   </span>
                                   <span style={{ color: '#333', fontSize: '0.92rem' }}>
-                                    <strong>String:</strong> {b.ownString ? 'Own String' : (b.stringName || '-')} | <strong>Color:</strong> {b.ownString ? 'N/A' : (b.stringColor || '-')} | <strong>Tension:</strong> {b.stringTension || '-'} | <strong>Qty:</strong> {b.quantity || 1}
+                                    <strong>String:</strong> {b.ownString ? 'Own String' : formatStringDisplay(b)} | <strong>Color:</strong> {b.ownString ? 'N/A' : (b.stringColor || '-')} | <strong>Tension:</strong> {b.stringTension || '-'} | <strong>Qty:</strong> {b.quantity || 1}
                                   </span>
                                 </div>
                               </li>
@@ -865,87 +957,113 @@ Thank you for choosing Markham Restring Studio!
                           )}
                         </div>
                       </td>
-                      <td style={{ padding: '1rem' }}>
-                        <select 
-                          value={b.status || 'Pending'} 
-                          onChange={(e) => handleStatusUpdate(b._id, e.target.value)}
-                          disabled={updating === b._id || isCancelled}
-                          style={{ 
-                            backgroundColor: statusColors.bg,
-                            color: statusColors.color,
-                            border: `1px solid ${statusColors.border}`,
-                            padding: '0.5rem 0.75rem',
-                            borderRadius: '6px',
-                            fontSize: '0.9rem',
-                            fontWeight: '500',
-                            cursor: isCancelled ? 'not-allowed' : 'pointer',
-                            minWidth: '120px'
-                          }}
-                        >
-                          <option value="Pending">⏳ Pending</option>
-                          <option value="In Progress">🔄 In Progress</option>
-                          <option value="Completed">✅ Completed</option>
-                          <option value="Cancelled">❌ Cancelled</option>
-                        </select>
-                        {updating === b._id && (
-                          <div style={{ 
-                            marginTop: '0.5rem',
-                            fontSize: '0.8rem',
-                            color: '#6c757d'
-                          }}>
-                            Updating...
-                          </div>
-                        )}
+                      <td style={{ padding: '1.25rem 1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <select 
+                            value={b.status || 'Pending'} 
+                            onChange={(e) => handleStatusUpdate(b._id, e.target.value)}
+                            disabled={updating === b._id || isCancelled}
+                            style={{ 
+                              backgroundColor: statusColors.bg,
+                              color: statusColors.color,
+                              border: `2px solid ${statusColors.border}`,
+                              padding: '0.75rem 1rem',
+                              borderRadius: '8px',
+                              fontSize: '0.9rem',
+                              fontWeight: '600',
+                              cursor: isCancelled ? 'not-allowed' : 'pointer',
+                              minWidth: '140px',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <option value="Pending">⏳ Pending</option>
+                            <option value="In Progress">🔄 In Progress</option>
+                            <option value="Completed">✅ Completed</option>
+                            <option value="Cancelled">❌ Cancelled</option>
+                          </select>
+                          {updating === b._id && (
+                            <div style={{ 
+                              fontSize: '0.8rem',
+                              color: '#666',
+                              textAlign: 'center',
+                              padding: '0.25rem',
+                              backgroundColor: '#f8f9fa',
+                              borderRadius: '4px'
+                            }}>
+                              ⏳ Updating...
+                            </div>
+                          )}
+                        </div>
                       </td>
-                      <td style={{ padding: '1rem' }}>
-                        <select 
-                          value={b.paymentStatus || 'Pending'} 
-                          onChange={(e) => handlePaymentUpdate(b._id, e.target.value)}
-                          disabled={updating === b._id || isCancelled}
-                          style={{ 
-                            backgroundColor: paymentColors.bg,
-                            color: paymentColors.color,
-                            border: `1px solid ${paymentColors.border}`,
-                            padding: '0.5rem 0.75rem',
-                            borderRadius: '6px',
-                            fontSize: '0.9rem',
-                            fontWeight: '500',
-                            cursor: isCancelled ? 'not-allowed' : 'pointer',
-                            minWidth: '100px'
-                          }}
-                        >
-                          <option value="Pending">⏳ Pending</option>
-                          <option value="Paid">💰 Paid</option>
-                        </select>
-                        {b.paymentReceivedAt && (
-                          <div style={{ 
-                            fontSize: '0.8rem', 
-                            color: '#6c757d', 
-                            marginTop: '0.25rem' 
-                          }}>
-                            {new Date(b.paymentReceivedAt).toLocaleDateString()}
-                          </div>
-                        )}
+                      <td style={{ padding: '1.25rem 1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <select 
+                            value={b.paymentStatus || 'Pending'} 
+                            onChange={(e) => handlePaymentUpdate(b._id, e.target.value)}
+                            disabled={updating === b._id || isCancelled}
+                            style={{ 
+                              backgroundColor: paymentColors.bg,
+                              color: paymentColors.color,
+                              border: `2px solid ${paymentColors.border}`,
+                              padding: '0.75rem 1rem',
+                              borderRadius: '8px',
+                              fontSize: '0.9rem',
+                              fontWeight: '600',
+                              cursor: isCancelled ? 'not-allowed' : 'pointer',
+                              minWidth: '120px',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <option value="Pending">⏳ Pending</option>
+                            <option value="Paid">💰 Paid</option>
+                          </select>
+                          {b.paymentReceivedAt && (
+                            <div style={{ 
+                              fontSize: '0.8rem', 
+                              color: '#28a745', 
+                              textAlign: 'center',
+                              padding: '0.25rem',
+                              backgroundColor: '#d4edda',
+                              borderRadius: '4px',
+                              fontWeight: '500'
+                            }}>
+                              💰 {new Date(b.paymentReceivedAt).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
                       </td>
-                      <td style={{ padding: '1rem', fontWeight: 600, color: '#2e7d32' }}>
-                        ${calculateBookingTotal(b).toFixed(2)}
+                      <td style={{ padding: '1.25rem 1rem' }}>
+                        <div style={{ 
+                          fontWeight: '700', 
+                          color: '#2e7d32',
+                          fontSize: '1.1rem',
+                          textAlign: 'center',
+                          padding: '0.75rem',
+                          backgroundColor: '#e8f5e8',
+                          borderRadius: '8px',
+                          border: '2px solid #c8e6c9'
+                        }}>
+                          ${calculateBookingTotal(b).toFixed(2)}
+                        </div>
                       </td>
-                      <td style={{ padding: '1rem' }}>
-                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <td style={{ padding: '1.25rem 1rem' }}>
+                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                           <button
                             onClick={() => setViewing(b)}
                             disabled={isCancelled}
                             style={{
-                              fontSize: '0.8rem',
-                              padding: '0.5rem 0.75rem',
-                              backgroundColor: '#6c63ff',
+                              fontSize: '0.85rem',
+                              padding: '0.75rem 1rem',
+                              backgroundColor: '#667eea',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: isCancelled ? 'not-allowed' : 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
+                              minWidth: '80px'
                             }}
                           >
                             👁️ View
@@ -954,16 +1072,18 @@ Thank you for choosing Markham Restring Studio!
                             onClick={() => handleStatusUpdate(b._id, 'Completed')}
                             disabled={updating === b._id || isCancelled}
                             style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.85rem', 
+                              padding: '0.75rem 1rem',
                               backgroundColor: '#28a745',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: updating === b._id || isCancelled ? 'not-allowed' : 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 8px rgba(40, 167, 69, 0.3)',
+                              minWidth: '100px'
                             }}
                           >
                             ✅ Complete
@@ -972,16 +1092,18 @@ Thank you for choosing Markham Restring Studio!
                             onClick={() => handleSendCompletionEmail(b)}
                             disabled={sendingEmail === b._id || isCancelled || !b.email}
                             style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.85rem', 
+                              padding: '0.75rem 1rem',
                               backgroundColor: sendingEmail === b._id ? '#6c757d' : '#ff6b35',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: sendingEmail === b._id || isCancelled || !b.email ? 'not-allowed' : 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               opacity: isCancelled || !b.email ? 0.5 : 1,
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              boxShadow: sendingEmail === b._id ? 'none' : '0 2px 8px rgba(255, 107, 53, 0.3)',
+                              minWidth: '90px'
                             }}
                             title={!b.email ? 'No email address available' : 'Send completion email to customer'}
                           >
@@ -991,16 +1113,18 @@ Thank you for choosing Markham Restring Studio!
                             onClick={() => handlePaymentUpdate(b._id, 'Paid')}
                             disabled={updating === b._id || b.paymentStatus === 'Paid' || isCancelled}
                             style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.85rem', 
+                              padding: '0.75rem 1rem',
                               backgroundColor: b.paymentStatus === 'Paid' ? '#6c757d' : '#17a2b8',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: updating === b._id || b.paymentStatus === 'Paid' || isCancelled ? 'not-allowed' : 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              boxShadow: b.paymentStatus === 'Paid' ? 'none' : '0 2px 8px rgba(23, 162, 184, 0.3)',
+                              minWidth: '100px'
                             }}
                           >
                             💰 Mark Paid
@@ -1009,16 +1133,18 @@ Thank you for choosing Markham Restring Studio!
                             onClick={() => handleStatusUpdate(b._id, 'Cancelled')}
                             disabled={updating === b._id || isCancelled}
                             style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.85rem', 
+                              padding: '0.75rem 1rem',
                               backgroundColor: '#dc3545',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: updating === b._id || isCancelled ? 'not-allowed' : 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)',
+                              minWidth: '90px'
                             }}
                           >
                             {isCancelled ? '❌ Cancelled' : '❌ Cancel'}
@@ -1027,16 +1153,18 @@ Thank you for choosing Markham Restring Studio!
                             onClick={() => handleDelete(b._id)}
                             disabled={deleting === b._id}
                             style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.85rem', 
+                              padding: '0.75rem 1rem',
                               backgroundColor: '#6c757d',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: deleting === b._id ? 'not-allowed' : 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               opacity: deleting === b._id ? 0.5 : 1,
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 8px rgba(108, 117, 125, 0.3)',
+                              minWidth: '90px'
                             }}
                           >
                             {deleting === b._id ? '🗑️ Deleting...' : '🗑️ Delete'}
@@ -1139,7 +1267,7 @@ Thank you for choosing Markham Restring Studio!
                         {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>String:</strong> {viewing.ownString ? 'Own String' : (r.stringName || '-')}
+                        <strong>String:</strong> {viewing.ownString ? 'Own String' : formatStringDisplay(r)}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
                         <strong>Color:</strong> {viewing.ownString ? 'N/A' : (r.stringColor || '-')}
@@ -1169,7 +1297,7 @@ Thank you for choosing Markham Restring Studio!
                     {viewing.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
-                    <strong>String:</strong> {viewing.ownString ? 'Own String' : (viewing.stringName || '-')}
+                    <strong>String:</strong> {viewing.ownString ? 'Own String' : formatStringDisplay(viewing)}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
                     <strong>Color:</strong> {viewing.ownString ? 'N/A' : (viewing.stringColor || '-')}

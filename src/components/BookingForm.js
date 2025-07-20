@@ -33,7 +33,7 @@ export default function BookingForm() {
 
   // Add state for multiple racket/string combos
   const [rackets, setRackets] = useState([
-    { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1 }
+    { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1, stringBrand: '', stringModel: '' }
   ]);
 
   // --- Fetch inventory and availability ---
@@ -91,10 +91,29 @@ export default function BookingForm() {
 
   function handleRacketChange(idx, e) {
     const { name, value } = e.target;
-    setRackets(rackets => rackets.map((r, i) => i === idx ? { ...r, [name]: value } : r));
+    setRackets(rackets => rackets.map((r, i) => {
+      if (i === idx) {
+        const updatedRacket = { ...r, [name]: value };
+        
+        // If string name or color changed, update string details
+        if (name === 'stringName' || name === 'stringColor') {
+          const stringDetails = getStringDetails(updatedRacket.racketType, updatedRacket.stringName, updatedRacket.stringColor);
+          if (stringDetails) {
+            updatedRacket.stringBrand = stringDetails.brand || '';
+            updatedRacket.stringModel = stringDetails.model || '';
+          } else {
+            updatedRacket.stringBrand = '';
+            updatedRacket.stringModel = '';
+          }
+        }
+        
+        return updatedRacket;
+      }
+      return r;
+    }));
   }
   function handleAddRacket() {
-    setRackets(rackets => [...rackets, { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1 }]);
+    setRackets(rackets => [...rackets, { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1, stringBrand: '', stringModel: '' }]);
   }
   function handleRemoveRacket(idx) {
     setRackets(rackets => rackets.filter((_, i) => i !== idx));
@@ -129,13 +148,18 @@ export default function BookingForm() {
   }
 
   // --- Inventory Filtering ---
-  // Returns grouped strings for a given racket type
+  // Returns grouped strings for a given racket type with Brand-Model display format
   function getGroupedStringsForType(racketType) {
     if (!racketType) return {};
     const filtered = strings.filter(s => s.type === racketType && s.quantity > 0);
     return filtered.reduce((acc, s) => {
-      if (!acc[s.name]) acc[s.name] = [];
-      acc[s.name].push(s);
+      // Create Brand-Model display name
+      const displayName = s.stringBrand && s.stringModel 
+        ? `${s.stringBrand}-${s.stringModel}` 
+        : s.name; // Fallback to original name if brand/model not available
+      
+      if (!acc[displayName]) acc[displayName] = [];
+      acc[displayName].push(s);
       return acc;
     }, {});
   }
@@ -143,6 +167,34 @@ export default function BookingForm() {
   function getAvailableColors(racketType, stringName) {
     const grouped = getGroupedStringsForType(racketType);
     return stringName && grouped[stringName] ? grouped[stringName].map(s => s.color) : [];
+  }
+
+  // Get string details (brand and model) for a selected string
+  function getStringDetails(racketType, stringName, stringColor) {
+    if (!racketType || !stringName) return null;
+    const grouped = getGroupedStringsForType(racketType);
+    if (!grouped[stringName]) return null;
+    
+    // If color is specified, find the specific variant
+    if (stringColor) {
+      const variant = grouped[stringName].find(s => s.color === stringColor);
+      return variant ? { brand: variant.stringBrand, model: variant.stringModel } : null;
+    }
+    
+    // If no color specified, return the first variant's details
+    const firstVariant = grouped[stringName][0];
+    return firstVariant ? { brand: firstVariant.stringBrand, model: firstVariant.stringModel } : null;
+  }
+
+  // Helper function to get the original string name from display name
+  function getOriginalStringName(racketType, displayName) {
+    if (!racketType || !displayName) return null;
+    const grouped = getGroupedStringsForType(racketType);
+    if (!grouped[displayName]) return null;
+    
+    // Return the original name from the first variant
+    const firstVariant = grouped[displayName][0];
+    return firstVariant ? firstVariant.name : null;
   }
 
   // --- Availability Filtering ---
@@ -219,7 +271,14 @@ export default function BookingForm() {
     // Prepare rackets data - clear string info if own string is selected
     const processedRackets = form.ownString 
       ? rackets.map(r => ({ ...r, stringName: '', stringColor: '' }))
-      : rackets;
+      : rackets.map(r => {
+          // Convert display name back to original string name for storage
+          const originalStringName = getOriginalStringName(r.racketType, r.stringName);
+          return {
+            ...r,
+            stringName: originalStringName || r.stringName // Fallback to display name if original not found
+          };
+        });
     
     // Get formatted time strings for dropoff and pickup
     const getFormattedTime = (slotId, location) => {
@@ -267,7 +326,17 @@ export default function BookingForm() {
 
   // --- UI ---
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.08)' }}>
+    <div style={{ 
+      maxWidth: '800px', 
+      margin: '0 auto', 
+      padding: 'clamp(1rem, 4vw, 2rem)', 
+      backgroundColor: 'white', 
+      borderRadius: '16px', 
+      boxShadow: '0 8px 32px rgba(0,0,0,0.1)', 
+      border: '1px solid rgba(0,0,0,0.08)',
+      width: '100%',
+      boxSizing: 'border-box'
+    }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <h2 style={{ fontSize: 'var(--font-size-h2)', fontWeight: '700', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
           Book Your Stringing Service
@@ -278,9 +347,13 @@ export default function BookingForm() {
       </div>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {/* 1. Personal Information */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+        <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
           <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 1. Personal Information</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            gap: 'clamp(1rem, 2vw, 1.5rem)'
+          }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: 'var(--font-size-label)' }}>Full Name *</label>
               <input type="text" name="fullName" value={form.fullName} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: 'var(--font-size-input)', transition: 'border-color 0.2s ease', boxSizing: 'border-box' }} placeholder="Enter your full name" />
@@ -298,7 +371,7 @@ export default function BookingForm() {
           </div>
         </div>
         {/* 2. Racket & String Details */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+        <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
           <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>🔍 2. Racket & String Details</h3>
           
           {/* Own String Option */}
@@ -330,7 +403,12 @@ export default function BookingForm() {
           
           {rackets.map((r, idx) => (
             <div key={idx} style={{ marginBottom: '2rem', borderBottom: idx < rackets.length - 1 ? '1px solid #e9ecef' : 'none', paddingBottom: '1.5rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                gap: 'clamp(1rem, 2vw, 1.5rem)', 
+                marginBottom: '1.5rem' 
+              }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Racket Type *</label>
                   <select name="racketType" value={r.racketType} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
@@ -341,25 +419,49 @@ export default function BookingForm() {
                 </div>
                 {!form.ownString && (
                   <>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Type *</label>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Type *</label>
                       <select name="stringName" value={r.stringName} onChange={e => handleRacketChange(idx, e)} required={!form.ownString} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                        <option value="">Select String...</option>
-                        {Object.keys(getGroupedStringsForType(r.racketType)).map(name => (
-                          <option key={name} value={name}>{name}</option>
-                        ))}
-                      </select>
+                    <option value="">Select String...</option>
+                    {Object.keys(getGroupedStringsForType(r.racketType)).map(name => (
+                      <option key={name} value={name}>{name}</option>
+                    ))}
+                  </select>
+                  
+                  {/* String Details Display - Show when string is selected */}
+                  {r.stringName && getStringDetails(r.racketType, r.stringName, r.stringColor) && (
+                    <div style={{ 
+                      marginTop: '0.75rem',
+                      background: 'linear-gradient(90deg, #e8f5e8 60%, #f0f9ff 100%)', 
+                      border: '1.5px solid #4caf50', 
+                      borderRadius: 8, 
+                      padding: '0.75rem 1rem', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 8 
+                    }}>
+                      <span style={{ fontSize: '1rem', color: '#4caf50' }}>ℹ️</span>
+                      <div style={{ fontSize: '0.9rem', color: '#2e7d32', lineHeight: '1.4' }}>
+                        <strong>Selected:</strong> {r.stringName}
+                        {getStringDetails(r.racketType, r.stringName, r.stringColor)?.brand && getStringDetails(r.racketType, r.stringName, r.stringColor)?.model && (
+                          <span> • Original: <strong>{getStringDetails(r.racketType, r.stringName, r.stringColor)?.brand} {getStringDetails(r.racketType, r.stringName, r.stringColor)?.model}</strong></span>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Color</label>
+                  )}
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Color</label>
                       <select name="stringColor" value={r.stringColor} onChange={e => handleRacketChange(idx, e)} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                        <option value="">Select Color...</option>
-                        {(r.stringName && getAvailableColors(r.racketType, r.stringName)) ? getAvailableColors(r.racketType, r.stringName).map(color => (
-                          <option key={color} value={color}>{color}</option>
-                        )) : null}
-                      </select>
-                      <small style={{ color: '#888' }}>Optional (based on available stock)</small>
-                    </div>
+                    <option value="">Select Color...</option>
+                    {(r.stringName && getAvailableColors(r.racketType, r.stringName)) ? getAvailableColors(r.racketType, r.stringName).map(color => (
+                      <option key={color} value={color}>{color}</option>
+                    )) : null}
+                  </select>
+                  <small style={{ color: '#888' }}>Optional (based on available stock)</small>
+                </div>
+                
+
                   </>
                 )}
                 {form.ownString && (
@@ -460,7 +562,7 @@ export default function BookingForm() {
                             {option.label}
                           </option>
                         ))}
-                      </select>
+                  </select>
                       {r.stringTension && (
                         <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
                           {getTensionOptions(r.racketType).find(opt => opt.value === r.stringTension)?.description}
@@ -497,19 +599,23 @@ export default function BookingForm() {
           <button type="button" onClick={handleAddRacket} style={{ background: '#6c63ff', color: 'white', border: 'none', borderRadius: '6px', padding: '0.75rem 1.5rem', fontWeight: 600, cursor: 'pointer', fontSize: '1rem', marginTop: '0.5rem' }}>+ Add Another Racket</button>
         </div>
         {/* 3. Service Options */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+        <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
           {/* Same-Day Service Warning */}
-          <div style={{ background: 'linear-gradient(90deg, #fef9c3 60%, #f8fafc 100%)', border: '1.5px solid #fde68a', borderRadius: 12, padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: '1.3rem', color: '#f59e42' }}>⚡</span>
-            <span style={{ fontSize: '1.05rem', color: '#b45309', fontWeight: 600 }}>Same-Day Service: Book before 2:00 AM for same-day pick-up</span>
+          <div style={{ background: 'linear-gradient(90deg, #fef9c3 60%, #f8fafc 100%)', border: '1.5px solid #fde68a', borderRadius: 12, padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)', color: '#f59e42' }}>⚡</span>
+            <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', color: '#b45309', fontWeight: 600 }}>Same-Day Service: Book before 2:00 AM for same-day pick-up</span>
           </div>
           {/* Modern card selection for turnaround time */}
-          <div style={{ display: 'flex', gap: '1.25rem', justifyContent: 'center', marginBottom: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
+            gap: 'clamp(0.75rem, 2vw, 1.25rem)', 
+            marginBottom: '2rem' 
+          }}>
             {/* Same Day Service Card */}
             <div
               onClick={() => setForm(f => ({ ...f, turnaroundTime: 'sameDay' }))}
               style={{
-                flex: 1,
                 cursor: 'pointer',
                 border: form.turnaroundTime === 'sameDay' ? '2.5px solid #6c63ff' : '1.5px solid #e9ecef',
                 borderRadius: '18px',
@@ -519,14 +625,17 @@ export default function BookingForm() {
                 boxShadow: form.turnaroundTime === 'sameDay'
                   ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)'
                   : '0 1.5px 8px rgba(0,0,0,0.06)',
-                padding: '1.25rem 0.75rem 1rem 0.75rem',
+                padding: 'clamp(1rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem)',
                 position: 'relative',
                 transition: 'border 0.18s, background 0.18s, box-shadow 0.18s, transform 0.12s',
-                minWidth: 140,
-                maxWidth: 180,
                 textAlign: 'center',
                 outline: 'none',
                 transform: form.turnaroundTime === 'sameDay' ? 'scale(1.045)' : 'scale(1)',
+                width: '100%',
+                minHeight: '120px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
               }}
               tabIndex={0}
               onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setForm(f => ({ ...f, turnaroundTime: 'sameDay' }))}
@@ -560,7 +669,6 @@ export default function BookingForm() {
             <div
               onClick={() => setForm(f => ({ ...f, turnaroundTime: 'nextDay' }))}
               style={{
-                flex: 1,
                 cursor: 'pointer',
                 border: form.turnaroundTime === 'nextDay' ? '2.5px solid #6c63ff' : '1.5px solid #e9ecef',
                 borderRadius: '18px',
@@ -570,14 +678,17 @@ export default function BookingForm() {
                 boxShadow: form.turnaroundTime === 'nextDay'
                   ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)'
                   : '0 1.5px 8px rgba(0,0,0,0.06)',
-                padding: '1.25rem 0.75rem 1rem 0.75rem',
+                padding: 'clamp(1rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem)',
                 position: 'relative',
                 transition: 'border 0.18s, background 0.18s, box-shadow 0.18s, transform 0.12s',
-                minWidth: 140,
-                maxWidth: 180,
                 textAlign: 'center',
                 outline: 'none',
                 transform: form.turnaroundTime === 'nextDay' ? 'scale(1.045)' : 'scale(1)',
+                width: '100%',
+                minHeight: '120px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
               }}
               tabIndex={0}
               onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setForm(f => ({ ...f, turnaroundTime: 'nextDay' }))}
@@ -592,7 +703,6 @@ export default function BookingForm() {
             <div
               onClick={() => setForm(f => ({ ...f, turnaroundTime: '3-5days' }))}
               style={{
-                flex: 1,
                 cursor: 'pointer',
                 border: form.turnaroundTime === '3-5days' ? '2.5px solid #6c63ff' : '1.5px solid #e9ecef',
                 borderRadius: '18px',
@@ -602,14 +712,17 @@ export default function BookingForm() {
                 boxShadow: form.turnaroundTime === '3-5days'
                   ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)'
                   : '0 1.5px 8px rgba(0,0,0,0.06)',
-                padding: '1.25rem 0.75rem 1rem 0.75rem',
+                padding: 'clamp(1rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem)',
                 position: 'relative',
                 transition: 'border 0.18s, background 0.18s, box-shadow 0.18s, transform 0.12s',
-                minWidth: 140,
-                maxWidth: 180,
                 textAlign: 'center',
                 outline: 'none',
                 transform: form.turnaroundTime === '3-5days' ? 'scale(1.045)' : 'scale(1)',
+                width: '100%',
+                minHeight: '120px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
               }}
               tabIndex={0}
               onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setForm(f => ({ ...f, turnaroundTime: '3-5days' }))}
@@ -630,28 +743,102 @@ export default function BookingForm() {
           </div>
         </div>
         {/* 4. Drop-Off / Pick-Up Scheduling */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📍 4. Drop-Off / Pickup Scheduling</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+        <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📍 4. Drop-Off / Pickup Scheduling</h3>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: 'clamp(1rem, 2vw, 1.5rem)', 
+            marginBottom: '1.5rem' 
+          }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Drop-Off Location *</label>
               <select name="dropoffLocation" value={form.dropoffLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
                 <option value="">Select Location...</option>
                 <option value="Markham Studio">🏠 Markham Studio</option>
-                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1</option>
+                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8</option>
                 <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
                 <option value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
               </select>
+              
+              {/* Location Links */}
+              {form.dropoffLocation === 'Wiser Park Tennis Courts' && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <a 
+                    href="https://maps.app.goo.gl/AcuokCBYds1XjqAX8?g_st=ipc" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ 
+                      color: '#667eea', 
+                      textDecoration: 'none', 
+                      fontSize: '0.85rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      padding: '0.25rem 0.5rem',
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: '4px',
+                      border: '1px solid #e9ecef',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = '#e3f2fd';
+                      e.target.style.borderColor = '#667eea';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = '#f8f9fa';
+                      e.target.style.borderColor = '#e9ecef';
+                    }}
+                  >
+                    📍 View on Google Maps
+                  </a>
+                </div>
+              )}
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Pick-up Location *</label>
               <select name="pickupLocation" value={form.pickupLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
                 <option value="">Select Location...</option>
                 <option value="Markham Studio">🏠 Markham Studio</option>
-                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - 980 Bur Oak Avenue, Markham, ON L6E 0E1</option>
+                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8</option>
                 <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
                 <option value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
               </select>
+              
+              {/* Location Links for Pickup */}
+              {form.pickupLocation === 'Wiser Park Tennis Courts' && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <a 
+                    href="https://maps.app.goo.gl/AcuokCBYds1XjqAX8?g_st=ipc" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ 
+                      color: '#667eea', 
+                      textDecoration: 'none', 
+                      fontSize: '0.85rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      padding: '0.25rem 0.5rem',
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: '4px',
+                      border: '1px solid #e9ecef',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = '#e3f2fd';
+                      e.target.style.borderColor = '#667eea';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = '#f8f9fa';
+                      e.target.style.borderColor = '#e9ecef';
+                    }}
+                  >
+                    📍 View on Google Maps
+                  </a>
+                </div>
+              )}
+              
               <div style={{ color: '#666', fontSize: '1rem', marginTop: '0.5rem' }}>We will contact you once your order is finished for pick-up coordination.</div>
             </div>
           </div>
@@ -670,7 +857,12 @@ export default function BookingForm() {
               />
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            gap: 'clamp(1rem, 2vw, 1.5rem)', 
+            marginBottom: '1.5rem' 
+          }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Drop-Off Date *</label>
               {/* Calendar picker for available dates */}
@@ -733,8 +925,8 @@ export default function BookingForm() {
           })()}
         </div>
         {/* 5. Additional Notes */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📝 5. Additional Notes</h3>
+        <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📝 5. Additional Notes</h3>
           <textarea name="notes" value={form.notes} onChange={handleChange} rows={3} style={{ width: '100%', padding: '1rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white', resize: 'vertical' }} placeholder="Any special instructions, requests, or comments? (Optional)" />
         </div>
         {/* 6. Summary & Price Estimate */}
@@ -759,8 +951,8 @@ export default function BookingForm() {
         </div>
         
         {/* 7. Terms and Conditions */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '2rem', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 7. Terms and Conditions</h3>
+        <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 7. Terms and Conditions</h3>
           
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
@@ -847,17 +1039,19 @@ export default function BookingForm() {
           type="submit" 
           disabled={status === 'loading' || !agreeToTerms} 
           style={{ 
-            padding: '1rem 2rem', 
+            padding: 'clamp(0.875rem, 2.5vw, 1rem) clamp(1.5rem, 4vw, 2rem)', 
             backgroundColor: status === 'loading' || !agreeToTerms ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
             background: status === 'loading' || !agreeToTerms ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '8px', 
-            fontSize: '1.1rem', 
+            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)', 
             fontWeight: '600', 
             cursor: status === 'loading' || !agreeToTerms ? 'not-allowed' : 'pointer', 
             transition: 'all 0.2s ease', 
-            boxShadow: status === 'loading' || !agreeToTerms ? 'none' : '0 4px 12px rgba(102, 126, 234, 0.3)' 
+            boxShadow: status === 'loading' || !agreeToTerms ? 'none' : '0 4px 12px rgba(102, 126, 234, 0.3)',
+            width: '100%',
+            minHeight: '48px'
           }}
         >
           {status === 'loading' ? '📤 Submitting...' : '📤 Submit Booking'}
