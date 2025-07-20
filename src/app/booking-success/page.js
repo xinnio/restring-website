@@ -2,8 +2,9 @@
 
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default function BookingSuccess() {
+function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const customerEmail = searchParams.get('email');
   const bookingNumber = searchParams.get('bookingNumber');
@@ -72,9 +73,9 @@ export default function BookingSuccess() {
             📞 Next Steps:
           </h3>
           <ul style={{ margin: 0, paddingLeft: '1.5rem', fontSize: 'var(--font-size-body)' }}>
-            <li style={{ marginBottom: '0.5rem' }}>We'll review your booking within 24 hours</li>
-            <li style={{ marginBottom: '0.5rem' }}>You'll receive a call or email to confirm details</li>
-            <li>We'll arrange pickup/drop-off times and locations</li>
+            <li style={{ marginBottom: '0.5rem' }}>We&apos;ll review your booking within 24 hours</li>
+            <li style={{ marginBottom: '0.5rem' }}>You&apos;ll receive a call or email to confirm details</li>
+            <li>We&apos;ll arrange pickup/drop-off times and locations</li>
           </ul>
         </div>
         
@@ -84,7 +85,7 @@ export default function BookingSuccess() {
           marginBottom: '2rem',
           lineHeight: '1.6'
         }}>
-          Thank you for choosing Markham Restring Studio! We're excited to provide you with professional stringing service.
+          Thank you for choosing Markham Restring Studio! We&apos;re excited to provide you with professional stringing service.
         </p>
         
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -128,5 +129,38 @@ export default function BookingSuccess() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BookingSuccess() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem',
+        fontFamily: 'Arial, sans-serif'
+      }}>
+        <div style={{
+          background: 'white',
+          color: '#333',
+          padding: '3rem',
+          borderRadius: '16px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>⏳</div>
+          <h1 style={{ color: '#667eea', marginBottom: '1rem' }}>Loading...</h1>
+          <p>Please wait while we load your booking confirmation.</p>
+        </div>
+      </div>
+    }>
+      <BookingSuccessContent />
+    </Suspense>
   );
 } 

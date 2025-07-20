@@ -638,10 +638,10 @@ export default function PickupBooking() {
                   resize: 'vertical',
                   fontFamily: 'inherit'
                 }}
-                placeholder="Need a different time? Special arrangements? Let us know here and we'll contact you to arrange a suitable pickup time."
+                placeholder="Need a different time? Special arrangements? Let us know here and we&apos;ll contact you to arrange a suitable pickup time."
               />
               <small style={{ color: '#666', fontSize: '0.9rem', marginTop: '0.25rem', display: 'block' }}>
-                If you can't find a suitable time slot above, let us know your preferred time and we'll contact you to arrange it.
+                If you can&apos;t find a suitable time slot above, let us know your preferred time and we&apos;ll contact you to arrange it.
               </small>
             </div>
 
