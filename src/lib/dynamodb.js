@@ -19,3 +19,11 @@ if (process.env.AWS_ROLE_ARN && process.env.VERCEL) {
 
 const ddbClient = new DynamoDBClient(clientConfig);
 export const docClient = DynamoDBDocumentClient.from(ddbClient);
+
+export function generateId() {
+  return (
+    'id_' +
+    Date.now().toString(36) +
+    Math.random().toString(36).substr(2, 9)
+  );
+}
