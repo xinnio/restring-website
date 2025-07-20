@@ -42,16 +42,17 @@ SENDGRID_API_KEY=your_api_key
 
 4. Update the email route to use SendGrid
 
-### Option 3: Mailgun
+### Option 3: Resend (Currently Active)
 
-1. Sign up at [Mailgun](https://www.mailgun.com/)
-2. Get your API key and domain
-3. Add to `.env.local`:
+1. Sign up at [Resend](https://resend.com/)
+2. Get your API key
+3. The API key is already configured in the code:
 
-```env
-MAILGUN_API_KEY=your_api_key
-MAILGUN_DOMAIN=your_domain
+```javascript
+const resend = new Resend('re_Zwfthvw2_Do4YGRtx35dSanefM4zHzMmh');
 ```
+
+The system is currently using Resend for email delivery with the onboarding email address.
 
 ## Development
 
