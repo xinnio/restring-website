@@ -1,4 +1,4 @@
-import { docClient, generateId } from '../../../lib/dynamodb';
+import { docClient } from '../../../lib/dynamodb';
 import { PutCommand, ScanCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { NextResponse } from 'next/server';
 

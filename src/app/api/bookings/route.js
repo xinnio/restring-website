@@ -1,10 +1,10 @@
-import { docClient, getBookingsTable, generateId } from '../../../lib/dynamodb';
+import { docClient } from '../../../lib/dynamodb';
 import { PutCommand, QueryCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { NextResponse } from 'next/server';
 
 // Function to generate the next booking number
 async function generateBookingNumber() {
-  const tableName = await getBookingsTable();
+  const tableName = process.env.BOOKINGS_TABLE;
   
   try {
     // Scan for the highest booking number
@@ -31,7 +31,7 @@ async function generateBookingNumber() {
 
 export async function GET() {
   try {
-    const tableName = await getBookingsTable();
+    const tableName = process.env.BOOKINGS_TABLE;
     
     const scanCommand = new ScanCommand({
       TableName: tableName,
@@ -53,7 +53,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const tableName = await getBookingsTable();
+    const tableName = process.env.BOOKINGS_TABLE;
     const body = await request.json();
     
     // Generate booking number and ID
