@@ -28,6 +28,7 @@ export default function AvailabilityManager() {
   const [formDate, setFormDate] = useState(''); // for new slot creation
   const [cleaningUp, setCleaningUp] = useState(false);
   const [cleanupMessage, setCleanupMessage] = useState('');
+  const [deleting, setDeleting] = useState(null); // Track which slot is being deleted
   // New state for weekly view
   const [selectedWeek, setSelectedWeek] = useState(0); // 0 = this week, 1 = next week, etc.
 
@@ -188,6 +189,45 @@ export default function AvailabilityManager() {
     }
   }
 
+  async function handleDeleteSlot(slotId) {
+    if (!confirm('Are you sure you want to delete this availability slot?')) {
+      return;
+    }
+    
+    console.log('Attempting to delete slot with ID:', slotId);
+    setDeleting(slotId);
+    
+    try {
+      const res = await fetch(`/api/availability/${slotId}`, {
+        method: 'DELETE',
+      });
+      
+      const responseData = await res.json();
+      console.log('Delete response:', responseData);
+      
+      if (res.ok) {
+        alert('Availability slot deleted successfully!');
+        fetchAvailability(); // Refresh the list
+      } else if (res.status === 404) {
+        // Slot was already deleted or doesn't exist
+        alert('This slot has already been deleted or does not exist. Refreshing the list...');
+        fetchAvailability(); // Refresh to remove from UI
+      } else {
+        const errorMessage = responseData.details || responseData.error || 'Error deleting availability slot. Please try again.';
+        alert(errorMessage);
+        // Refresh data even on error to ensure UI is up to date
+        fetchAvailability();
+      }
+    } catch (error) {
+      console.error('Error deleting availability slot:', error);
+      alert('Error deleting availability slot. Please try again.');
+      // Refresh data even on error to ensure UI is up to date
+      fetchAvailability();
+    } finally {
+      setDeleting(null);
+    }
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar />
@@ -345,7 +385,7 @@ export default function AvailabilityManager() {
                             </tr>
                           ) : (
                             availability.map((slot) => (
-                              <tr key={slot._id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
+                              <tr key={slot.id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
                                 <td style={{ padding: '16px', verticalAlign: 'top', fontWeight: 500 }}>{slot.date}</td>
                                 <td style={{ padding: '16px', verticalAlign: 'top' }}>{slot.startTime} - {slot.endTime}</td>
                                 <td style={{ padding: '16px', verticalAlign: 'top' }}>{slot.location}</td>
@@ -357,7 +397,27 @@ export default function AvailabilityManager() {
                                   )}
                                 </td>
                                 <td style={{ padding: '16px', verticalAlign: 'top' }}>
-                                  <button onClick={() => handleEditSlot(slot)} style={{ background: '#667eea', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 2px 8px #667eea22', marginRight: 8 }}>Edit</button>
+                                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button onClick={() => handleEditSlot(slot)} style={{ background: '#667eea', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 2px 8px #667eea22' }}>Edit</button>
+                                    <button 
+                                      onClick={() => handleDeleteSlot(slot.id)} 
+                                      disabled={deleting === slot.id}
+                                      style={{ 
+                                        background: deleting === slot.id ? '#6c757d' : '#dc3545', 
+                                        color: 'white', 
+                                        border: 'none', 
+                                        borderRadius: '6px', 
+                                        padding: '0.5rem 1rem', 
+                                        fontWeight: 600, 
+                                        cursor: deleting === slot.id ? 'not-allowed' : 'pointer', 
+                                        fontSize: '0.95rem', 
+                                        boxShadow: deleting === slot.id ? 'none' : '0 2px 8px rgba(220, 53, 69, 0.3)',
+                                        opacity: deleting === slot.id ? 0.7 : 1
+                                      }}
+                                    >
+                                      {deleting === slot.id ? '🗑️ Deleting...' : '🗑️ Delete'}
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             ))
@@ -423,7 +483,7 @@ export default function AvailabilityManager() {
                             </tr>
                           ) : (
                             filteredSlots.map((slot) => (
-                              <tr key={slot._id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
+                              <tr key={slot.id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
                                 <td style={{ padding: '16px', verticalAlign: 'top', fontWeight: 500 }}>{slot.date}</td>
                                 <td style={{ padding: '16px', verticalAlign: 'top' }}>{slot.startTime} - {slot.endTime}</td>
                                 <td style={{ padding: '16px', verticalAlign: 'top' }}>{slot.location}</td>
@@ -435,7 +495,27 @@ export default function AvailabilityManager() {
                                   )}
                                 </td>
                                 <td style={{ padding: '16px', verticalAlign: 'top' }}>
-                                  <button onClick={() => handleEditSlot(slot)} style={{ background: '#667eea', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 2px 8px #667eea22', marginRight: 8 }}>Edit</button>
+                                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button onClick={() => handleEditSlot(slot)} style={{ background: '#667eea', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 2px 8px #667eea22' }}>Edit</button>
+                                    <button 
+                                      onClick={() => handleDeleteSlot(slot.id)} 
+                                      disabled={deleting === slot.id}
+                                      style={{ 
+                                        background: deleting === slot.id ? '#6c757d' : '#dc3545', 
+                                        color: 'white', 
+                                        border: 'none', 
+                                        borderRadius: '6px', 
+                                        padding: '0.5rem 1rem', 
+                                        fontWeight: 600, 
+                                        cursor: deleting === slot.id ? 'not-allowed' : 'pointer', 
+                                        fontSize: '0.95rem', 
+                                        boxShadow: deleting === slot.id ? 'none' : '0 2px 8px rgba(220, 53, 69, 0.3)',
+                                        opacity: deleting === slot.id ? 0.7 : 1
+                                      }}
+                                    >
+                                      {deleting === slot.id ? '🗑️ Deleting...' : '🗑️ Delete'}
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             ))

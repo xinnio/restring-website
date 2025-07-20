@@ -36,6 +36,18 @@ export default function BookingForm() {
     { racketType: '', stringName: '', stringColor: '', stringTension: '', tensionMethod: 'custom', quantity: 1, stringBrand: '', stringModel: '' }
   ]);
 
+  // Add state for discount functionality
+  const [discountCode, setDiscountCode] = useState('');
+  const [activeNotice, setActiveNotice] = useState(null);
+  const [discountApplied, setDiscountApplied] = useState(false);
+  const [discountError, setDiscountError] = useState('');
+
+  // Add state for coupon code functionality
+  const [couponCode, setCouponCode] = useState('');
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [couponDetails, setCouponDetails] = useState(null);
+
   // --- Fetch inventory and availability ---
   useEffect(() => {
     async function fetchStrings() {
@@ -66,6 +78,32 @@ export default function BookingForm() {
       }
     }
     fetchAvailability();
+  }, []);
+
+  // Fetch active notice for discount information
+  useEffect(() => {
+    async function fetchActiveNotice() {
+      try {
+        const res = await fetch('/api/notices?active=true');
+        if (res.ok) {
+          const notice = await res.json();
+          if (notice && notice.isActive) {
+            // Check if notice has expired
+            if (notice.expiresAt) {
+              const expirationDate = new Date(notice.expiresAt);
+              const now = new Date();
+              if (now > expirationDate) {
+                return; // Notice has expired
+              }
+            }
+            setActiveNotice(notice);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching active notice:', error);
+      }
+    }
+    fetchActiveNotice();
   }, []);
 
   // --- Handlers ---
@@ -225,6 +263,118 @@ export default function BookingForm() {
     // Return unique dates with available slots
     return [...new Set(slots.map(slot => slot.date))];
   }
+
+  // --- Discount Functions ---
+  function handleDiscountCodeChange(e) {
+    setDiscountCode(e.target.value);
+    setDiscountError('');
+    if (discountApplied) {
+      setDiscountApplied(false);
+    }
+  }
+
+  function applyDiscount() {
+    if (!discountCode.trim()) {
+      setDiscountError('Please enter a discount code');
+      return;
+    }
+
+    if (!activeNotice || !activeNotice.discountCode) {
+      setDiscountError('No active discount available');
+      return;
+    }
+
+    if (discountCode.trim().toUpperCase() === activeNotice.discountCode.toUpperCase()) {
+      // Check if threshold-based discount applies
+      if (activeNotice.discountType === 'threshold') {
+        const currentTotal = calculatePriceBreakdown().subtotalBeforeDiscount;
+        if (currentTotal < activeNotice.discountThreshold) {
+          setDiscountError(`Order must be at least $${activeNotice.discountThreshold} to apply this discount`);
+          setDiscountApplied(false);
+          return;
+        }
+      }
+      
+      setDiscountApplied(true);
+      setDiscountError('');
+    } else {
+      setDiscountError('Invalid discount code');
+      setDiscountApplied(false);
+    }
+  }
+
+  function removeDiscount() {
+    setDiscountApplied(false);
+    setDiscountCode('');
+    setDiscountError('');
+  }
+
+  // Coupon code handlers
+  function handleCouponCodeChange(e) {
+    setCouponCode(e.target.value);
+    if (couponError) setCouponError('');
+  }
+
+  function applyCoupon() {
+    if (!couponCode.trim()) {
+      setCouponError('Please enter a coupon code');
+      return;
+    }
+
+    // Check if the coupon code matches any active notice
+    if (!activeNotice || activeNotice.discountCode !== couponCode.trim().toUpperCase()) {
+      setCouponError('Invalid coupon code. Please try again.');
+      return;
+    }
+
+    // Check if coupon is applicable based on notice conditions
+    let isApplicable = true;
+    let errorMessage = '';
+
+    // Check minimum order value if threshold is set
+    if (activeNotice.discountThreshold && activeNotice.discountThreshold > 0) {
+      const priceDetails = calculatePriceBreakdown();
+      if (priceDetails.subtotalBeforeDiscount < activeNotice.discountThreshold) {
+        isApplicable = false;
+        errorMessage = `This coupon requires a minimum order of $${activeNotice.discountThreshold}`;
+      }
+    }
+
+    // Check racket quantity if specified in notice
+    if (activeNotice.minRackets && activeNotice.minRackets > 0) {
+      const totalRackets = rackets.reduce((sum, r) => sum + (parseInt(r.quantity) || 1), 0);
+      if (totalRackets < activeNotice.minRackets) {
+        isApplicable = false;
+        errorMessage = `This coupon requires ${activeNotice.minRackets} or more rackets`;
+      }
+    }
+
+    if (!isApplicable) {
+      setCouponError(errorMessage);
+      return;
+    }
+
+    // Create coupon details from the active notice
+    const couponDetails = {
+      type: activeNotice.discountType || 'percentage',
+      value: activeNotice.discountValue || 0,
+      description: activeNotice.discountDescription || `${activeNotice.discountValue}% off`,
+      threshold: activeNotice.discountThreshold || 0,
+      minRackets: activeNotice.minRackets || 0
+    };
+
+    setCouponApplied(true);
+    setCouponDetails(couponDetails);
+    setCouponError('');
+  }
+
+  function removeCoupon() {
+    setCouponApplied(false);
+    setCouponCode('');
+    setCouponDetails(null);
+    setCouponError('');
+  }
+
   // --- Helper: Get slots for selected date/location ---
   function getSlotsForDate(location, date) {
     return getSlotsForLocation(location).filter(slot => slot.date === date);
@@ -252,12 +402,65 @@ export default function BookingForm() {
     if (dropoffDelivery) deliveryFee += 12;
     if (pickupDelivery) deliveryFee += 12;
     if (dropoffDelivery && pickupDelivery) deliveryFee -= 4; // $4 discount if both
-    const total = racketsSubtotal + extras + deliveryFee;
+    
+    // Calculate subtotal before discount
+    const subtotalBeforeDiscount = racketsSubtotal + extras + deliveryFee;
+    
+    // Apply discount if valid code is entered
+    let discountAmount = 0;
+    if (discountApplied && activeNotice && activeNotice.discountValue > 0) {
+      switch (activeNotice.discountType) {
+        case 'percentage':
+          discountAmount = (subtotalBeforeDiscount * activeNotice.discountValue) / 100;
+          break;
+        case 'fixed':
+          discountAmount = Math.min(activeNotice.discountValue, subtotalBeforeDiscount);
+          break;
+        case 'threshold':
+          if (subtotalBeforeDiscount >= activeNotice.discountThreshold) {
+            discountAmount = Math.min(activeNotice.discountValue, subtotalBeforeDiscount);
+          }
+          break;
+        default:
+          // Fallback to percentage for backward compatibility
+          discountAmount = (subtotalBeforeDiscount * activeNotice.discountValue) / 100;
+      }
+    }
+    
+    // Apply coupon discount if valid coupon is applied
+    let couponAmount = 0;
+    if (couponApplied && couponDetails) {
+      switch (couponDetails.type) {
+        case 'percentage':
+          couponAmount = (subtotalBeforeDiscount * couponDetails.value) / 100;
+          break;
+        case 'fixed':
+          couponAmount = Math.min(couponDetails.value, subtotalBeforeDiscount);
+          break;
+        case 'delivery':
+          // Free delivery up to the coupon value
+          couponAmount = Math.min(couponDetails.value, deliveryFee);
+          break;
+        default:
+          couponAmount = 0;
+      }
+    }
+    
+    const total = subtotalBeforeDiscount - discountAmount - couponAmount;
+    
     return {
       basePrice,
       racketsSubtotal,
       extras,
       deliveryFee,
+      subtotalBeforeDiscount,
+      discountAmount,
+      discountType: discountApplied && activeNotice ? activeNotice.discountType : null,
+      discountValue: discountApplied && activeNotice ? activeNotice.discountValue : 0,
+      discountThreshold: activeNotice ? activeNotice.discountThreshold : 0,
+      couponAmount,
+      couponType: couponApplied && couponDetails ? couponDetails.type : null,
+      couponValue: couponApplied && couponDetails ? couponDetails.value : 0,
       total,
     };
   }
@@ -402,7 +605,7 @@ export default function BookingForm() {
           </div>
           
           {rackets.map((r, idx) => (
-            <div key={idx} style={{ marginBottom: '2rem', borderBottom: idx < rackets.length - 1 ? '1px solid #e9ecef' : 'none', paddingBottom: '1.5rem' }}>
+            <div key={`racket-${idx}-${r.racketType || 'default'}`} style={{ marginBottom: '2rem', borderBottom: idx < rackets.length - 1 ? '1px solid #e9ecef' : 'none', paddingBottom: '1.5rem' }}>
               <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
@@ -412,9 +615,9 @@ export default function BookingForm() {
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Racket Type *</label>
                   <select name="racketType" value={r.racketType} onChange={e => handleRacketChange(idx, e)} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                    <option value="">Select Racket Type...</option>
-                    <option value="tennis">🎾 Tennis</option>
-                    <option value="badminton">🏸 Badminton</option>
+                    <option key="select-racket" value="">Select Racket Type...</option>
+                    <option key="tennis" value="tennis">🎾 Tennis</option>
+                    <option key="badminton" value="badminton">🏸 Badminton</option>
                   </select>
                 </div>
                 {!form.ownString && (
@@ -422,7 +625,7 @@ export default function BookingForm() {
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Type *</label>
                       <select name="stringName" value={r.stringName} onChange={e => handleRacketChange(idx, e)} required={!form.ownString} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                    <option value="">Select String...</option>
+                    <option key="select-string" value="">Select String...</option>
                     {Object.keys(getGroupedStringsForType(r.racketType)).map(name => (
                       <option key={name} value={name}>{name}</option>
                     ))}
@@ -453,7 +656,7 @@ export default function BookingForm() {
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>String Color</label>
                       <select name="stringColor" value={r.stringColor} onChange={e => handleRacketChange(idx, e)} style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                    <option value="">Select Color...</option>
+                    <option key="select-color" value="">Select Color...</option>
                     {(r.stringName && getAvailableColors(r.racketType, r.stringName)) ? getAvailableColors(r.racketType, r.stringName).map(color => (
                       <option key={color} value={color}>{color}</option>
                     )) : null}
@@ -556,7 +759,7 @@ export default function BookingForm() {
                           boxSizing: 'border-box' 
                         }}
                       >
-                        <option value="">Select your play level...</option>
+                        <option key="select-level" value="">Select your play level...</option>
                         {getTensionOptions(r.racketType).map(option => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -754,11 +957,11 @@ export default function BookingForm() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Drop-Off Location *</label>
               <select name="dropoffLocation" value={form.dropoffLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', transition: 'border-color 0.2s ease', backgroundColor: 'white', boxSizing: 'border-box' }}>
-                <option value="">Select Location...</option>
-                <option value="Markham Studio">🏠 Markham Studio</option>
-                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8</option>
-                <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
-                <option value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
+                <option key="select-dropoff" value="">Select Location...</option>
+                <option key="markham-studio" value="Markham Studio">🏠 Markham Studio</option>
+                <option key="wiser-park" value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8</option>
+                <option key="angus-glen" value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
+                <option key="door-to-door" value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
               </select>
               
               {/* Location Links */}
@@ -798,11 +1001,11 @@ export default function BookingForm() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333', fontSize: '0.95rem' }}>Pick-up Location *</label>
               <select name="pickupLocation" value={form.pickupLocation} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
-                <option value="">Select Location...</option>
-                <option value="Markham Studio">🏠 Markham Studio</option>
-                <option value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8</option>
-                <option value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
-                <option value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
+                <option key="select-pickup" value="">Select Location...</option>
+                <option key="markham-studio-pickup" value="Markham Studio">🏠 Markham Studio</option>
+                <option key="wiser-park-pickup" value="Wiser Park Tennis Courts">🎾 Wiser Park Tennis Courts - Markham, ON L6E 1H8</option>
+                <option key="angus-glen-pickup" value="Angus Glen Community Centre">🏢 Angus Glen Community Centre (Library) - 3970 Major Mackenzie Dr E, Markham, ON L6C 1P8</option>
+                <option key="door-to-door-pickup" value="Door-to-Door (Delivery)">🚗 Door-to-Door (Delivery) (+$12.00)</option>
               </select>
               
               {/* Location Links for Pickup */}
@@ -898,7 +1101,7 @@ export default function BookingForm() {
                   <div style={{ color: '#b71c1c', fontWeight: 500 }}>No time slots available for this date.</div>
                 ) : (
                   <select name="dropoffSlotId" value={form.dropoffSlotId} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
-                    <option value="">Select a time slot...</option>
+                    <option key="select-timeslot" value="">Select a time slot...</option>
                     {getSlotsForDate(form.dropoffLocation, form.dropoffDate).map(slot => (
                       <option key={slot._id} value={slot._id}>{slot.startTime} - {slot.endTime}</option>
                     ))}
@@ -916,7 +1119,7 @@ export default function BookingForm() {
             const windows = getThirtyMinWindows(slot.startTime, slot.endTime);
             return (
               <select name="dropoffWindow" value={form.dropoffWindow || ''} onChange={handleChange} required style={{ width: '100%', marginTop: '0.5rem', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
-                <option value="">Select 30-min window...</option>
+                <option key="select-window" value="">Select 30-min window...</option>
                 {windows.map(w => (
                   <option key={w} value={w}>{slot.date} | {w}</option>
                 ))}
@@ -929,14 +1132,259 @@ export default function BookingForm() {
           <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📝 5. Additional Notes</h3>
           <textarea name="notes" value={form.notes} onChange={handleChange} rows={3} style={{ width: '100%', padding: '1rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white', resize: 'vertical' }} placeholder="Any special instructions, requests, or comments? (Optional)" />
         </div>
-        {/* 6. Summary & Price Estimate */}
+
+        {/* 6. Discount Code */}
+        {activeNotice && activeNotice.discountPercentage > 0 && (
+          <div style={{ backgroundColor: '#fff3cd', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '2px solid #ffc107' }}>
+            <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#856404' }}>🎫 6. Discount Code</h3>
+            <div style={{ 
+              background: 'linear-gradient(90deg, #fff3cd 60%, #ffeaa7 100%)', 
+              border: '1.5px solid #ffc107', 
+              borderRadius: 12, 
+              padding: '1rem 1.5rem', 
+              marginBottom: '1.5rem', 
+              display: 'flex', 
+              alignItems: 'flex-start', 
+              gap: 12 
+            }}>
+              <span style={{ fontSize: '1.2rem', color: '#856404', marginTop: '0.1rem' }}>💰</span>
+              <div style={{ fontSize: '0.95rem', color: '#856404', lineHeight: '1.5' }}>
+                <strong>Special Offer:</strong> {activeNotice.message}
+                {activeNotice.discountCode && (
+                  <span style={{ fontWeight: 'bold', marginLeft: '0.5rem' }}>
+                    Use code: <span style={{ 
+                      background: '#856404', 
+                      color: '#fff3cd', 
+                      padding: '0.25rem 0.5rem', 
+                      borderRadius: '4px', 
+                      fontFamily: 'monospace',
+                      fontSize: '0.9rem'
+                    }}>
+                      {activeNotice.discountCode}
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#856404', fontSize: '0.95rem' }}>
+                  Enter Discount Code
+                </label>
+                <input 
+                  type="text" 
+                  value={discountCode} 
+                  onChange={handleDiscountCodeChange}
+                  placeholder="Enter your discount code"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.875rem', 
+                    border: discountError ? '2px solid #dc3545' : '2px solid #ffc107', 
+                    borderRadius: '8px', 
+                    fontSize: '0.875rem', 
+                    backgroundColor: 'white',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                {discountError && (
+                  <div style={{ color: '#dc3545', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                    {discountError}
+                  </div>
+                )}
+              </div>
+              {!discountApplied ? (
+                <button
+                  type="button"
+                  onClick={applyDiscount}
+                  style={{
+                    padding: '0.875rem 1.5rem',
+                    backgroundColor: '#ffc107',
+                    color: '#856404',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Apply
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={removeDiscount}
+                  style={{
+                    padding: '0.875rem 1.5rem',
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            
+            {discountApplied && (
+              <div style={{ 
+                background: '#d4edda', 
+                border: '1.5px solid #28a745', 
+                borderRadius: 8, 
+                padding: '1rem', 
+                marginTop: '1rem',
+                color: '#155724',
+                fontSize: '0.9rem',
+                fontWeight: '600'
+              }}>
+                ✅ Discount applied! You'll save {
+                  activeNotice.discountType === 'percentage' 
+                    ? `${activeNotice.discountValue}%` 
+                    : activeNotice.discountType === 'fixed' 
+                    ? `$${activeNotice.discountValue}` 
+                    : activeNotice.discountType === 'threshold' 
+                    ? `$${activeNotice.discountValue} (on orders over $${activeNotice.discountThreshold})` 
+                    : `${activeNotice.discountValue}%`
+                } on your order.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Coupon Code Section */}
+        <div style={{ backgroundColor: '#fff3cd', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #ffeaa7' }}>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#856404' }}>
+            🎫 Coupon Code
+          </h3>
+          
+          <div style={{ 
+            background: '#fff8e1', 
+            border: '1.5px solid #ffc107', 
+            borderRadius: 12, 
+            padding: '1.5rem', 
+            marginBottom: '1.5rem', 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            gap: 12 
+          }}>
+            <span style={{ fontSize: '1.2rem', color: '#856404', marginTop: '0.1rem' }}>💡</span>
+            <div style={{ fontSize: '0.95rem', color: '#856404', lineHeight: '1.5' }}>
+              <strong>Coupon Codes:</strong>
+              <p style={{ margin: '0.5rem 0 0 0' }}>
+                Enter a valid coupon code to receive a discount on your order. 
+                Coupon codes are managed by our admin system and may have specific conditions 
+                such as minimum order values or racket quantities.
+              </p>
+              {activeNotice && activeNotice.discountCode && (
+                <div style={{ 
+                  background: '#d4edda', 
+                  border: '1px solid #28a745', 
+                  borderRadius: '6px', 
+                  padding: '0.75rem', 
+                  marginTop: '0.75rem',
+                  color: '#155724'
+                }}>
+                  <strong>Current Promotion:</strong> Use code <strong>{activeNotice.discountCode}</strong> for {activeNotice.discountDescription || `${activeNotice.discountValue}% off`}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#856404', fontSize: '0.95rem' }}>
+                Enter Coupon Code
+              </label>
+              <input 
+                type="text" 
+                value={couponCode} 
+                onChange={handleCouponCodeChange}
+                placeholder="Enter your coupon code"
+                style={{ 
+                  width: '100%', 
+                  padding: '0.875rem', 
+                  border: couponError ? '2px solid #dc3545' : '2px solid #ffc107', 
+                  borderRadius: '8px', 
+                  fontSize: '0.875rem', 
+                  backgroundColor: 'white',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {couponError && (
+                <div style={{ color: '#dc3545', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                  {couponError}
+                </div>
+              )}
+            </div>
+            {!couponApplied ? (
+              <button
+                type="button"
+                onClick={applyCoupon}
+                style={{
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: '#ffc107',
+                  color: '#856404',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Apply
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={removeCoupon}
+                style={{
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          
+          {couponApplied && (
+            <div style={{ 
+              background: '#d4edda', 
+              border: '1.5px solid #28a745', 
+              borderRadius: 8, 
+              padding: '1rem', 
+              marginTop: '1rem',
+              color: '#155724',
+              fontSize: '0.9rem',
+              fontWeight: '600'
+            }}>
+              ✅ Coupon applied! {couponDetails.description}
+            </div>
+          )}
+        </div>
+        
+        {/* 7. Summary & Price Estimate */}
         <div style={{ backgroundColor: '#e8f5e8', padding: '1.5rem', borderRadius: '12px', border: '2px solid #4caf50', textAlign: 'center' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#2e7d32' }}>💰 6. Estimated Total</h3>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#2e7d32' }}>💰 {activeNotice && activeNotice.discountPercentage > 0 ? '7' : '6'}. Estimated Total</h3>
           <div style={{ fontSize: '2rem', fontWeight: '700', color: '#2e7d32' }}>${priceDetails.total.toFixed(2)}</div>
           <ul style={{ color: '#2e7d32', fontSize: '1rem', margin: '1rem 0', padding: 0, listStyle: 'none', textAlign: 'left', maxWidth: 400, marginLeft: 'auto', marginRight: 'auto' }}>
             <li><strong>Rackets:</strong></li>
             {rackets.map((r, idx) => (
-              <li key={idx} style={{ marginLeft: '1.5rem', fontSize: '0.98rem' }}>
+              <li key={`price-racket-${idx}-${r.racketType || 'default'}`} style={{ marginLeft: '1.5rem', fontSize: '0.98rem' }}>
                 {r.quantity} × {form.turnaroundTime === 'sameDay' ? '$35' : form.turnaroundTime === 'nextDay' ? '$30' : form.turnaroundTime === '3-5days' ? '$25' : '$0'} = <strong>${((parseInt(r.quantity) || 1) * priceDetails.basePrice).toFixed(2)}</strong>
               </li>
             ))}
@@ -946,13 +1394,19 @@ export default function BookingForm() {
             {form.dropoffLocation === 'Door-to-Door (Delivery)' && <li>Drop-off Delivery: +$12.00</li>}
             {form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Pickup Delivery: +$12.00</li>}
             {form.dropoffLocation === 'Door-to-Door (Delivery)' && form.pickupLocation === 'Door-to-Door (Delivery)' && <li>Both Delivery Discount: -$4.00</li>}
+            {priceDetails.discountAmount > 0 && (
+              <li style={{ marginTop: '0.5rem' }}><strong>Discount:</strong> -${priceDetails.discountAmount.toFixed(2)}</li>
+            )}
+            {couponApplied && couponDetails && (
+              <li style={{ marginTop: '0.5rem' }}><strong>Coupon ({couponCode.toUpperCase()}):</strong> -${priceDetails.couponAmount.toFixed(2)}</li>
+            )}
           </ul>
           <p style={{ color: '#2e7d32', fontSize: '0.9rem', marginTop: '0.5rem' }}>Payment is due at pick-up/delivery. We currently accept cash only.</p>
         </div>
         
-        {/* 7. Terms and Conditions */}
+        {/* 8. Terms and Conditions */}
         <div style={{ backgroundColor: '#f8f9fa', padding: 'clamp(1rem, 3vw, 2rem)', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 7. Terms and Conditions</h3>
+          <h3 style={{ fontSize: 'var(--font-size-h3)', fontWeight: '600', marginBottom: '1.5rem', color: '#1a1a1a' }}>📋 {activeNotice && activeNotice.discountPercentage > 0 ? '8' : '7'}. Terms and Conditions</h3>
           
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
@@ -1008,7 +1462,7 @@ export default function BookingForm() {
               • Same-day and next-day orders may include a small rush fee.<br/><br/>
 
               <strong>2. Providing Your Own String</strong><br/>
-              • If you bring your own string, we only charge for labor (+$3).<br/>
+              • If you bring your own string, we only charge for labor (-$5 discount).<br/>
               • If your string breaks during stringing, we&apos;ll replace it free of charge using a similar string from our inventory (similar color and performance).<br/>
               • However, we are not responsible for replacing it with the original string you provided.<br/><br/>
 

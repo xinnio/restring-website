@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import Sidebar from '../../components/Sidebar';
 import BookingTable from '../../components/BookingTable';
+import NoticeManager from '../../components/NoticeManager';
 
 function AdminDashboardContent() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState('all'); // 'all', 'pending', 'inProgress', 'completed', 'paid'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'notices'
 
   async function fetchBookings() {
     setLoading(true);
@@ -259,34 +261,85 @@ function AdminDashboardContent() {
             </div>
           </div>
 
-          {/* Bookings Table */}
+          {/* Tab Navigation */}
           <div style={{ 
             backgroundColor: 'white',
             borderRadius: '12px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             border: '1px solid rgba(0,0,0,0.08)',
+            marginBottom: '2rem',
             overflow: 'hidden'
           }}>
-            {loading ? (
-              <div style={{ 
-                padding: '3rem', 
-                textAlign: 'center',
-                color: '#666'
-              }}>
-                <div style={{ 
-                  width: '40px', 
-                  height: '40px', 
-                  border: '4px solid #f3f3f3', 
-                  borderTop: '4px solid #667eea', 
-                  borderRadius: '50%', 
-                  animation: 'spin 1s linear infinite',
-                  margin: '0 auto 1rem'
-                }}></div>
-                <p style={{ fontSize: '1.1rem' }}>Loading bookings...</p>
-              </div>
-            ) : (
-              <BookingTable bookings={filteredBookings} onUpdate={fetchBookings} />
-            )}
+            <div style={{ 
+              display: 'flex', 
+              borderBottom: '1px solid #e5e7eb'
+            }}>
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                style={{
+                  flex: 1,
+                  padding: '1rem 1.5rem',
+                  backgroundColor: activeTab === 'dashboard' ? '#667eea' : 'transparent',
+                  color: activeTab === 'dashboard' ? 'white' : '#6b7280',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                📊 Dashboard
+              </button>
+              <button
+                onClick={() => setActiveTab('notices')}
+                style={{
+                  flex: 1,
+                  padding: '1rem 1.5rem',
+                  backgroundColor: activeTab === 'notices' ? '#667eea' : 'transparent',
+                  color: activeTab === 'notices' ? 'white' : '#6b7280',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                📢 Notice Management
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div style={{ padding: '2rem' }}>
+              {activeTab === 'dashboard' ? (
+                <div>
+                  {/* Bookings Table */}
+                  {loading ? (
+                    <div style={{ 
+                      padding: '3rem', 
+                      textAlign: 'center',
+                      color: '#666'
+                    }}>
+                      <div style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        border: '4px solid #f3f3f3', 
+                        borderTop: '4px solid #667eea', 
+                        borderRadius: '50%', 
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 1rem'
+                      }}></div>
+                      <p style={{ fontSize: '1.1rem' }}>Loading bookings...</p>
+                    </div>
+                  ) : (
+                    <BookingTable bookings={filteredBookings} onUpdate={fetchBookings} />
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <NoticeManager />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

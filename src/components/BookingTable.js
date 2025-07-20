@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function BookingTable({ bookings = [], onUpdate }) {
   const [updating, setUpdating] = useState(null);
@@ -8,6 +9,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
   const [sendingEmail, setSendingEmail] = useState(null);
   const [viewing, setViewing] = useState(null); // booking object or null
   const [filterRange, setFilterRange] = useState('all'); // 'all', 'week', 'month'
+  const [emailDropdown, setEmailDropdown] = useState(null); // booking ID or null for email dropdown
 
   // Helper function to format string name to Brand-Model display
   const formatStringDisplay = (racket) => {
@@ -436,155 +438,106 @@ export default function BookingTable({ bookings = [], onUpdate }) {
       return;
     }
 
+    console.log('Attempting to delete booking with ID:', bookingId);
+    console.log('Booking data structure:', bookings.find(b => b.id === bookingId));
     setDeleting(bookingId);
+    
     try {
       const res = await fetch(`/api/bookings/${bookingId}`, {
         method: 'DELETE',
       });
-      if (res.ok && onUpdate) {
-        onUpdate();
+      
+      const responseData = await res.json();
+      console.log('Delete booking response:', responseData);
+      
+      if (res.ok) {
+        alert('Booking deleted successfully!');
+        if (onUpdate) {
+          onUpdate();
+        }
+      } else if (res.status === 404) {
+        // Booking was already deleted or doesn't exist
+        alert('This booking has already been deleted or does not exist. Refreshing data...');
+        if (onUpdate) {
+          onUpdate();
+        }
+      } else {
+        const errorMessage = responseData.details || responseData.error || 'Error deleting booking. Please try again.';
+        alert(errorMessage);
+        // Refresh data even on error to ensure UI is up to date
+        if (onUpdate) {
+          onUpdate();
+        }
       }
     } catch (error) {
       console.error('Error deleting booking:', error);
+      alert('Error deleting booking. Please try again.');
     } finally {
       setDeleting(null);
     }
   }
 
-  async function handleSendCompletionEmail(booking) {
+
+
+  // New email handlers for different email types
+  async function handleSendEmail(booking, emailType) {
     setSendingEmail(booking._id);
+    setEmailDropdown(null); // Close dropdown
+    
     try {
-      const baseUrl = window.location.origin;
-      const pickupUrl = `${baseUrl}/pickup-booking`;
-      
-      const emailData = {
-        to: booking.email,
-        subject: `🎾 Your Racket Stringing is Complete - Booking #${booking.bookingNumber}`,
-        html: `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <style>
-              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-              .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
-              .content { padding: 20px; }
-              .section { margin-bottom: 25px; }
-              .section h3 { color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
-              .highlight { background-color: #e8f5e8; padding: 15px; border-radius: 5px; border-left: 4px solid #28a745; }
-              .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 10px 0; }
-              .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 0.9rem; color: #666; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>🎾 Stringing Complete!</h1>
-              <p>Markham Restring Studio</p>
-            </div>
-            
-            <div class="content">
-              <div class="highlight">
-                <h3>✅ Your racket stringing is complete!</h3>
-                <p>Dear ${booking.fullName},</p>
-                <p>Great news! Your racket stringing service has been completed and is ready for pickup.</p>
-              </div>
-
-              <div class="section">
-                <h3>📋 Booking Details</h3>
-                <p><strong>Booking Number:</strong> #${booking.bookingNumber}</p>
-                <p><strong>Customer:</strong> ${booking.fullName}</p>
-                <p><strong>Phone:</strong> ${booking.phone || 'Not provided'}</p>
-                <p><strong>Email:</strong> ${booking.email || 'Not provided'}</p>
-                ${booking.pickupLocation ? `<p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>` : ''}
-                ${booking.pickupTime ? `<p><strong>Pickup Time:</strong> ${booking.pickupTime}</p>` : ''}
-                ${booking.pickupDate ? `<p><strong>Pickup Date:</strong> ${new Date(booking.pickupDate).toLocaleDateString('en-GB', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}</p>` : ''}
-                ${booking.pickupWindow ? `<p><strong>Pickup Window:</strong> ${booking.pickupWindow}</p>` : ''}
-                ${booking.specialPickupRequest ? `<p><strong>Special Pickup Request:</strong> ${booking.specialPickupRequest}</p>` : ''}
-              </div>
-
-              <div class="section">
-                <h3>📅 Schedule Your Pickup</h3>
-                <p>Please click the button below to schedule your pickup time:</p>
-                <a href="${pickupUrl}" class="button">📅 Schedule Pickup Time</a>
-                <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
-                  Or copy and paste this link: <a href="${pickupUrl}">${pickupUrl}</a>
-                </p>
-              </div>
-
-              <div class="section">
-                <h3>📞 Need Help?</h3>
-                <p>If you have any questions or need assistance, please contact us:</p>
-                <p><strong>Phone:</strong> (647) 655-3658</p>
-                <p><strong>Email:</strong> markhamrestring@gmail.com</p>
-              </div>
-            </div>
-
-            <div class="footer">
-              <p>Thank you for choosing Markham Restring Studio!</p>
-              <p>Professional racket stringing with quality strings and expert care.</p>
-            </div>
-          </body>
-          </html>
-        `,
-        text: `
-Stringing Complete - Markham Restring Studio
-
-Dear ${booking.fullName},
-
-Great news! Your racket stringing service has been completed and is ready for pickup.
-
-BOOKING DETAILS:
-Booking Number: #${booking.bookingNumber}
-Customer: ${booking.fullName}
-Phone: ${booking.phone || 'Not provided'}
-Email: ${booking.email || 'Not provided'}
-${booking.pickupLocation ? `Pickup Location: ${booking.pickupLocation}` : ''}
-${booking.pickupTime ? `Pickup Time: ${booking.pickupTime}` : ''}
-${booking.pickupDate ? `Pickup Date: ${new Date(booking.pickupDate).toLocaleDateString('en-GB', {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-})}` : ''}
-${booking.pickupWindow ? `Pickup Window: ${booking.pickupWindow}` : ''}
-${booking.specialPickupRequest ? `Special Pickup Request: ${booking.specialPickupRequest}` : ''}
-
-SCHEDULE YOUR PICKUP:
-Please visit the following link to schedule your pickup time:
-${pickupUrl}
-
-NEED HELP?
-If you have any questions or need assistance, please contact us:
-Phone: (647) 655-3658
-Email: markhamrestring@gmail.com
-
-Thank you for choosing Markham Restring Studio!
-        `
-      };
-
       const res = await fetch('/api/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(emailData)
+        body: JSON.stringify({
+          type: emailType,
+          booking: booking
+        })
       });
 
+      const result = await res.json();
+
       if (res.ok) {
-        alert('Completion email sent successfully!');
+        if (result.development) {
+          alert(`${emailType} email would be sent in production.\nTo: ${result.to}\nSubject: ${result.subject}`);
+        } else if (result.redirected) {
+          alert(`📧 ${emailType} email sent to admin (${booking.email} redirected due to Resend testing mode).\n\nTo send emails to customers:\n1. Go to resend.com/domains\n2. Verify your domain\n3. Update the 'from' address to use your domain`);
+        } else {
+          // Check if this is a customer email (not admin)
+          const isCustomerEmail = booking.email !== 'markhamrestring@gmail.com';
+          if (isCustomerEmail) {
+            alert(`📧 ${emailType} email sent to admin (${booking.email} redirected due to Resend testing mode).\n\nTo send emails to customers:\n1. Go to resend.com/domains\n2. Verify your domain\n3. Update the 'from' address to use your domain`);
+          } else {
+            alert(`${emailType} email sent successfully!`);
+          }
+        }
       } else {
-        alert('Failed to send completion email');
+        console.error('Email API error:', result);
+        if (result.error && result.error.includes('RESEND_API_KEY')) {
+          alert('Email service not configured. Please set up the RESEND_API_KEY environment variable.');
+        } else {
+          alert(`Failed to send ${emailType} email: ${result.error || 'Unknown error'}`);
+        }
       }
     } catch (error) {
-      console.error('Error sending completion email:', error);
-      alert('Error sending completion email');
+      console.error(`Error sending ${emailType} email:`, error);
+      alert(`Error sending ${emailType} email. Please check the console for details.`);
     } finally {
       setSendingEmail(null);
     }
+  }
+
+  async function handleSendConfirmationEmail(booking) {
+    await handleSendEmail(booking, 'confirmation');
+  }
+
+  async function handleSendCompletionEmail(booking) {
+    await handleSendEmail(booking, 'completion');
+  }
+
+  async function handleSendPickupEmail(booking) {
+    await handleSendEmail(booking, 'pickup');
   }
 
   function getStatusColor(status) {
@@ -635,6 +588,17 @@ Thank you for choosing Markham Restring Studio!
     if (dropoffDelivery && pickupDelivery) deliveryFee -= 4;
     return racketsSubtotal + extras + deliveryFee;
   }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emailDropdown && !event.target.closest('.email-dropdown-button') && !event.target.closest('.email-dropdown-content')) {
+        setEmailDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [emailDropdown]);
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -841,13 +805,14 @@ Thank you for choosing Markham Restring Studio!
                   </td>
                 </tr>
               ) : (
-                filteredBookings.map((b) => {
+                filteredBookings.map((b, index) => {
+                  const isCancelled = b.status === 'Cancelled';
+                  console.log('Rendering booking:', b.id, b.bookingNumber, b.fullName);
                   const statusColors = getStatusColor(b.status || 'Pending');
                   const paymentColors = getPaymentStatusColor(b.paymentStatus || 'Pending');
-                  const isCancelled = b.status === 'Cancelled';
                   
                   return (
-                    <tr key={b._id} style={{ 
+                    <tr key={b.id} style={{ 
                       borderBottom: '1px solid #e9ecef',
                       transition: 'all 0.2s ease',
                       backgroundColor: isCancelled ? '#f8d7da' : 'white',
@@ -909,7 +874,7 @@ Thank you for choosing Markham Restring Studio!
                           {(b.rackets && Array.isArray(b.rackets)) ? (
                             <ul style={{ margin: 0, paddingLeft: 18 }}>
                               {b.rackets.map((r, idx) => (
-                                <li key={idx} style={{ marginBottom: 6, listStyle: 'disc', color: '#333', fontSize: '0.95rem' }}>
+                                <li key={`${b.id}-racket-${idx}`} style={{ marginBottom: 6, listStyle: 'disc', color: '#333', fontSize: '0.95rem' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                     <span style={{
                                       padding: '0.25rem 0.5rem',
@@ -961,8 +926,8 @@ Thank you for choosing Markham Restring Studio!
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                           <select 
                             value={b.status || 'Pending'} 
-                            onChange={(e) => handleStatusUpdate(b._id, e.target.value)}
-                            disabled={updating === b._id || isCancelled}
+                            onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
+                            disabled={updating === b.id || isCancelled}
                             style={{ 
                               backgroundColor: statusColors.bg,
                               color: statusColors.color,
@@ -981,7 +946,7 @@ Thank you for choosing Markham Restring Studio!
                             <option value="Completed">✅ Completed</option>
                             <option value="Cancelled">❌ Cancelled</option>
                           </select>
-                          {updating === b._id && (
+                          {updating === b.id && (
                             <div style={{ 
                               fontSize: '0.8rem',
                               color: '#666',
@@ -999,8 +964,8 @@ Thank you for choosing Markham Restring Studio!
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                           <select 
                             value={b.paymentStatus || 'Pending'} 
-                            onChange={(e) => handlePaymentUpdate(b._id, e.target.value)}
-                            disabled={updating === b._id || isCancelled}
+                            onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
+                            disabled={updating === b.id || isCancelled}
                             style={{ 
                               backgroundColor: paymentColors.bg,
                               color: paymentColors.color,
@@ -1069,8 +1034,8 @@ Thank you for choosing Markham Restring Studio!
                             👁️ View
                           </button>
                           <button 
-                            onClick={() => handleStatusUpdate(b._id, 'Completed')}
-                            disabled={updating === b._id || isCancelled}
+                            onClick={() => handleStatusUpdate(b.id, 'Completed')}
+                            disabled={updating === b.id || isCancelled}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1078,7 +1043,7 @@ Thank you for choosing Markham Restring Studio!
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: updating === b._id || isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: updating === b.id || isCancelled ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
                               transition: 'all 0.2s ease',
@@ -1088,30 +1053,122 @@ Thank you for choosing Markham Restring Studio!
                           >
                             ✅ Complete
                           </button>
+                          <div style={{ position: 'relative' }} data-email-dropdown={b.id}>
+                            <button 
+                              onClick={() => setEmailDropdown(emailDropdown === b.id ? null : b.id)}
+                              disabled={sendingEmail === b.id || isCancelled || !b.email}
+                              className="email-dropdown-button"
+                              style={{ 
+                                fontSize: '0.85rem', 
+                                padding: '0.75rem 1rem',
+                                backgroundColor: sendingEmail === b.id ? '#6c757d' : '#ff6b35',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '8px',
+                                cursor: sendingEmail === b.id || isCancelled || !b.email ? 'not-allowed' : 'pointer',
+                                fontWeight: '600',
+                                opacity: isCancelled || !b.email ? 0.5 : 1,
+                                transition: 'all 0.2s ease',
+                                boxShadow: sendingEmail === b.id ? 'none' : '0 2px 8px rgba(255, 107, 53, 0.3)',
+                                minWidth: '90px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.25rem'
+                              }}
+                              title={!b.email ? 'No email address available' : 'Send email to customer'}
+                            >
+                              {sendingEmail === b.id ? '📧 Sending...' : '📧 Email'}
+                              <span style={{ fontSize: '0.75rem' }}>▼</span>
+                            </button>
+                            
+                            {emailDropdown === b.id && (
+                              <div style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: 0,
+                                right: 0,
+                                backgroundColor: 'white',
+                                border: '1px solid #e9ecef',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                zIndex: 1000,
+                                marginTop: '0.25rem',
+                                overflow: 'hidden'
+                              }}>
+                                <button
+                                  onClick={() => handleSendConfirmationEmail(b)}
+                                  disabled={sendingEmail === b.id}
+                                  style={{
+                                    width: '100%',
+                                    padding: '0.75rem 1rem',
+                                    backgroundColor: 'white',
+                                    color: '#495057',
+                                    border: 'none',
+                                    borderBottom: '1px solid #f8f9fa',
+                                    cursor: sendingEmail === b.id ? 'not-allowed' : 'pointer',
+                                    fontSize: '0.85rem',
+                                    textAlign: 'left',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    transition: 'background-color 0.2s ease'
+                                  }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                                >
+                                  ✅ Confirmation Email
+                                </button>
+                                <button
+                                  onClick={() => handleSendCompletionEmail(b)}
+                                  disabled={sendingEmail === b.id}
+                                  style={{
+                                    width: '100%',
+                                    padding: '0.75rem 1rem',
+                                    backgroundColor: 'white',
+                                    color: '#495057',
+                                    border: 'none',
+                                    borderBottom: '1px solid #f8f9fa',
+                                    cursor: sendingEmail === b.id ? 'not-allowed' : 'pointer',
+                                    fontSize: '0.85rem',
+                                    textAlign: 'left',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    transition: 'background-color 0.2s ease'
+                                  }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                                >
+                                  🎾 Completion Email
+                                </button>
+                                <button
+                                  onClick={() => handleSendPickupEmail(b)}
+                                  disabled={sendingEmail === b.id}
+                                  style={{
+                                    width: '100%',
+                                    padding: '0.75rem 1rem',
+                                    backgroundColor: 'white',
+                                    color: '#495057',
+                                    border: 'none',
+                                    cursor: sendingEmail === b.id ? 'not-allowed' : 'pointer',
+                                    fontSize: '0.85rem',
+                                    textAlign: 'left',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    transition: 'background-color 0.2s ease'
+                                  }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                                >
+                                  📅 Pickup Email
+                                </button>
+                              </div>
+                            )}
+                          </div>
                           <button 
-                            onClick={() => handleSendCompletionEmail(b)}
-                            disabled={sendingEmail === b._id || isCancelled || !b.email}
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '0.75rem 1rem',
-                              backgroundColor: sendingEmail === b._id ? '#6c757d' : '#ff6b35',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              cursor: sendingEmail === b._id || isCancelled || !b.email ? 'not-allowed' : 'pointer',
-                              fontWeight: '600',
-                              opacity: isCancelled || !b.email ? 0.5 : 1,
-                              transition: 'all 0.2s ease',
-                              boxShadow: sendingEmail === b._id ? 'none' : '0 2px 8px rgba(255, 107, 53, 0.3)',
-                              minWidth: '90px'
-                            }}
-                            title={!b.email ? 'No email address available' : 'Send completion email to customer'}
-                          >
-                            {sendingEmail === b._id ? '📧 Sending...' : '📧 Email'}
-                          </button>
-                          <button 
-                            onClick={() => handlePaymentUpdate(b._id, 'Paid')}
-                            disabled={updating === b._id || b.paymentStatus === 'Paid' || isCancelled}
+                            onClick={() => handlePaymentUpdate(b.id, 'Paid')}
+                            disabled={updating === b.id || b.paymentStatus === 'Paid' || isCancelled}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1119,7 +1176,7 @@ Thank you for choosing Markham Restring Studio!
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: updating === b._id || b.paymentStatus === 'Paid' || isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: updating === b.id || b.paymentStatus === 'Paid' || isCancelled ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
                               transition: 'all 0.2s ease',
@@ -1130,8 +1187,8 @@ Thank you for choosing Markham Restring Studio!
                             💰 Mark Paid
                           </button>
                           <button 
-                            onClick={() => handleStatusUpdate(b._id, 'Cancelled')}
-                            disabled={updating === b._id || isCancelled}
+                            onClick={() => handleStatusUpdate(b.id, 'Cancelled')}
+                            disabled={updating === b.id || isCancelled}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1139,7 +1196,7 @@ Thank you for choosing Markham Restring Studio!
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: updating === b._id || isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: updating === b.id || isCancelled ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
                               opacity: isCancelled ? 0.5 : 1,
                               transition: 'all 0.2s ease',
@@ -1150,8 +1207,8 @@ Thank you for choosing Markham Restring Studio!
                             {isCancelled ? '❌ Cancelled' : '❌ Cancel'}
                           </button>
                           <button 
-                            onClick={() => handleDelete(b._id)}
-                            disabled={deleting === b._id}
+                            onClick={() => handleDelete(b.id)}
+                            disabled={deleting === b.id}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1159,15 +1216,15 @@ Thank you for choosing Markham Restring Studio!
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: deleting === b._id ? 'not-allowed' : 'pointer',
+                              cursor: deleting === b.id ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
-                              opacity: deleting === b._id ? 0.5 : 1,
+                              opacity: deleting === b.id ? 0.5 : 1,
                               transition: 'all 0.2s ease',
                               boxShadow: '0 2px 8px rgba(108, 117, 125, 0.3)',
                               minWidth: '90px'
                             }}
                           >
-                            {deleting === b._id ? '🗑️ Deleting...' : '🗑️ Delete'}
+                            {deleting === b.id ? '🗑️ Deleting...' : '🗑️ Delete'}
                           </button>
                         </div>
                       </td>
@@ -1243,7 +1300,7 @@ Thank you for choosing Markham Restring Studio!
               {(viewing.rackets && Array.isArray(viewing.rackets)) ? (
                 <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {viewing.rackets.map((r, idx) => (
-                    <div key={idx} style={{
+                    <div key={`${viewing.id}-view-racket-${idx}`} style={{
                       border: '1px solid #e3e3e3',
                       borderRadius: '10px',
                       padding: '0.75rem 1.25rem',
@@ -1427,7 +1484,7 @@ Thank you for choosing Markham Restring Studio!
                   const qty = parseInt(r.quantity) || 1;
                   racketsSubtotal += basePrice * qty;
                   return (
-                    <li key={idx}>
+                    <li key={`${viewing.id}-breakdown-${idx}`}>
                       {qty} × ${basePrice} ({r.racketType === 'tennis' ? 'Tennis' : 'Badminton'}
                       {r.stringName ? `, ${r.stringName}` : ''}
                       {r.stringColor ? `, ${r.stringColor}` : ''}

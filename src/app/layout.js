@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import './globals.css';
 import MobileNav from '../components/MobileNav';
+import Banner from '../components/Banner';
 
 export const metadata = {
   title: 'Markham Restring Studio',
@@ -151,6 +152,11 @@ export default function RootLayout({ children }) {
             <MobileNav />
           </div>
         </nav>
+        
+        {/* Banner positioned after navigation */}
+        <div style={{ padding: '0 2rem' }}>
+          <Banner />
+        </div>
         
         <main style={{ minHeight: 'calc(100vh - 140px)' }}>
           {children}

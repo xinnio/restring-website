@@ -1,10 +1,21 @@
-import { getStringsCollection } from '../../../lib/mongodb';
+import { docClient, getStringsTable, generateId } from '../../../lib/dynamodb';
+import { PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const collection = await getStringsCollection();
-    const strings = await collection.find({}).sort({ name: 1 }).toArray();
+    const tableName = await getStringsTable();
+    
+    const scanCommand = new ScanCommand({
+      TableName: tableName,
+    });
+    
+    const result = await docClient.send(scanCommand);
+    const strings = result.Items || [];
+    
+    // Sort by name
+    strings.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    
     return NextResponse.json(strings);
   } catch (error) {
     console.error('Database error:', error);
@@ -15,17 +26,25 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const collection = await getStringsCollection();
+    const tableName = await getStringsTable();
     const body = await request.json();
     
+    const id = await generateId();
+    
     const string = {
+      id,
       ...body,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     
-    const result = await collection.insertOne(string);
-    return NextResponse.json({ message: 'String added!', id: result.insertedId }, { status: 201 });
+    const putCommand = new PutCommand({
+      TableName: tableName,
+      Item: string,
+    });
+    
+    await docClient.send(putCommand);
+    return NextResponse.json({ message: 'String added!', id: id }, { status: 201 });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });

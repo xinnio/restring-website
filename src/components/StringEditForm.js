@@ -487,7 +487,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {variantForms.map((variant, index) => (
-            <div key={index} style={{
+            <div key={`${string._id}-variant-${index}`} style={{
               border: '1px solid #e9ecef',
               borderRadius: '8px',
               padding: '1rem',

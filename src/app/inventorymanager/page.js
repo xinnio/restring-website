@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Sidebar from '../../components/Sidebar';
 import StringForm from '../../components/StringForm';
@@ -13,6 +13,27 @@ export default function InventoryManager() {
   const [editing, setEditing] = useState(null); // string object being edited
   const [editingVariants, setEditingVariants] = useState([]); // all variants for the string being edited
   const [showEditModal, setShowEditModal] = useState(false);
+  const [imageUrls, setImageUrls] = useState({}); // Store presigned URLs
+
+  // Function to generate presigned URL for an image
+  async function getImageUrl(imageUrl) {
+    if (!imageUrl) return null;
+    
+    try {
+      // Extract filename from the S3 URL
+      const filename = imageUrl.split('/').pop();
+      if (!filename) return null;
+      
+      const response = await fetch(`/api/images/${filename}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.url;
+      }
+    } catch (error) {
+      console.error('Error generating image URL:', error);
+    }
+    return null;
+  }
 
   async function fetchStrings() {
     setLoading(true);
@@ -20,6 +41,25 @@ export default function InventoryManager() {
       const res = await fetch('/api/strings');
       const data = await res.json();
       setStrings(data);
+      
+      // Generate presigned URLs for all images
+      const urlPromises = data.map(async (string) => {
+        if (string.imageUrl) {
+          const presignedUrl = await getImageUrl(string.imageUrl);
+          return { id: string.id, url: presignedUrl };
+        }
+        return null;
+      });
+      
+      const urlResults = await Promise.all(urlPromises);
+      const urlMap = {};
+      urlResults.forEach(result => {
+        if (result) {
+          urlMap[result.id] = result.url;
+        }
+      });
+      setImageUrls(urlMap);
+      
     } catch (error) {
       console.error('Error fetching strings:', error);
     } finally {
@@ -32,16 +72,46 @@ export default function InventoryManager() {
       return;
     }
 
+    // Check if the stringId is valid
+    if (!stringId || stringId === 'undefined' || stringId === undefined || stringId === null || stringId === '') {
+      alert('Cannot delete string: Invalid or missing ID. This string may have been corrupted. Please refresh the page and try again.');
+      fetchStrings(); // Refresh to get updated data
+      return;
+    }
+
+    console.log('Attempting to delete string with ID:', stringId);
     setDeleting(stringId);
+    
     try {
       const res = await fetch(`/api/strings/${stringId}`, {
         method: 'DELETE',
       });
+      
+      const responseData = await res.json();
+      console.log('Delete string response:', responseData);
+      
       if (res.ok) {
+        alert('String deleted successfully!');
+        fetchStrings(); // Refresh the list
+      } else if (res.status === 404) {
+        // String was already deleted or doesn't exist
+        alert('This string has already been deleted or does not exist. Refreshing the list...');
+        fetchStrings(); // Refresh to remove from UI
+      } else if (res.status === 400 && responseData.details && responseData.details.includes('String ID is missing or undefined')) {
+        // Handle the specific case of undefined IDs
+        alert('This string has an invalid ID and cannot be deleted through the normal interface. It has been automatically cleaned up. Refreshing the list...');
+        fetchStrings(); // Refresh to remove from UI
+      } else {
+        const errorMessage = responseData.details || responseData.error || 'Error deleting string. Please try again.';
+        alert(errorMessage);
+        // Refresh data even on error to ensure UI is up to date
         fetchStrings();
       }
     } catch (error) {
       console.error('Error deleting string:', error);
+      alert('Error deleting string. Please try again.');
+      // Refresh data even on error to ensure UI is up to date
+      fetchStrings();
     } finally {
       setDeleting(null);
     }
@@ -67,9 +137,14 @@ export default function InventoryManager() {
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar />
       <main style={{ flex: 1, padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <h1 style={{ color: '#333', marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-1px' }}>🧵 String Inventory Manager</h1>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', alignItems: 'flex-start' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'minmax(300px, 1fr) minmax(600px, 2fr)', 
+            gap: '2rem', 
+            alignItems: 'flex-start'
+          }}>
             <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 24px rgba(102,126,234,0.08)', border: '1px solid #e9ecef' }}>
               <h2 style={{ marginBottom: '1.5rem', color: '#333', fontSize: '1.5rem', fontWeight: 600 }}>Add New String</h2>
               <StringForm onSuccess={fetchStrings} />
@@ -83,15 +158,24 @@ export default function InventoryManager() {
                 </div>
               ) : (
                 <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: 'white', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+                  <table style={{ 
+                    width: '100%', 
+                    borderCollapse: 'separate', 
+                    borderSpacing: 0, 
+                    background: 'white', 
+                    borderRadius: '16px', 
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                    overflow: 'hidden',
+                    minWidth: '800px' // Minimum width to prevent squishing
+                  }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Image</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Name</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Type</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Brand & Model</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Colors & Quantities</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>Actions</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '80px' }}>Image</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '20%' }}>Name</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '12%' }}>Type</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '18%' }}>Brand & Model</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '25%' }}>Colors & Quantities</th>
+                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '15%' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -121,10 +205,11 @@ export default function InventoryManager() {
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
                                 {first.imageUrl ? (
                                   <Image 
-                                    src={first.imageUrl} 
+                                    src={imageUrls[first.id] || first.imageUrl} 
                                     alt={`${name} string`} 
                                     width={60}
                                     height={60}
+                                    unoptimized={true}
                                     style={{ 
                                       objectFit: 'cover',
                                       borderRadius: '8px',
@@ -175,80 +260,89 @@ export default function InventoryManager() {
                                 </div>
                               </td>
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', maxWidth: '100%' }}>
                                   {variants.map(v => (
-                                    <span key={v.color} style={{
+                                    <span key={`${v.color}-${v._id || v.id || Math.random()}`} style={{
                                       display: 'inline-flex',
                                       alignItems: 'center',
                                       background: '#f8f9fa',
-                                      border: `2px solid ${v.quantity <= 2 ? '#dc3545' : v.quantity <= 5 ? '#ffc107' : '#28a745'}`,
+                                      border: `1px solid ${v.quantity <= 2 ? '#dc3545' : v.quantity <= 5 ? '#ffc107' : '#28a745'}`,
                                       color: v.quantity <= 2 ? '#dc3545' : v.quantity <= 5 ? '#ffc107' : '#28a745',
-                                      borderRadius: '8px',
-                                      padding: '0.5rem 1.25rem',
-                                      fontSize: '1rem',
+                                      borderRadius: '6px',
+                                      padding: '0.25rem 0.5rem',
+                                      fontSize: '0.85rem',
                                       fontWeight: '600',
-                                      minWidth: '90px',
+                                      minWidth: '60px',
                                       justifyContent: 'center',
-                                      boxShadow: v.quantity <= 2 ? '0 0 0 2px #dc354522' : v.quantity <= 5 ? '0 0 0 2px #ffc10722' : '0 0 0 2px #28a74522',
+                                      boxShadow: v.quantity <= 2 ? '0 0 0 1px #dc354522' : v.quantity <= 5 ? '0 0 0 1px #ffc10722' : '0 0 0 1px #28a74522',
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis'
                                     }}>
-                                      <span style={{ fontWeight: 700 }}>{v.color}</span>
-                                      <span style={{ margin: '0 0.5rem' }}>•</span>
-                                      <span>{v.quantity}</span>
-                                      {v.quantity <= 2 && <span style={{ marginLeft: '4px' }}>⚠️</span>}
+                                      <span style={{ fontWeight: 700, fontSize: '0.8rem' }}>{v.color}</span>
+                                      <span style={{ margin: '0 0.25rem', fontSize: '0.8rem' }}>•</span>
+                                      <span style={{ fontSize: '0.8rem' }}>{v.quantity}</span>
+                                      {v.quantity <= 2 && <span style={{ marginLeft: '2px', fontSize: '0.7rem' }}>⚠️</span>}
                                     </span>
                                   ))}
                                 </div>
                               </td>
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                                   {/* Edit button for the string name/type/description */}
                                   <button
                                     onClick={() => handleEdit(first, variants)}
                                     style={{
-                                      fontSize: '1rem',
-                                      padding: '8px 16px',
+                                      fontSize: '0.85rem',
+                                      padding: '6px 12px',
                                       backgroundColor: '#28a745',
                                       color: 'white',
                                       border: 'none',
-                                      borderRadius: '6px',
+                                      borderRadius: '4px',
                                       cursor: 'pointer',
-                                      marginBottom: '0.5rem',
                                       fontWeight: 600,
-                                      boxShadow: '0 2px 8px rgba(40,167,69,0.08)',
+                                      boxShadow: '0 2px 4px rgba(40,167,69,0.15)',
                                       display: 'flex',
                                       alignItems: 'center',
-                                      gap: '0.5rem',
+                                      gap: '0.25rem',
                                       transition: 'background 0.2s',
+                                      whiteSpace: 'nowrap',
+                                      width: '100%',
+                                      justifyContent: 'center'
                                     }}
                                   >
-                                    ✏️ Edit String
+                                    ✏️ Edit
                                   </button>
-                                  {/* Delete buttons for each variant */}
-                                  {variants.map(v => (
-                                    <button
-                                      key={v._id}
-                                      onClick={() => handleDelete(v._id)}
-                                      disabled={deleting === v._id}
-                                      style={{
-                                        fontSize: '1rem',
-                                        padding: '8px 16px',
-                                        backgroundColor: '#dc3545',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        marginBottom: '2px',
-                                        fontWeight: 600,
-                                        boxShadow: '0 2px 8px rgba(220,53,69,0.08)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        transition: 'background 0.2s',
-                                      }}
-                                    >
-                                      🗑️ {deleting === v._id ? 'Deleting...' : `Delete ${v.color}`}
-                                    </button>
-                                  ))}
+                                  {/* Compact delete buttons */}
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                                    {variants.map(v => (
+                                      <button
+                                        key={v._id}
+                                        onClick={() => handleDelete(v._id)}
+                                        disabled={deleting === v._id}
+                                        style={{
+                                          fontSize: '0.75rem',
+                                          padding: '4px 8px',
+                                          backgroundColor: '#dc3545',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer',
+                                          fontWeight: 600,
+                                          boxShadow: '0 2px 4px rgba(220,53,69,0.15)',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '0.25rem',
+                                          transition: 'background 0.2s',
+                                          whiteSpace: 'nowrap',
+                                          minWidth: '60px',
+                                          justifyContent: 'center'
+                                        }}
+                                      >
+                                        🗑️ {deleting === v._id ? '...' : v.color}
+                                      </button>
+                                    ))}
+                                  </div>
                                 </div>
                               </td>
                             </tr>

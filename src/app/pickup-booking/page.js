@@ -118,6 +118,46 @@ export default function PickupBooking() {
       });
 
       if (res.ok) {
+        // Send schedule pickup email automatically
+        try {
+          const selectedSlot = availability.find(slot => slot._id === form.selectedTimeSlot);
+          const pickupTimeDisplay = selectedSlot ? 
+            (form.selectedWindow || `${selectedSlot.startTime} - ${selectedSlot.endTime}`) : 
+            'Special Request';
+          
+          const pickupDate = selectedSlot ? new Date(selectedSlot.date).toLocaleDateString('en-GB', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }) : 'To be arranged';
+          
+          const pickupLocation = selectedSlot ? selectedSlot.location : 'To be arranged';
+
+          const emailData = {
+            emailType: 'schedulePickup',
+            to: foundBooking.email,
+            bookingData: {
+              ...foundBooking,
+              pickupTime: pickupTimeDisplay,
+              pickupDate: pickupDate,
+              pickupLocation: pickupLocation,
+              specialPickupRequest: form.specialRequest.trim() || null
+            }
+          };
+
+          await fetch('/api/email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData),
+          });
+        } catch (emailError) {
+          console.error('Failed to send schedule pickup email:', emailError);
+          // Don't fail the pickup scheduling if email fails
+        }
+
         setSuccess(true);
       } else {
         setError('Failed to update pickup time. Please try again.');

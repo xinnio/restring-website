@@ -9,6 +9,26 @@ export default function Strings() {
   const [filter, setFilter] = useState('all'); // all, tennis, badminton
   const [selectedName, setSelectedName] = useState(null);
   const [selectedColor, setSelectedColor] = useState('');
+  const [imageUrls, setImageUrls] = useState({});
+
+  async function getImageUrl(imageUrl) {
+    if (!imageUrl) return null;
+    
+    try {
+      // Extract filename from the S3 URL
+      const filename = imageUrl.split('/').pop();
+      if (!filename) return null;
+      
+      const response = await fetch(`/api/images/${filename}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.url;
+      }
+    } catch (error) {
+      console.error('Error generating image URL:', error);
+    }
+    return null;
+  }
 
   useEffect(() => {
     async function fetchStrings() {
@@ -16,6 +36,25 @@ export default function Strings() {
         const res = await fetch('/api/strings');
         const data = await res.json();
         setStrings(data);
+        
+        // Generate presigned URLs for all images
+        const urlPromises = data.map(async (string) => {
+          if (string.imageUrl) {
+            const presignedUrl = await getImageUrl(string.imageUrl);
+            return { id: string.id, url: presignedUrl };
+          }
+          return null;
+        });
+        
+        const urlResults = await Promise.all(urlPromises);
+        const urlMap = {};
+        urlResults.forEach(result => {
+          if (result) {
+            urlMap[result.id] = result.url;
+          }
+        });
+        setImageUrls(urlMap);
+        
       } catch (error) {
         console.error('Error fetching strings:', error);
       } finally {
@@ -263,9 +302,10 @@ export default function Strings() {
 
                     {first.imageUrl ? (
                       <Image 
-                        src={first.imageUrl} 
+                        src={imageUrls[first.id] || first.imageUrl} 
                         alt={`${name} string`} 
                         fill
+                        unoptimized={true}
                         style={{ 
                           objectFit: 'cover',
                           borderRadius: '12px'
