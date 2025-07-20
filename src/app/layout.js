@@ -152,7 +152,19 @@ export default function RootLayout({ children }) {
             <MobileNav />
           </div>
         </nav>
-        
+        {/* Responsive styles for navigation */}
+        <style>{`
+          @media (max-width: 900px) {
+            .desktop-nav {
+              display: none !important;
+            }
+          }
+          @media (min-width: 901px) {
+            .mobile-nav {
+              display: none !important;
+            }
+          }
+        `}</style>
         {/* Banner positioned after navigation */}
         <div style={{ padding: '0 2rem' }}>
           <Banner />
