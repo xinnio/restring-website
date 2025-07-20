@@ -67,30 +67,43 @@ export default function Banner() {
       border: '2px solid #ffc107',
       borderRadius: '0 0 16px 16px',
       boxShadow: '0 4px 24px rgba(255,193,7,0.18)',
+      width: '100%',
+      maxWidth: '1200px',
       margin: '0 auto',
-      width: '100vw',
-      left: 0,
-      right: 0,
       top: 0,
+      left: 'unset',
+      right: 'unset',
       position: 'sticky',
       zIndex: 2000,
       padding: '20px 0',
       marginBottom: '24px',
-      animation: 'banner-pop 0.7s cubic-bezier(0.23, 1, 0.32, 1)'
+      animation: 'banner-pop 0.7s cubic-bezier(0.23, 1, 0.32, 1)',
+      // Responsive padding for mobile
+      boxSizing: 'border-box',
     }}>
       <style>{`
         @keyframes banner-pop {
           0% { transform: translateY(-40px); opacity: 0; }
           100% { transform: translateY(0); opacity: 1; }
         }
+        @media (max-width: 700px) {
+          .banner-content {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            padding: 0 8px !important;
+          }
+        }
       `}</style>
-      <div style={{
+      <div className="banner-content" style={{
         display: 'flex',
         alignItems: 'center',
         gap: '18px',
         maxWidth: '1200px',
         margin: '0 auto',
         padding: '0 24px',
+        boxSizing: 'border-box',
+        width: '100%',
       }}>
         {/* Lightning Bolt Icon */}
         <div style={{
@@ -127,6 +140,7 @@ export default function Banner() {
           lineHeight: '1.5',
           letterSpacing: '0.01em',
           textShadow: '0 1px 2px #fffbe6',
+          wordBreak: 'break-word',
         }}>
           <span style={{ fontWeight: '800', fontSize: '1.35rem', color: '#7a4f01' }}>
             {notice.message}
