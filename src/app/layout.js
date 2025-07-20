@@ -47,7 +47,7 @@ export default function RootLayout({ children }) {
               alignItems: 'center',
               gap: '0.5rem'
             }}>
-              <Image src="/logo.png" alt="Markham Restring Studio Logo" width={80} height={80} style={{ 
+              <Image src="/logo.jpg" alt="Markham Restring Studio Logo" width={80} height={80} style={{ 
                 maxHeight: '80px', 
                 marginRight: '0.75rem', 
                 borderRadius: '8px', 
