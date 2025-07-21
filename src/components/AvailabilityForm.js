@@ -24,8 +24,11 @@ export default function AvailabilityForm({ slot = null, onSuccess }) {
     e.preventDefault();
     setStatus('loading');
     try {
-      const res = await fetch('/api/availability', {
-        method: 'POST',
+      const url = slot?.id ? `/api/availability/${slot.id}` : '/api/availability';
+      const method = slot?.id ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
