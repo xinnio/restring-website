@@ -118,7 +118,7 @@ export default function NoticeManager() {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: '2rem', maxWidth: '100vw', overflowX: 'auto', boxSizing: 'border-box' }}>
       <div style={{ 
         backgroundColor: 'white',
         borderRadius: '16px',
