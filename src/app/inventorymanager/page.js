@@ -205,27 +205,34 @@ export default function InventoryManager() {
                   <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1rem)' }}>Loading strings...</p>
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
+                <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
                   <table style={{ 
-                    width: '100%', 
-                    borderCollapse: 'separate', 
-                    borderSpacing: 0, 
-                    background: 'white', 
-                    borderRadius: '16px', 
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                    width: '100%',
+                    maxWidth: '100vw',
+                    borderCollapse: 'separate',
+                    borderSpacing: 0,
+                    background: 'white',
+                    borderRadius: '16px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                     overflow: 'hidden',
-                    minWidth: '600px' // Minimum width to prevent squishing
+                    minWidth: '700px',
+                    tableLayout: 'auto',
+                    wordBreak: 'break-word',
+                    whiteSpace: 'normal'
                   }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
                         <th style={{ 
-                          padding: 'clamp(12px, 3vw, 16px)', 
+                          padding: 'clamp(8px, 2vw, 12px)', 
                           textAlign: 'left', 
-                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', 
                           color: '#333', 
                           fontWeight: 600, 
-                          borderBottom: '1px solid #dee2e6', 
-                          width: '80px' 
+                          borderBottom: '1px solid #dee2e6',
+                          minWidth: '60px',
+                          maxWidth: '100px',
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word'
                         }}>Image</th>
                         <th style={{ 
                           padding: 'clamp(12px, 3vw, 16px)', 
@@ -304,7 +311,7 @@ export default function InventoryManager() {
                           const first = variants[0];
                           return (
                             <tr key={name} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
-                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', verticalAlign: 'top' }}>
+                              <td style={{ padding: 'clamp(8px, 2vw, 12px)', verticalAlign: 'top', fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', whiteSpace: 'normal', wordBreak: 'break-word', maxWidth: '120px' }}>
                                 {first.imageUrl ? (
                                   <Image 
                                     src={imageUrls[first.id] || first.imageUrl} 
