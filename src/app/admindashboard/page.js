@@ -328,9 +328,9 @@ function AdminDashboardContent() {
             </div>
 
             {/* Tab Content */}
-            <div style={{ padding: '2rem' }}>
+            <div style={{ padding: '2rem', width: '100%' }}>
               {activeTab === 'dashboard' ? (
-                <div>
+                <div style={{ width: '100%' }}>
                   {/* Bookings Table */}
                   {loading ? (
                     <div style={{ 
@@ -354,7 +354,7 @@ function AdminDashboardContent() {
                   )}
                 </div>
               ) : (
-                <div>
+                <div style={{ width: '100%' }}>
                   <NoticeManager />
                 </div>
               )}

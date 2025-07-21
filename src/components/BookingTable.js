@@ -601,7 +601,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
   }, [emailDropdown]);
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
       {/* Dashboard Header */}
       <div style={{ 
         display: 'flex', 
@@ -612,7 +612,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         backgroundColor: 'white',
         borderRadius: '16px',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.08)'
+        border: '1px solid rgba(0,0,0,0.08)',
+        flexWrap: 'wrap',
+        gap: '1rem'
       }}>
         <div>
         <h2 style={{ 
@@ -634,7 +636,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
-          gap: '1.5rem'
+          gap: '1.5rem',
+          flexWrap: 'wrap'
         }}>
           <div style={{ 
             padding: '0.75rem 1.25rem', 
@@ -683,13 +686,15 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         borderRadius: '16px',
         overflow: 'hidden',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.08)'
+        border: '1px solid rgba(0,0,0,0.08)',
+        width: '100%'
       }}>
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', width: '100%' }}>
           <table style={{ 
             width: '100%', 
             borderCollapse: 'collapse',
-            fontSize: '0.95rem'
+            fontSize: '0.95rem',
+            minWidth: '800px'
           }}>
             <thead>
               <tr style={{ 
@@ -703,7 +708,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '10%'
                 }}>Booking #</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -712,7 +718,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '15%'
                 }}>Customer</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -721,7 +728,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '25%'
                 }}>Racket Details</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -730,7 +738,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '10%'
                 }}>Status</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -739,7 +748,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '10%'
                 }}>Payment</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -748,7 +758,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '10%'
                 }}>Total Price</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -757,7 +768,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   color: '#1a1a1a',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  width: '20%'
                 }}>Actions</th>
               </tr>
             </thead>
