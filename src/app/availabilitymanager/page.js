@@ -512,12 +512,15 @@ export default function AvailabilityManager() {
                         <thead>
                           <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
                             <th style={{ 
-                              padding: 'clamp(12px, 3vw, 16px)', 
+                              padding: 'clamp(8px, 2vw, 12px)', 
                               textAlign: 'left', 
-                              fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                              fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', 
                               color: '#333', 
                               fontWeight: 600, 
-                              borderBottom: '1px solid #dee2e6' 
+                              borderBottom: '1px solid #dee2e6',
+                              whiteSpace: 'normal',
+                              wordBreak: 'break-word',
+                              maxWidth: '120px'
                             }}>Date</th>
                             <th style={{ 
                               padding: 'clamp(12px, 3vw, 16px)', 
@@ -572,10 +575,13 @@ export default function AvailabilityManager() {
                             availability.map((slot) => (
                               <tr key={slot.id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
                                 <td style={{ 
-                                  padding: 'clamp(12px, 3vw, 16px)', 
+                                  padding: 'clamp(8px, 2vw, 12px)', 
                                   verticalAlign: 'top', 
                                   fontWeight: 500,
-                                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                                  fontSize: 'clamp(0.8rem, 2vw, 0.95rem)',
+                                  whiteSpace: 'normal',
+                                  wordBreak: 'break-word',
+                                  maxWidth: '120px'
                                 }}>{slot.date}</td>
                                 <td style={{ 
                                   padding: 'clamp(12px, 3vw, 16px)', 
@@ -735,12 +741,15 @@ export default function AvailabilityManager() {
                         <thead>
                           <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
                             <th style={{ 
-                              padding: 'clamp(12px, 3vw, 16px)', 
+                              padding: 'clamp(8px, 2vw, 12px)', 
                               textAlign: 'left', 
-                              fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                              fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', 
                               color: '#333', 
                               fontWeight: 600, 
-                              borderBottom: '1px solid #dee2e6' 
+                              borderBottom: '1px solid #dee2e6',
+                              whiteSpace: 'normal',
+                              wordBreak: 'break-word',
+                              maxWidth: '120px'
                             }}>Date</th>
                             <th style={{ 
                               padding: 'clamp(12px, 3vw, 16px)', 
@@ -809,10 +818,13 @@ export default function AvailabilityManager() {
                             filteredSlots.map((slot) => (
                               <tr key={slot.id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
                                 <td style={{ 
-                                  padding: 'clamp(12px, 3vw, 16px)', 
+                                  padding: 'clamp(8px, 2vw, 12px)', 
                                   verticalAlign: 'top', 
                                   fontWeight: 500,
-                                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                                  fontSize: 'clamp(0.8rem, 2vw, 0.95rem)',
+                                  whiteSpace: 'normal',
+                                  wordBreak: 'break-word',
+                                  maxWidth: '120px'
                                 }}>{slot.date}</td>
                                 <td style={{ 
                                   padding: 'clamp(12px, 3vw, 16px)', 

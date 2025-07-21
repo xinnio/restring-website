@@ -139,7 +139,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
 
     try {
       // First, update the main string properties
-      const stringUpdateRes = await fetch(`/api/strings/${string._id}`, {
+      const stringUpdateRes = await fetch(`/api/strings/${string.id || string._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submissionData),
@@ -151,9 +151,9 @@ export default function StringEditForm({ string, variants, onSuccess }) {
 
       // Then update each variant
       const updatePromises = variantForms.map(async (variant) => {
-        if (variant._id) {
+        if (variant.id || variant._id) {
           // Update existing variant
-          return fetch(`/api/strings/${variant._id}`, {
+          return fetch(`/api/strings/${variant.id || variant._id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

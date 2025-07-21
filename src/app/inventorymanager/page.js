@@ -43,7 +43,12 @@ export default function InventoryManager() {
     try {
       const res = await fetch('/api/strings');
       const data = await res.json();
-      setStrings(data);
+      // Normalize all string and variant objects to have an id property
+      const normalized = data.map(s => ({
+        ...s,
+        id: s.id || s._id,
+      }));
+      setStrings(normalized);
       // Generate presigned URLs for all images on demand
       const urlPromises = data.map(async (string) => {
         if (string.imageUrl) {
