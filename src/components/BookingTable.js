@@ -689,10 +689,12 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
         border: '1px solid rgba(0,0,0,0.08)',
         width: '100%',
-        maxWidth: '100vw',
-        minWidth: 0
+        maxWidth: '100%', // changed from 100vw to 100%
+        minWidth: 0,
+        padding: '0.5rem 0.5rem 1.5rem 0.5rem', // add padding for better fit
+        boxSizing: 'border-box',
       }}>
-        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
+        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
           <table style={{ 
             width: '100%', 
             maxWidth: '100vw',
@@ -853,6 +855,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                 </tr>
               ) : (
                 filteredBookings.map((b, index) => {
+                  // --- ADDED CONSOLE LOG FOR DEBUGGING ---
+                  console.log('Rendering booking row:', { id: b.id, bookingNumber: b.bookingNumber, fullName: b.fullName });
                   const isCancelled = b.status === 'Cancelled';
                   console.log('Rendering booking:', b.id, b.bookingNumber, b.fullName);
                   const statusColors = getStatusColor(b.status || 'Pending');

@@ -45,6 +45,8 @@ export default function AvailabilityManager() {
       // Map _id to id if present
       const mapped = data.map(slot => ({ ...slot, id: slot.id || slot._id }));
       setAvailability(mapped);
+      // --- LOG ALL SLOTS AFTER MAPPING ---
+      console.log('Fetched and mapped availability slots:', mapped);
     } catch (error) {
       console.error('Error fetching availability:', error);
     } finally {
@@ -156,7 +158,10 @@ export default function AvailabilityManager() {
     setShowForm(true);
   }
   function handleEditSlot(slot) {
-    setFormSlot(slot);
+    // --- FORCE NORMALIZATION AND LOG ---
+    const normalizedSlot = { ...slot, id: slot.id || slot._id };
+    console.log('handleEditSlot called with slot:', normalizedSlot);
+    setFormSlot(normalizedSlot);
     setFormDate('');
     setShowForm(true);
   }
@@ -424,6 +429,8 @@ export default function AvailabilityManager() {
                       color: '#667eea', 
                       cursor: 'pointer' 
                     }}>&times;</button>
+                    {/* LOG SLOT PASSED TO AVAILABILITYFORM */}
+                    {formSlot && console.log('Passing slot to AvailabilityForm:', formSlot)}
                     <AvailabilityForm slot={formSlot ? formSlot : (formDate ? { date: formDate } : null)} onSuccess={handleFormSuccess} />
                   </div>
                 )}

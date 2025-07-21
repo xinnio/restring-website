@@ -23,9 +23,19 @@ export default function AvailabilityForm({ slot = null, onSuccess }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus('loading');
+    // --- FORCE NORMALIZATION OF ID ---
+    let normalizedSlot = slot ? { ...slot } : null;
+    if (normalizedSlot && !normalizedSlot.id && normalizedSlot._id) {
+      normalizedSlot.id = normalizedSlot._id;
+      console.log('Normalized slot id from _id:', normalizedSlot);
+    } else if (normalizedSlot) {
+      console.log('Slot id is already normalized:', normalizedSlot);
+    }
+    // --- LOG SLOT OBJECT ---
+    console.log('Submitting slot:', normalizedSlot);
     try {
-      const url = slot?.id ? `/api/availability/${slot.id}` : '/api/availability';
-      const method = slot?.id ? 'PUT' : 'POST';
+      const url = normalizedSlot?.id ? `/api/availability/${normalizedSlot.id}` : '/api/availability';
+      const method = normalizedSlot?.id ? 'PUT' : 'POST';
       
       const res = await fetch(url, {
         method: method,
