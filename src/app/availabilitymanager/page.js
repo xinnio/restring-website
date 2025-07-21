@@ -42,7 +42,9 @@ export default function AvailabilityManager() {
     try {
       const res = await fetch('/api/availability');
       const data = await res.json();
-      setAvailability(data);
+      // Map _id to id if present
+      const mapped = data.map(slot => ({ ...slot, id: slot.id || slot._id }));
+      setAvailability(mapped);
     } catch (error) {
       console.error('Error fetching availability:', error);
     } finally {
