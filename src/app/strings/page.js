@@ -282,59 +282,121 @@ export default function Strings() {
                     {first.type === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                   </div>
 
-                  {/* String Image */}
+                  {/* String Images Gallery */}
                   <div style={{ 
                     marginBottom: '1.5rem', 
                     textAlign: 'center',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    backgroundColor: '#f8f9fa',
-                    border: '1px solid #e9ecef',
-                    width: '120px',
-                    height: '120px',
                     display: 'flex',
-                    alignItems: 'center',
+                    gap: '1rem',
                     justifyContent: 'center',
-                    position: 'relative',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    margin: '0 auto 1.5rem auto'
+                    alignItems: 'center'
                   }}>
-
-                    {first.imageUrl ? (
-                      <Image 
-                        src={imageUrls[first.id] || first.imageUrl} 
-                        alt={`${name} string`} 
-                        fill
-                        unoptimized={true}
-                        style={{ 
-                          objectFit: 'cover',
-                          borderRadius: '12px'
-                        }} 
-                        onError={(e) => {
-                          console.log('Image failed to load:', first.imageUrl);
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                        onLoad={() => {
-                          console.log('Image loaded successfully:', first.imageUrl);
-                        }}
-                      />
-                    ) : null}
+                    {/* First Image */}
                     <div style={{ 
-                      display: first.imageUrl ? 'none' : 'flex',
-                      flexDirection: 'column',
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      backgroundColor: '#f8f9fa',
+                      border: '1px solid #e9ecef',
+                      width: '120px',
+                      height: '120px',
+                      display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: '#999',
-                      fontSize: '2rem',
-                      width: '100%',
-                      height: '100%',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0
+                      position: 'relative',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      flexShrink: 0
                     }}>
-                      <span style={{ fontSize: '2.5rem', marginBottom: '0.25rem' }}>📷</span>
-                      <span style={{ fontSize: '0.8rem', color: '#666' }}>No image available</span>
+                      {first.imageUrl ? (
+                        <Image 
+                          src={imageUrls[first.id] || first.imageUrl} 
+                          alt={`${name} string - Image 1`} 
+                          fill
+                          unoptimized={true}
+                          style={{ 
+                            objectFit: 'cover',
+                            borderRadius: '12px'
+                          }} 
+                          onError={(e) => {
+                            console.log('Image 1 failed to load:', first.imageUrl);
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                          onLoad={() => {
+                            console.log('Image 1 loaded successfully:', first.imageUrl);
+                          }}
+                        />
+                      ) : null}
+                      <div style={{ 
+                        display: first.imageUrl ? 'none' : 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#999',
+                        fontSize: '2rem',
+                        width: '100%',
+                        height: '100%',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0
+                      }}>
+                        <span style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>📷</span>
+                        <span style={{ fontSize: '0.7rem', color: '#666' }}>No image</span>
+                      </div>
+                    </div>
+
+                    {/* Second Image - Show a different angle or packaging */}
+                    <div style={{ 
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      backgroundColor: '#f8f9fa',
+                      border: '1px solid #e9ecef',
+                      width: '120px',
+                      height: '120px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      flexShrink: 0
+                    }}>
+                      {/* For now, show a placeholder or the same image with different styling */}
+                      {first.imageUrl ? (
+                        <Image 
+                          src={imageUrls[first.id] || first.imageUrl} 
+                          alt={`${name} string - Image 2`} 
+                          fill
+                          unoptimized={true}
+                          style={{ 
+                            objectFit: 'cover',
+                            borderRadius: '12px',
+                            filter: 'brightness(1.1) contrast(1.1)' // Slightly different appearance
+                          }} 
+                          onError={(e) => {
+                            console.log('Image 2 failed to load:', first.imageUrl);
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                          onLoad={() => {
+                            console.log('Image 2 loaded successfully:', first.imageUrl);
+                          }}
+                        />
+                      ) : null}
+                      <div style={{ 
+                        display: first.imageUrl ? 'none' : 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#999',
+                        fontSize: '2rem',
+                        width: '100%',
+                        height: '100%',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0
+                      }}>
+                        <span style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>📦</span>
+                        <span style={{ fontSize: '0.7rem', color: '#666' }}>Package</span>
+                      </div>
                     </div>
                   </div>
 
