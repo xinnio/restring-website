@@ -977,8 +977,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <select 
                           value={b.status || 'Pending'} 
-                            onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
-                            disabled={updating === b.id || isCancelled}
+                          onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
+                          disabled={updating === b.id}
                           style={{ 
                             backgroundColor: statusColors.bg,
                             color: statusColors.color,
@@ -1015,8 +1015,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <select 
                           value={b.paymentStatus || 'Pending'} 
-                            onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
-                            disabled={updating === b.id || isCancelled}
+                          onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
+                          disabled={updating === b.id}
                           style={{ 
                             backgroundColor: paymentColors.bg,
                             color: paymentColors.color,
@@ -1066,7 +1066,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                           <button
                             onClick={() => setViewing(b)}
-                            disabled={isCancelled}
+                            // disabled={isCancelled}
                             style={{
                               fontSize: '0.85rem',
                               padding: '0.75rem 1rem',
@@ -1074,9 +1074,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: 'pointer',
                               fontWeight: '600',
-                              opacity: isCancelled ? 0.5 : 1,
+                              opacity: 1,
                               transition: 'all 0.2s ease',
                               boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
                               minWidth: '80px'
@@ -1086,7 +1086,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           </button>
                           <button 
                             onClick={() => handleStatusUpdate(b.id, 'Completed')}
-                            disabled={updating === b.id || isCancelled}
+                            disabled={updating === b.id}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1094,9 +1094,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: updating === b.id || isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: updating === b.id ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
-                              opacity: isCancelled ? 0.5 : 1,
+                              opacity: 1,
                               transition: 'all 0.2s ease',
                               boxShadow: '0 2px 8px rgba(40, 167, 69, 0.3)',
                               minWidth: '100px'
@@ -1111,7 +1111,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                                 console.log('Current emailDropdown:', emailDropdown);
                                 setEmailDropdown(emailDropdown === b.id ? null : b.id);
                               }}
-                              disabled={sendingEmail === b.id || isCancelled || !b.email}
+                              disabled={sendingEmail === b.id || !b.email}
                               className="email-dropdown-button"
                             style={{ 
                                 fontSize: '0.85rem', 
@@ -1120,9 +1120,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '8px',
-                                cursor: sendingEmail === b.id || isCancelled || !b.email ? 'not-allowed' : 'pointer',
+                                cursor: sendingEmail === b.id || !b.email ? 'not-allowed' : 'pointer',
                                 fontWeight: '600',
-                                opacity: isCancelled || !b.email ? 0.5 : 1,
+                                opacity: !b.email ? 0.5 : 1,
                                 transition: 'all 0.2s ease',
                                 boxShadow: sendingEmail === b.id ? 'none' : '0 2px 8px rgba(255, 107, 53, 0.3)',
                                 minWidth: '90px',
@@ -1223,7 +1223,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           </div>
                           <button 
                             onClick={() => handlePaymentUpdate(b.id, 'Paid')}
-                            disabled={updating === b.id || b.paymentStatus === 'Paid' || isCancelled}
+                            disabled={updating === b.id || b.paymentStatus === 'Paid'}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1231,9 +1231,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: updating === b.id || b.paymentStatus === 'Paid' || isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: updating === b.id || b.paymentStatus === 'Paid' ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
-                              opacity: isCancelled ? 0.5 : 1,
+                              opacity: 1,
                               transition: 'all 0.2s ease',
                               boxShadow: b.paymentStatus === 'Paid' ? 'none' : '0 2px 8px rgba(23, 162, 184, 0.3)',
                               minWidth: '100px'
@@ -1243,7 +1243,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           </button>
                           <button 
                             onClick={() => handleStatusUpdate(b.id, 'Cancelled')}
-                            disabled={updating === b.id || isCancelled}
+                            disabled={updating === b.id}
                             style={{ 
                               fontSize: '0.85rem', 
                               padding: '0.75rem 1rem',
@@ -1251,9 +1251,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               color: 'white',
                               border: 'none',
                               borderRadius: '8px',
-                              cursor: updating === b.id || isCancelled ? 'not-allowed' : 'pointer',
+                              cursor: updating === b.id ? 'not-allowed' : 'pointer',
                               fontWeight: '600',
-                              opacity: isCancelled ? 0.5 : 1,
+                              opacity: 1,
                               transition: 'all 0.2s ease',
                               boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)',
                               minWidth: '90px'
