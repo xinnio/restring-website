@@ -602,7 +602,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
   }, [emailDropdown]);
 
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ width: '100%', maxWidth: '100vw', boxSizing: 'border-box', overflowX: 'auto' }}>
       {/* Dashboard Header */}
       <div style={{ 
         display: 'flex', 
@@ -685,12 +685,14 @@ export default function BookingTable({ bookings = [], onUpdate }) {
       <div style={{ 
         backgroundColor: 'white',
         borderRadius: '16px',
-        overflow: 'hidden',
+        overflow: 'auto',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
         border: '1px solid rgba(0,0,0,0.08)',
-        width: '100%'
+        width: '100%',
+        maxWidth: '100vw',
+        minWidth: 0
       }}>
-        <div style={{ overflowX: 'auto', width: '100%' }}>
+        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
           <table style={{ 
             width: '100%', 
             borderCollapse: 'collapse',
