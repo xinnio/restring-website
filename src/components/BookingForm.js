@@ -1535,3 +1535,5 @@ export function generateId() {
     Math.random().toString(36).substr(2, 9)
   );
 }
+
+const EMAIL_FROM = process.env.EMAIL_FROM;

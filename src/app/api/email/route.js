@@ -265,6 +265,8 @@ const emailTemplates = {
   })
 };
 
+const EMAIL_FROM = process.env.EMAIL_FROM || 'Markham Restring Studio <markhamrestring@gmail.com>';
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -334,7 +336,7 @@ export async function POST(request) {
 
     // Send email via Resend
     const result = await resend.emails.send({
-      from: 'Markham Restring Studio <markhamrestring@gmail.com>',
+      from: EMAIL_FROM,
       to: emailData.to,
       subject: emailData.subject,
       html: emailData.html,
@@ -353,7 +355,7 @@ export async function POST(request) {
         };
         
         const adminResult = await resend.emails.send({
-          from: 'Markham Restring Studio <markhamrestring@gmail.com>',
+          from: EMAIL_FROM,
           to: adminEmailData.to,
           subject: adminEmailData.subject,
           html: adminEmailData.html,
