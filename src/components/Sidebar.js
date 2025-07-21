@@ -21,7 +21,7 @@ export default function Sidebar({ isCollapsed, onToggle }) {
           onClick={onToggle}
           style={{
             position: 'fixed',
-            top: '20px',
+            top: '100px',
             left: '20px',
             zIndex: 1000,
             padding: '12px',
