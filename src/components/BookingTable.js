@@ -695,9 +695,13 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
           <table style={{ 
             width: '100%', 
+            maxWidth: '100vw',
             borderCollapse: 'collapse',
             fontSize: '0.95rem',
-            minWidth: '800px'
+            minWidth: '900px',
+            tableLayout: 'auto',
+            wordBreak: 'break-word',
+            whiteSpace: 'normal'
           }}>
             <thead>
               <tr style={{ 
@@ -712,7 +716,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '10%'
+                  minWidth: '80px',
+                  maxWidth: '120px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Booking #</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -722,7 +730,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '15%'
+                  minWidth: '120px',
+                  maxWidth: '180px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Customer</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -732,7 +744,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '25%'
+                  minWidth: '180px',
+                  maxWidth: '260px',
+                  whiteSpace: 'normal',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Racket Details</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -742,7 +758,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '10%'
+                  minWidth: '110px',
+                  maxWidth: '140px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Status</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -752,7 +772,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '10%'
+                  minWidth: '110px',
+                  maxWidth: '140px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Payment</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -762,7 +786,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '10%'
+                  minWidth: '100px',
+                  maxWidth: '120px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Total Price</th>
                 <th style={{ 
                   padding: '1.25rem 1rem', 
@@ -772,7 +800,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  width: '20%'
+                  minWidth: '180px',
+                  maxWidth: '260px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>Actions</th>
               </tr>
             </thead>
