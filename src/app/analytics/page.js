@@ -10,6 +10,11 @@ function AnalyticsContent() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('month'); // 'week', 'month', 'year'
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -312,7 +317,7 @@ function AnalyticsContent() {
   if (loading) {
     return (
       <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
-        <Sidebar />
+        <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
         <main style={{ flex: 1, padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
@@ -342,7 +347,7 @@ function AnalyticsContent() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
-      <Sidebar />
+      <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       <main style={{ flex: 1, padding: '2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h1 style={{ color: '#333', marginBottom: '2rem' }}>Analytics Dashboard</h1>

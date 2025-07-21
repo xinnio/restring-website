@@ -31,6 +31,11 @@ export default function AvailabilityManager() {
   const [deleting, setDeleting] = useState(null); // Track which slot is being deleted
   // New state for weekly view
   const [selectedWeek, setSelectedWeek] = useState(0); // 0 = this week, 1 = next week, etc.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   async function fetchAvailability() {
     setLoading(true);
@@ -230,7 +235,7 @@ export default function AvailabilityManager() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
-      <Sidebar />
+      <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       <main style={{ flex: 1, padding: '2rem' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <h1 style={{ color: '#333', marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-1px' }}>📅 Pickup/Drop-Off Time Slot Manager</h1>

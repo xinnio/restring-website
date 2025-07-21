@@ -11,6 +11,11 @@ function AdminDashboardContent() {
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState('all'); // 'all', 'pending', 'inProgress', 'completed', 'paid'
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'notices'
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   async function fetchBookings() {
     setLoading(true);
@@ -58,7 +63,7 @@ function AdminDashboardContent() {
       backgroundColor: '#f8f9fa',
       overflow: 'hidden'
     }}>
-      <Sidebar />
+      <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       <main style={{ 
         flex: 1, 
         padding: '2rem', 

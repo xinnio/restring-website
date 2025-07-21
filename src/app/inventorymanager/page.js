@@ -14,6 +14,11 @@ export default function InventoryManager() {
   const [editingVariants, setEditingVariants] = useState([]); // all variants for the string being edited
   const [showEditModal, setShowEditModal] = useState(false);
   const [imageUrls, setImageUrls] = useState({}); // Store presigned URLs
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   // Function to generate presigned URL for an image
   async function getImageUrl(imageUrl) {
@@ -130,7 +135,7 @@ export default function InventoryManager() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
-      <Sidebar />
+      <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       <main style={{ flex: 1, padding: '2rem' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <h1 style={{ color: '#333', marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-1px' }}>🧵 String Inventory Manager</h1>
