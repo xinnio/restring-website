@@ -5,6 +5,37 @@ import { Resend } from 'resend';
 const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
 
+// Add a helper function to calculate total cost
+function calculateTotal(booking) {
+  const rackets = booking.rackets || [
+    {
+      racketType: booking.racketType,
+      stringName: booking.stringName,
+      stringColor: booking.stringColor,
+      stringTension: booking.stringTension,
+      quantity: booking.quantity || 1
+    }
+  ];
+  let basePrice = 0;
+  switch (booking.turnaroundTime) {
+    case 'sameDay': basePrice = 35; break;
+    case 'nextDay': basePrice = 30; break;
+    case '3-5days': basePrice = 25; break;
+    default: basePrice = 0;
+  }
+  let racketsSubtotal = rackets.reduce((sum, r) => sum + (basePrice * (parseInt(r.quantity) || 1)), 0);
+  let extras = 0;
+  if (booking.ownString) extras += 3;
+  if (booking.grommetReplacement) extras += 0.25;
+  let deliveryFee = 0;
+  const dropoffDelivery = booking.dropoffLocation === 'Door-to-Door (Delivery)';
+  const pickupDelivery = booking.pickupLocation === 'Door-to-Door (Delivery)';
+  if (dropoffDelivery) deliveryFee += 12;
+  if (pickupDelivery) deliveryFee += 12;
+  if (dropoffDelivery && pickupDelivery) deliveryFee -= 4;
+  return (racketsSubtotal + extras + deliveryFee).toFixed(2);
+}
+
 // Email templates
 const emailTemplates = {
   bookingSubmission: (booking) => ({
@@ -27,7 +58,6 @@ const emailTemplates = {
             <p><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;">${booking.status}</span></p>
             <p><strong>Turnaround Time:</strong> ${booking.turnaroundTime}</p>
           </div>
-          
           <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
             <h3 style="color: #667eea; margin-top: 0;">Racket Details</h3>
             ${booking.rackets.map((racket, index) => `
@@ -41,16 +71,18 @@ const emailTemplates = {
               </div>
             `).join('')}
           </div>
-          
           <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
             <h3 style="color: #667eea; margin-top: 0;">Pickup & Dropoff</h3>
             <p><strong>Dropoff Location:</strong> ${booking.dropoffLocation}</p>
             <p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>
             ${booking.notes ? `<p><strong>Notes:</strong> ${booking.notes}</p>` : ''}
           </div>
-          
+          <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #28a745; margin-top: 0;">Receipt</h3>
+            <p style="font-size: 1.15em; font-weight: bold; color: #2e7d32;">Receipt: $${calculateTotal(booking)}</p>
+          </div>
           <div style="text-align: center; margin-top: 30px;">
-            <p style="color: #6c757d; font-size: 14px;">We&apos;ll notify you when your racket is ready for pickup!</p>
+            <p style="color: #6c757d; font-size: 14px;">We'll notify you when your racket is ready for pickup!</p>
             <p style="color: #6c757d; font-size: 12px;">Thank you for choosing Markham Restring Studio</p>
           </div>
         </div>
@@ -69,14 +101,16 @@ const emailTemplates = {
         
         <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
           <h2 style="color: #333; margin-bottom: 20px;">Your Racket is Ready! 🎉</h2>
-          
           <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745;">
             <h3 style="color: #28a745; margin-top: 0;">Pickup Information</h3>
             <p><strong>Booking #:</strong> ${booking.bookingNumber}</p>
             <p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>
             <p><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;">Ready for Pickup</span></p>
           </div>
-          
+          <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #28a745; margin-top: 0;">Receipt</h3>
+            <p style="font-size: 1.15em; font-weight: bold; color: #2e7d32;">Receipt: $${calculateTotal(booking)}</p>
+          </div>
           <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
             <h3 style="color: #28a745; margin-top: 0;">📅 Schedule Your Pickup</h3>
             <p>Please visit our website to schedule your pickup time:</p>
@@ -328,10 +362,12 @@ export async function POST(request) {
     // Check if this is a customer email (not admin)
     const isCustomerEmail = emailData.to !== 'markhamrestring@gmail.com';
     
-    // In testing mode, send customer emails to admin instead
+    // In development mode, send customer emails to admin instead
+    let redirected = false;
     if (process.env.NODE_ENV === 'development' && isCustomerEmail) {
       console.log(`📧 Development mode: ${type || 'custom'} email redirected from ${emailData.to} to markhamrestring@gmail.com`);
       emailData.to = 'markhamrestring@gmail.com';
+      redirected = true;
     }
 
     // Send email via Resend
@@ -345,7 +381,29 @@ export async function POST(request) {
 
     console.log(`📧 ${type || 'custom'} email sent successfully via Resend:`, result);
 
-    // For completion emails, also send to admin
+    // For bookingSubmission and schedulePickup, also send to admin (in production)
+    let adminResult = null;
+    if ((type === 'bookingSubmission' || type === 'schedulePickup') && isCustomerEmail && process.env.NODE_ENV === 'production') {
+      try {
+        const adminEmailData = {
+          ...emailData,
+          to: 'markhamrestring@gmail.com',
+          subject: `[ADMIN NOTIFICATION] ${emailData.subject}`
+        };
+        adminResult = await resend.emails.send({
+          from: EMAIL_FROM,
+          to: adminEmailData.to,
+          subject: adminEmailData.subject,
+          html: adminEmailData.html,
+          text: adminEmailData.text
+        });
+        console.log(`📧 Admin notification sent for ${type} email:`, adminResult);
+      } catch (adminError) {
+        console.error('Failed to send admin notification:', adminError);
+      }
+    }
+
+    // For completion emails, also send to admin (legacy logic)
     if (type === 'completion' && isCustomerEmail) {
       try {
         const adminEmailData = {
@@ -353,16 +411,14 @@ export async function POST(request) {
           to: 'markhamrestring@gmail.com',
           subject: `[ADMIN NOTIFICATION] ${emailData.subject}`
         };
-        
-        const adminResult = await resend.emails.send({
+        const adminResultCompletion = await resend.emails.send({
           from: EMAIL_FROM,
           to: adminEmailData.to,
           subject: adminEmailData.subject,
           html: adminEmailData.html,
           text: adminEmailData.text
         });
-        
-        console.log(`📧 Admin notification sent for completion email:`, adminResult);
+        console.log(`📧 Admin notification sent for completion email:`, adminResultCompletion);
       } catch (adminError) {
         console.error('Failed to send admin notification:', adminError);
       }
@@ -374,7 +430,8 @@ export async function POST(request) {
         id: result.id,
         type: type,
         to: emailData.to,
-        redirected: process.env.NODE_ENV === 'development' && isCustomerEmail
+        adminNotified: !!adminResult,
+        redirected: redirected
       },
       { status: 200 }
     );

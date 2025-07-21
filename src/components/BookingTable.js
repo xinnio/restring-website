@@ -504,13 +504,12 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         } else if (result.redirected) {
           alert(`📧 ${emailType} email sent to admin (${booking.email} redirected due to Resend testing mode).\n\nTo send emails to customers:\n1. Go to resend.com/domains\n2. Verify your domain\n3. Update the 'from' address to use your domain`);
         } else {
-          // Check if this is a customer email (not admin)
-          const isCustomerEmail = booking.email !== 'markhamrestring@gmail.com';
-          if (isCustomerEmail) {
-            alert(`📧 ${emailType} email sent to admin (${booking.email} redirected due to Resend testing mode).\n\nTo send emails to customers:\n1. Go to resend.com/domains\n2. Verify your domain\n3. Update the 'from' address to use your domain`);
-          } else {
-            alert(`${emailType} email sent successfully!`);
+          // Show a clear success message for customer and admin emails
+          let msg = `📧 ${emailType} email sent successfully!`;
+          if (result.adminNotified) {
+            msg += `\nA copy was also sent to admin (markhamrestring@gmail.com).`;
           }
+          alert(msg);
         }
       } else {
         console.error('Email API error:', result);
