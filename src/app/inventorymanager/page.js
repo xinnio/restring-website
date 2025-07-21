@@ -18,12 +18,10 @@ export default function InventoryManager() {
   // Function to generate presigned URL for an image
   async function getImageUrl(imageUrl) {
     if (!imageUrl) return null;
-    
     try {
-      // Extract filename from the S3 URL
+      // Extract filename from the S3 URL or use the key directly
       const filename = imageUrl.split('/').pop();
       if (!filename) return null;
-      
       const response = await fetch(`/api/images/${filename}`);
       if (response.ok) {
         const data = await response.json();
@@ -41,8 +39,7 @@ export default function InventoryManager() {
       const res = await fetch('/api/strings');
       const data = await res.json();
       setStrings(data);
-      
-      // Generate presigned URLs for all images
+      // Generate presigned URLs for all images on demand
       const urlPromises = data.map(async (string) => {
         if (string.imageUrl) {
           const presignedUrl = await getImageUrl(string.imageUrl);
@@ -50,7 +47,6 @@ export default function InventoryManager() {
         }
         return null;
       });
-      
       const urlResults = await Promise.all(urlPromises);
       const urlMap = {};
       urlResults.forEach(result => {
@@ -59,7 +55,6 @@ export default function InventoryManager() {
         }
       });
       setImageUrls(urlMap);
-      
     } catch (error) {
       console.error('Error fetching strings:', error);
     } finally {
@@ -262,7 +257,7 @@ export default function InventoryManager() {
                               <td style={{ padding: '16px', verticalAlign: 'top' }}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', maxWidth: '100%' }}>
                                   {variants.map(v => (
-                                    <span key={`${v.color}-${v._id || v.id || Math.random()}`} style={{
+                                    <span key={`${v.color}-${v.id || Math.random()}`} style={{
                                       display: 'inline-flex',
                                       alignItems: 'center',
                                       background: '#f8f9fa',
@@ -317,9 +312,9 @@ export default function InventoryManager() {
                                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
                                     {variants.map(v => (
                                       <button
-                                        key={v._id}
-                                        onClick={() => handleDelete(v._id)}
-                                        disabled={deleting === v._id}
+                                        key={v.id}
+                                        onClick={() => handleDelete(v.id)}
+                                        disabled={deleting === v.id}
                                         style={{
                                           fontSize: '0.75rem',
                                           padding: '4px 8px',
@@ -339,7 +334,7 @@ export default function InventoryManager() {
                                           justifyContent: 'center'
                                         }}
                                       >
-                                        🗑️ {deleting === v._id ? '...' : v.color}
+                                        🗑️ {deleting === v.id ? '...' : v.color}
                                       </button>
                                     ))}
                                   </div>
