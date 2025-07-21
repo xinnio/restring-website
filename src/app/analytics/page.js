@@ -348,47 +348,143 @@ function AnalyticsContent() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
-      <main style={{ flex: 1, padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h1 style={{ color: '#333', marginBottom: '2rem' }}>Analytics Dashboard</h1>
+      <main style={{ flex: 1, padding: 'clamp(1rem, 3vw, 2rem)', overflow: 'auto' }}>
+        <div style={{ maxWidth: '100%', margin: '0 auto' }}>
+          <h1 style={{ 
+            color: '#333', 
+            marginBottom: 'clamp(1rem, 3vw, 2rem)',
+            fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+            lineHeight: '1.2'
+          }}>Analytics Dashboard</h1>
           
           {/* Key Metrics Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.775rem' }}>Total Bookings</h3>
-              <div style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#007bff' }}>{bookings.length}</div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+            gap: 'clamp(1rem, 3vw, 1.5rem)', 
+            marginBottom: 'clamp(1rem, 3vw, 2rem)' 
+          }}>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#666', 
+                margin: '0 0 0.5rem 0', 
+                fontSize: 'clamp(0.7rem, 2.5vw, 0.775rem)' 
+              }}>Total Bookings</h3>
+              <div style={{ 
+                fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', 
+                fontWeight: 'bold', 
+                color: '#007bff' 
+              }}>{bookings.length}</div>
             </div>
             
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.775rem' }}>Total Revenue</h3>
-              <div style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#28a745' }}>${totalRevenue.toFixed(2)}</div>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#666', 
+                margin: '0 0 0.5rem 0', 
+                fontSize: 'clamp(0.7rem, 2.5vw, 0.775rem)' 
+              }}>Total Revenue</h3>
+              <div style={{ 
+                fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', 
+                fontWeight: 'bold', 
+                color: '#28a745' 
+              }}>${totalRevenue.toFixed(2)}</div>
             </div>
             
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>Paid Revenue</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#17a2b8' }}>${paidRevenue.toFixed(2)}</div>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#666', 
+                margin: '0 0 0.5rem 0', 
+                fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)' 
+              }}>Paid Revenue</h3>
+              <div style={{ 
+                fontSize: 'clamp(1.5rem, 4vw, 2rem)', 
+                fontWeight: 'bold', 
+                color: '#17a2b8' 
+              }}>${paidRevenue.toFixed(2)}</div>
             </div>
             
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>Pending Revenue</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ffc107' }}>${pendingRevenue.toFixed(2)}</div>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#666', 
+                margin: '0 0 0.5rem 0', 
+                fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)' 
+              }}>Pending Revenue</h3>
+              <div style={{ 
+                fontSize: 'clamp(1.5rem, 4vw, 2rem)', 
+                fontWeight: 'bold', 
+                color: '#ffc107' 
+              }}>${pendingRevenue.toFixed(2)}</div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: 'clamp(1rem, 3vw, 2rem)' 
+          }}>
             {/* Booking Status */}
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#333', marginBottom: '1rem' }}>Booking Status</h3>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)',
+                fontSize: 'clamp(1.1rem, 3vw, 1.25rem)'
+              }}>Booking Status</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Pending</span>
                   <span style={{ fontWeight: 'bold', color: '#ffa500' }}>{statusCounts.Pending}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>In Progress</span>
                   <span style={{ fontWeight: 'bold', color: '#0066cc' }}>{statusCounts['In Progress']}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Completed</span>
                   <span style={{ fontWeight: 'bold', color: '#28a745' }}>{statusCounts.Completed}</span>
                 </div>
@@ -396,18 +492,48 @@ function AnalyticsContent() {
             </div>
 
             {/* Payment Status */}
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#333', marginBottom: '1rem' }}>Payment Status</h3>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)',
+                fontSize: 'clamp(1.1rem, 3vw, 1.25rem)'
+              }}>Payment Status</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Pending Payment</span>
                   <span style={{ fontWeight: 'bold', color: '#ffa500' }}>{paymentCounts.Pending}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Paid</span>
                   <span style={{ fontWeight: 'bold', color: '#28a745' }}>{paymentCounts.Paid}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Payment Rate</span>
                   <span style={{ fontWeight: 'bold', color: '#17a2b8' }}>
                     {bookings.length > 0 ? ((paymentCounts.Paid / bookings.length) * 100).toFixed(1) : 0}%
@@ -417,37 +543,92 @@ function AnalyticsContent() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: 'clamp(1rem, 3vw, 2rem)', 
+            marginTop: 'clamp(1rem, 3vw, 2rem)' 
+          }}>
             {/* Most Requested Strings */}
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#333', marginBottom: '1rem' }}>Most Requested Strings</h3>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)',
+                fontSize: 'clamp(1.1rem, 3vw, 1.25rem)'
+              }}>Most Requested Strings</h3>
               {mostRequestedStrings.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {mostRequestedStrings.map(([stringName, count]) => (
-                    <div key={stringName} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                    <div key={stringName} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                      backgroundColor: '#f8f9fa', 
+                      borderRadius: '4px',
+                      fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                    }}>
                       <span>{stringName}</span>
                       <span style={{ fontWeight: 'bold', color: '#007bff' }}>{count}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p style={{ color: '#666', textAlign: 'center' }}>No booking data available</p>
+                <p style={{ 
+                  color: '#666', 
+                  textAlign: 'center',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>No booking data available</p>
               )}
             </div>
 
             {/* Revenue Breakdown */}
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#333', marginBottom: '1rem' }}>Revenue Breakdown</h3>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              borderRadius: '8px', 
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)',
+                fontSize: 'clamp(1.1rem, 3vw, 1.25rem)'
+              }}>Revenue Breakdown</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Total Revenue</span>
                   <span style={{ fontWeight: 'bold', color: '#28a745' }}>${totalRevenue.toFixed(2)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Collected</span>
                   <span style={{ fontWeight: 'bold', color: '#17a2b8' }}>${paidRevenue.toFixed(2)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: 'clamp(0.4rem, 2vw, 0.5rem)', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                }}>
                   <span>Outstanding</span>
                   <span style={{ fontWeight: 'bold', color: '#ffc107' }}>${pendingRevenue.toFixed(2)}</span>
                 </div>
@@ -458,23 +639,38 @@ function AnalyticsContent() {
           {/* Low Stock Alert */}
           {lowStockStrings.length > 0 && (
             <div style={{ 
-              marginTop: '2rem', 
+              marginTop: 'clamp(1rem, 3vw, 2rem)', 
               backgroundColor: '#fff3cd', 
               border: '1px solid #ffeaa7', 
               borderRadius: '8px', 
-              padding: '1.5rem' 
+              padding: 'clamp(1rem, 3vw, 1.5rem)' 
             }}>
-              <h3 style={{ color: '#856404', marginBottom: '1rem' }}>⚠️ Low Stock Alert</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+              <h3 style={{ 
+                color: '#856404', 
+                marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)',
+                fontSize: 'clamp(1.1rem, 3vw, 1.25rem)'
+              }}>⚠️ Low Stock Alert</h3>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                gap: 'clamp(0.75rem, 2.5vw, 1rem)' 
+              }}>
                 {lowStockStrings.map(string => (
                   <div key={string._id} style={{ 
                     backgroundColor: 'white', 
-                    padding: '1rem', 
+                    padding: 'clamp(0.75rem, 2.5vw, 1rem)', 
                     borderRadius: '4px', 
                     border: '1px solid #ffeaa7' 
                   }}>
-                    <div style={{ fontWeight: 'bold', color: '#333' }}>{string.name}</div>
-                    <div style={{ color: '#666', fontSize: '0.9rem' }}>Quantity: {string.quantity}</div>
+                    <div style={{ 
+                      fontWeight: 'bold', 
+                      color: '#333',
+                      fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                    }}>{string.name}</div>
+                    <div style={{ 
+                      color: '#666', 
+                      fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)' 
+                    }}>Quantity: {string.quantity}</div>
                   </div>
                 ))}
               </div>
@@ -483,9 +679,9 @@ function AnalyticsContent() {
 
           {/* Time Series Charts */}
           <div style={{ 
-            marginTop: '2rem', 
+            marginTop: 'clamp(1rem, 3vw, 2rem)', 
             backgroundColor: 'white', 
-            padding: '1.5rem', 
+            padding: 'clamp(1rem, 3vw, 1.5rem)', 
             borderRadius: '8px', 
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
           }}>
@@ -494,28 +690,33 @@ function AnalyticsContent() {
               display: 'flex', 
               justifyContent: 'space-between', 
               alignItems: 'center', 
-              marginBottom: '1.5rem',
+              marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
               flexWrap: 'wrap',
-              gap: '1rem'
+              gap: 'clamp(0.5rem, 2vw, 1rem)'
             }}>
-              <h3 style={{ color: '#333', margin: 0 }}>Time Series Analytics</h3>
+              <h3 style={{ 
+                color: '#333', 
+                margin: 0,
+                fontSize: 'clamp(1.1rem, 3vw, 1.25rem)'
+              }}>Time Series Analytics</h3>
               
               {/* Time Range Selector */}
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: 'clamp(0.25rem, 1.5vw, 0.5rem)', flexWrap: 'wrap' }}>
                 {['week', 'month', 'year'].map(range => (
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
                     style={{
-                      padding: '0.5rem 1rem',
+                      padding: 'clamp(0.4rem, 2vw, 0.5rem) clamp(0.8rem, 2.5vw, 1rem)',
                       border: 'none',
                       borderRadius: '6px',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      fontSize: '0.9rem',
+                      fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)',
                       background: timeRange === range ? '#007bff' : '#f8f9fa',
                       color: timeRange === range ? 'white' : '#333',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -524,16 +725,21 @@ function AnalyticsContent() {
               </div>
               
               {/* Navigation Arrows */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 'clamp(0.5rem, 2vw, 1rem)',
+                flexWrap: 'wrap'
+              }}>
                 <button
                   onClick={() => navigateTime('prev')}
                   style={{
                     background: 'none',
                     border: 'none',
-                    fontSize: '1.5rem',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
                     cursor: 'pointer',
                     color: '#007bff',
-                    padding: '0.5rem',
+                    padding: 'clamp(0.4rem, 2vw, 0.5rem)',
                     borderRadius: '4px',
                     transition: 'background 0.2s ease'
                   }}
@@ -546,8 +752,8 @@ function AnalyticsContent() {
                 <span style={{ 
                   fontWeight: '600', 
                   color: '#333', 
-                  fontSize: '1.1rem',
-                  minWidth: '120px',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
+                  minWidth: 'clamp(100px, 20vw, 120px)',
                   textAlign: 'center'
                 }}>
                   {getCurrentPeriodLabel()}
@@ -558,10 +764,10 @@ function AnalyticsContent() {
                   style={{
                     background: 'none',
                     border: 'none',
-                    fontSize: '1.5rem',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
                     cursor: 'pointer',
                     color: '#007bff',
-                    padding: '0.5rem',
+                    padding: 'clamp(0.4rem, 2vw, 0.5rem)',
                     borderRadius: '4px',
                     transition: 'background 0.2s ease'
                   }}
@@ -574,10 +780,19 @@ function AnalyticsContent() {
             </div>
 
             {/* Charts Container */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+              gap: 'clamp(1rem, 3vw, 2rem)' 
+            }}>
               {/* Bookings Chart */}
               <div>
-                <h4 style={{ color: '#333', marginBottom: '1rem', textAlign: 'center' }}>Bookings</h4>
+                <h4 style={{ 
+                  color: '#333', 
+                  marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)', 
+                  textAlign: 'center',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.1rem)'
+                }}>Bookings</h4>
                 {(() => {
                   const timeSeriesData = getTimeSeriesData();
                   const entries = Object.entries(timeSeriesData);
@@ -585,12 +800,12 @@ function AnalyticsContent() {
                   if (entries.length === 0) {
                   return (
                       <div style={{ 
-                        height: '200px', 
+                        height: 'clamp(150px, 30vw, 200px)', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center',
                         color: '#666',
-                        fontSize: '0.9rem'
+                        fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)'
                       }}>
                         No data available for this period
                       </div>
@@ -603,13 +818,13 @@ function AnalyticsContent() {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'end', 
-                      gap: '0.5rem', 
-                      height: '200px', 
-                      paddingTop: '2rem',
-                      paddingBottom: '2rem'
+                      gap: 'clamp(0.25rem, 1.5vw, 0.5rem)', 
+                      height: 'clamp(150px, 30vw, 200px)', 
+                      paddingTop: 'clamp(1.5rem, 3vw, 2rem)',
+                      paddingBottom: 'clamp(1.5rem, 3vw, 2rem)'
                     }}>
                       {entries.map(([label, count]) => {
-                        const height = maxCount > 0 ? (count / maxCount) * 150 : 0;
+                        const height = maxCount > 0 ? (count / maxCount) * 120 : 0;
                         return (
                           <div key={label} style={{ 
                             display: 'flex', 
@@ -623,7 +838,7 @@ function AnalyticsContent() {
                         height: `${height}px`, 
                         backgroundColor: '#007bff', 
                         borderRadius: '4px 4px 0 0',
-                              marginBottom: '0.5rem',
+                              marginBottom: 'clamp(0.25rem, 1.5vw, 0.5rem)',
                               transition: 'all 0.3s ease',
                               cursor: 'pointer'
                             }}
@@ -638,7 +853,7 @@ function AnalyticsContent() {
                             title={`${label}: ${count} bookings`}
                             ></div>
                             <div style={{ 
-                              fontSize: '0.75rem', 
+                              fontSize: 'clamp(0.7rem, 2.5vw, 0.75rem)', 
                               color: '#666', 
                               textAlign: 'center',
                               fontWeight: '500'
@@ -646,7 +861,7 @@ function AnalyticsContent() {
                               {label}
                             </div>
                             <div style={{ 
-                              fontSize: '0.8rem', 
+                              fontSize: 'clamp(0.75rem, 2.5vw, 0.8rem)', 
                               fontWeight: 'bold', 
                               color: '#333',
                               marginTop: '0.25rem'
@@ -663,7 +878,12 @@ function AnalyticsContent() {
 
               {/* Revenue Chart */}
               <div>
-                <h4 style={{ color: '#333', marginBottom: '1rem', textAlign: 'center' }}>Revenue</h4>
+                <h4 style={{ 
+                  color: '#333', 
+                  marginBottom: 'clamp(0.75rem, 2.5vw, 1rem)', 
+                  textAlign: 'center',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.1rem)'
+                }}>Revenue</h4>
                 {(() => {
                   const revenueData = getRevenueTimeSeriesData();
                   const entries = Object.entries(revenueData);
@@ -671,12 +891,12 @@ function AnalyticsContent() {
                   if (entries.length === 0) {
                     return (
                       <div style={{ 
-                        height: '200px', 
+                        height: 'clamp(150px, 30vw, 200px)', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center',
                         color: '#666',
-                        fontSize: '0.9rem'
+                        fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)'
                       }}>
                         No revenue data available for this period
                       </div>
@@ -689,13 +909,13 @@ function AnalyticsContent() {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'end', 
-                      gap: '0.5rem', 
-                      height: '200px', 
-                      paddingTop: '2rem',
-                      paddingBottom: '2rem'
+                      gap: 'clamp(0.25rem, 1.5vw, 0.5rem)', 
+                      height: 'clamp(150px, 30vw, 200px)', 
+                      paddingTop: 'clamp(1.5rem, 3vw, 2rem)',
+                      paddingBottom: 'clamp(1.5rem, 3vw, 2rem)'
                     }}>
                       {entries.map(([label, revenue]) => {
-                        const height = maxRevenue > 0 ? (revenue / maxRevenue) * 150 : 0;
+                        const height = maxRevenue > 0 ? (revenue / maxRevenue) * 120 : 0;
                         return (
                           <div key={label} style={{ 
                             display: 'flex', 
@@ -709,7 +929,7 @@ function AnalyticsContent() {
                               height: `${height}px`, 
                               backgroundColor: '#28a745', 
                               borderRadius: '4px 4px 0 0',
-                              marginBottom: '0.5rem',
+                              marginBottom: 'clamp(0.25rem, 1.5vw, 0.5rem)',
                               transition: 'all 0.3s ease',
                               cursor: 'pointer'
                             }}
@@ -724,7 +944,7 @@ function AnalyticsContent() {
                             title={`${label}: $${revenue.toFixed(2)}`}
                             ></div>
                             <div style={{ 
-                              fontSize: '0.75rem', 
+                              fontSize: 'clamp(0.7rem, 2.5vw, 0.75rem)', 
                               color: '#666', 
                               textAlign: 'center',
                               fontWeight: '500'
@@ -732,7 +952,7 @@ function AnalyticsContent() {
                               {label}
                             </div>
                             <div style={{ 
-                              fontSize: '0.8rem', 
+                              fontSize: 'clamp(0.75rem, 2.5vw, 0.8rem)', 
                               fontWeight: 'bold', 
                               color: '#333',
                               marginTop: '0.25rem'
@@ -751,10 +971,10 @@ function AnalyticsContent() {
             {/* Summary Stats */}
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-              gap: '1rem', 
-              marginTop: '2rem',
-              paddingTop: '1.5rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+              gap: 'clamp(0.75rem, 2.5vw, 1rem)', 
+              marginTop: 'clamp(1rem, 3vw, 2rem)',
+              paddingTop: 'clamp(1rem, 3vw, 1.5rem)',
               borderTop: '1px solid #e9ecef'
             }}>
               {(() => {
@@ -766,21 +986,73 @@ function AnalyticsContent() {
                 
                 return (
                   <>
-                    <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Total Bookings</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#007bff' }}>{totalBookings}</div>
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: 'clamp(0.75rem, 2.5vw, 1rem)', 
+                      backgroundColor: '#f8f9fa', 
+                      borderRadius: '6px' 
+                    }}>
+                      <div style={{ 
+                        fontSize: 'clamp(0.7rem, 2.5vw, 0.8rem)', 
+                        color: '#666', 
+                        marginBottom: '0.5rem' 
+                      }}>Total Bookings</div>
+                      <div style={{ 
+                        fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+                        fontWeight: 'bold', 
+                        color: '#007bff' 
+                      }}>{totalBookings}</div>
                     </div>
-                    <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Total Revenue</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#28a745' }}>${totalRevenue.toFixed(2)}</div>
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: 'clamp(0.75rem, 2.5vw, 1rem)', 
+                      backgroundColor: '#f8f9fa', 
+                      borderRadius: '6px' 
+                    }}>
+                      <div style={{ 
+                        fontSize: 'clamp(0.7rem, 2.5vw, 0.8rem)', 
+                        color: '#666', 
+                        marginBottom: '0.5rem' 
+                      }}>Total Revenue</div>
+                      <div style={{ 
+                        fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+                        fontWeight: 'bold', 
+                        color: '#28a745' 
+                      }}>${totalRevenue.toFixed(2)}</div>
                     </div>
-                    <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Avg Revenue/Booking</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#17a2b8' }}>${avgRevenue.toFixed(2)}</div>
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: 'clamp(0.75rem, 2.5vw, 1rem)', 
+                      backgroundColor: '#f8f9fa', 
+                      borderRadius: '6px' 
+                    }}>
+                      <div style={{ 
+                        fontSize: 'clamp(0.7rem, 2.5vw, 0.8rem)', 
+                        color: '#666', 
+                        marginBottom: '0.5rem' 
+                      }}>Avg Revenue/Booking</div>
+                      <div style={{ 
+                        fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+                        fontWeight: 'bold', 
+                        color: '#17a2b8' 
+                      }}>${avgRevenue.toFixed(2)}</div>
                     </div>
-                    <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Period</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#6c757d' }}>{timeRange.charAt(0).toUpperCase() + timeRange.slice(1)}</div>
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: 'clamp(0.75rem, 2.5vw, 1rem)', 
+                      backgroundColor: '#f8f9fa', 
+                      borderRadius: '6px' 
+                    }}>
+                      <div style={{ 
+                        fontSize: 'clamp(0.7rem, 2.5vw, 0.8rem)', 
+                        color: '#666', 
+                        marginBottom: '0.5rem' 
+                      }}>Period</div>
+                      <div style={{ 
+                        fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+                        fontWeight: 'bold', 
+                        color: '#6c757d' 
+                      }}>{timeRange.charAt(0).toUpperCase() + timeRange.slice(1)}</div>
                     </div>
                   </>
                 );

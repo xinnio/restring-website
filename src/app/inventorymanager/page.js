@@ -136,25 +136,68 @@ export default function InventoryManager() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
-      <main style={{ flex: 1, padding: '2rem' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <h1 style={{ color: '#333', marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-1px' }}>🧵 String Inventory Manager</h1>
+      <main style={{ flex: 1, padding: 'clamp(1rem, 3vw, 2rem)', overflow: 'auto' }}>
+        <div style={{ maxWidth: '100%', margin: '0 auto' }}>
+          <h1 style={{ 
+            color: '#333', 
+            marginBottom: 'clamp(1rem, 3vw, 2rem)', 
+            fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', 
+            fontWeight: 700, 
+            letterSpacing: '-1px',
+            lineHeight: '1.2'
+          }}>🧵 String Inventory Manager</h1>
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'minmax(300px, 1fr) minmax(600px, 2fr)', 
-            gap: '2rem', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 'clamp(1rem, 3vw, 2rem)', 
             alignItems: 'flex-start'
           }}>
-            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 24px rgba(102,126,234,0.08)', border: '1px solid #e9ecef' }}>
-              <h2 style={{ marginBottom: '1.5rem', color: '#333', fontSize: '1.5rem', fontWeight: 600 }}>Add New String</h2>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 2rem)', 
+              borderRadius: '16px', 
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
+              border: '1px solid #e9ecef',
+              minWidth: '280px'
+            }}>
+              <h2 style={{ 
+                marginBottom: 'clamp(1rem, 3vw, 1.5rem)', 
+                color: '#333', 
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+                fontWeight: 600 
+              }}>Add New String</h2>
               <StringForm onSuccess={fetchStrings} />
             </div>
-            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 24px rgba(102,126,234,0.08)', border: '1px solid #e9ecef' }}>
-              <h2 style={{ marginBottom: '1.5rem', color: '#333', fontSize: '1.5rem', fontWeight: 600 }}>Current Inventory</h2>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 2rem)', 
+              borderRadius: '16px', 
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
+              border: '1px solid #e9ecef',
+              minWidth: '280px'
+            }}>
+              <h2 style={{ 
+                marginBottom: 'clamp(1rem, 3vw, 1.5rem)', 
+                color: '#333', 
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+                fontWeight: 600 
+              }}>Current Inventory</h2>
               {loading ? (
-                <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-                  <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #667eea', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 1rem' }}></div>
-                  <p style={{ fontSize: '1.1rem' }}>Loading strings...</p>
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: 'clamp(2rem, 5vw, 3rem)', 
+                  color: '#666' 
+                }}>
+                  <div style={{ 
+                    width: 'clamp(30px, 8vw, 40px)', 
+                    height: 'clamp(30px, 8vw, 40px)', 
+                    border: '4px solid #f3f3f3', 
+                    borderTop: '4px solid #667eea', 
+                    borderRadius: '50%', 
+                    animation: 'spin 1s linear infinite', 
+                    margin: '0 auto 1rem' 
+                  }}></div>
+                  <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1rem)' }}>Loading strings...</p>
                 </div>
               ) : (
                 <div style={{ overflowX: 'auto' }}>
@@ -166,16 +209,64 @@ export default function InventoryManager() {
                     borderRadius: '16px', 
                     boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
                     overflow: 'hidden',
-                    minWidth: '800px' // Minimum width to prevent squishing
+                    minWidth: '600px' // Minimum width to prevent squishing
                   }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '80px' }}>Image</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '20%' }}>Name</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '12%' }}>Type</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '18%' }}>Brand & Model</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '25%' }}>Colors & Quantities</th>
-                        <th style={{ padding: '16px', textAlign: 'left', fontSize: '1rem', color: '#333', fontWeight: 600, borderBottom: '1px solid #dee2e6', width: '15%' }}>Actions</th>
+                        <th style={{ 
+                          padding: 'clamp(12px, 3vw, 16px)', 
+                          textAlign: 'left', 
+                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          color: '#333', 
+                          fontWeight: 600, 
+                          borderBottom: '1px solid #dee2e6', 
+                          width: '80px' 
+                        }}>Image</th>
+                        <th style={{ 
+                          padding: 'clamp(12px, 3vw, 16px)', 
+                          textAlign: 'left', 
+                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          color: '#333', 
+                          fontWeight: 600, 
+                          borderBottom: '1px solid #dee2e6', 
+                          width: '20%' 
+                        }}>Name</th>
+                        <th style={{ 
+                          padding: 'clamp(12px, 3vw, 16px)', 
+                          textAlign: 'left', 
+                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          color: '#333', 
+                          fontWeight: 600, 
+                          borderBottom: '1px solid #dee2e6', 
+                          width: '12%' 
+                        }}>Type</th>
+                        <th style={{ 
+                          padding: 'clamp(12px, 3vw, 16px)', 
+                          textAlign: 'left', 
+                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          color: '#333', 
+                          fontWeight: 600, 
+                          borderBottom: '1px solid #dee2e6', 
+                          width: '18%' 
+                        }}>Brand & Model</th>
+                        <th style={{ 
+                          padding: 'clamp(12px, 3vw, 16px)', 
+                          textAlign: 'left', 
+                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          color: '#333', 
+                          fontWeight: 600, 
+                          borderBottom: '1px solid #dee2e6', 
+                          width: '25%' 
+                        }}>Colors & Quantities</th>
+                        <th style={{ 
+                          padding: 'clamp(12px, 3vw, 16px)', 
+                          textAlign: 'left', 
+                          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', 
+                          color: '#333', 
+                          fontWeight: 600, 
+                          borderBottom: '1px solid #dee2e6', 
+                          width: '15%' 
+                        }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -189,10 +280,16 @@ export default function InventoryManager() {
                         if (names.length === 0) {
                           return (
                             <tr>
-                              <td colSpan="6" style={{ padding: '3rem', textAlign: 'center', color: '#888', background: '#f8f9fa', borderRadius: '12px' }}>
-                                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🧵</div>
-                                <div style={{ fontSize: '1.25rem', fontWeight: 600 }}>No strings in inventory.</div>
-                                <div style={{ color: '#aaa', marginTop: '0.5rem' }}>Add your first string to get started!</div>
+                              <td colSpan="6" style={{ 
+                                padding: 'clamp(2rem, 5vw, 3rem)', 
+                                textAlign: 'center', 
+                                color: '#888', 
+                                background: '#f8f9fa', 
+                                borderRadius: '12px' 
+                              }}>
+                                <div style={{ fontSize: 'clamp(2rem, 6vw, 2.5rem)', marginBottom: '1rem' }}>🧵</div>
+                                <div style={{ fontSize: 'clamp(1.1rem, 3vw, 1.25rem)', fontWeight: 600 }}>No strings in inventory.</div>
+                                <div style={{ color: '#aaa', marginTop: '0.5rem', fontSize: 'clamp(0.9rem, 2.5vw, 1rem)' }}>Add your first string to get started!</div>
                               </td>
                             </tr>
                           );
@@ -202,7 +299,7 @@ export default function InventoryManager() {
                           const first = variants[0];
                           return (
                             <tr key={name} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s' }}>
-                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', verticalAlign: 'top' }}>
                                 {first.imageUrl ? (
                                   <Image 
                                     src={imageUrls[first.id] || first.imageUrl} 
@@ -233,33 +330,33 @@ export default function InventoryManager() {
                                   </div>
                                 )}
                               </td>
-                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
-                                <strong style={{ fontSize: '1.1rem', color: '#222' }}>{name}</strong>
+                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', verticalAlign: 'top' }}>
+                                <strong style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1rem)', color: '#222' }}>{name}</strong>
                                 {first.description && (
-                                  <div style={{ fontSize: '0.95rem', color: '#666', marginTop: '4px' }}>{first.description}</div>
+                                  <div style={{ fontSize: 'clamp(0.9rem, 2.5vw, 0.95rem)', color: '#666', marginTop: '4px' }}>{first.description}</div>
                                 )}
                               </td>
-                              <td style={{ padding: '16px', textTransform: 'capitalize', verticalAlign: 'top', fontWeight: 500 }}>{first.type}</td>
-                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', textTransform: 'capitalize', verticalAlign: 'top', fontWeight: 500, fontSize: 'clamp(0.9rem, 2.5vw, 1rem)' }}>{first.type}</td>
+                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', verticalAlign: 'top' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                                   {first.stringBrand && (
-                                    <div style={{ fontSize: '0.95rem', color: '#333', fontWeight: '500' }}>
+                                    <div style={{ fontSize: 'clamp(0.9rem, 2.5vw, 0.95rem)', color: '#333', fontWeight: '500' }}>
                                       <strong>Brand:</strong> {first.stringBrand}
                                     </div>
                                   )}
                                   {first.stringModel && (
-                                    <div style={{ fontSize: '0.95rem', color: '#333', fontWeight: '500' }}>
+                                    <div style={{ fontSize: 'clamp(0.9rem, 2.5vw, 0.95rem)', color: '#333', fontWeight: '500' }}>
                                       <strong>Model:</strong> {first.stringModel}
                                     </div>
                                   )}
                                   {!first.stringBrand && !first.stringModel && (
-                                    <div style={{ fontSize: '0.9rem', color: '#999', fontStyle: 'italic' }}>
+                                    <div style={{ fontSize: 'clamp(0.85rem, 2.5vw, 0.9rem)', color: '#999', fontStyle: 'italic' }}>
                                       No brand/model info
                                     </div>
                                   )}
                                 </div>
                               </td>
-                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', verticalAlign: 'top' }}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', maxWidth: '100%' }}>
                                   {variants.map(v => (
                                     <span key={`${v.color}-${v.id || Math.random()}`} style={{
@@ -270,7 +367,7 @@ export default function InventoryManager() {
                                       color: v.quantity <= 2 ? '#dc3545' : v.quantity <= 5 ? '#ffc107' : '#28a745',
                                       borderRadius: '6px',
                                       padding: '0.25rem 0.5rem',
-                                      fontSize: '0.85rem',
+                                      fontSize: 'clamp(0.8rem, 2.5vw, 0.85rem)',
                                       fontWeight: '600',
                                       minWidth: '60px',
                                       justifyContent: 'center',
@@ -279,22 +376,22 @@ export default function InventoryManager() {
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis'
                                     }}>
-                                      <span style={{ fontWeight: 700, fontSize: '0.8rem' }}>{v.color}</span>
-                                      <span style={{ margin: '0 0.25rem', fontSize: '0.8rem' }}>•</span>
-                                      <span style={{ fontSize: '0.8rem' }}>{v.quantity}</span>
-                                      {v.quantity <= 2 && <span style={{ marginLeft: '2px', fontSize: '0.7rem' }}>⚠️</span>}
+                                      <span style={{ fontWeight: 700, fontSize: 'clamp(0.75rem, 2.5vw, 0.8rem)' }}>{v.color}</span>
+                                      <span style={{ margin: '0 0.25rem', fontSize: 'clamp(0.75rem, 2.5vw, 0.8rem)' }}>•</span>
+                                      <span style={{ fontSize: 'clamp(0.75rem, 2.5vw, 0.8rem)' }}>{v.quantity}</span>
+                                      {v.quantity <= 2 && <span style={{ marginLeft: '2px', fontSize: 'clamp(0.65rem, 2.5vw, 0.7rem)' }}>⚠️</span>}
                                     </span>
                                   ))}
                                 </div>
                               </td>
-                              <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                              <td style={{ padding: 'clamp(12px, 3vw, 16px)', verticalAlign: 'top' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                                   {/* Edit button for the string name/type/description */}
                                   <button
                                     onClick={() => handleEdit(first, variants)}
                                     style={{
-                                      fontSize: '0.85rem',
-                                      padding: '6px 12px',
+                                      fontSize: 'clamp(0.8rem, 2.5vw, 0.85rem)',
+                                      padding: 'clamp(4px, 1.5vw, 6px) clamp(8px, 2.5vw, 12px)',
                                       backgroundColor: '#28a745',
                                       color: 'white',
                                       border: 'none',
@@ -321,8 +418,8 @@ export default function InventoryManager() {
                                         onClick={() => handleDelete(v.id)}
                                         disabled={deleting === v.id}
                                         style={{
-                                          fontSize: '0.75rem',
-                                          padding: '4px 8px',
+                                          fontSize: 'clamp(0.7rem, 2.5vw, 0.75rem)',
+                                          padding: 'clamp(3px, 1.5vw, 4px) clamp(6px, 2.5vw, 8px)',
                                           backgroundColor: '#dc3545',
                                           color: 'white',
                                           border: 'none',
@@ -371,14 +468,14 @@ export default function InventoryManager() {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
-          padding: '2rem'
+          padding: 'clamp(1rem, 3vw, 2rem)'
         }}>
           <div style={{
             backgroundColor: 'white',
             borderRadius: '16px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-            padding: '2.5rem',
-            minWidth: '500px',
+            padding: 'clamp(1.5rem, 4vw, 2.5rem)',
+            minWidth: 'clamp(300px, 80vw, 500px)',
             maxWidth: '95vw',
             maxHeight: '90vh',
             overflowY: 'auto',
@@ -392,7 +489,7 @@ export default function InventoryManager() {
                 right: 24, 
                 background: 'none', 
                 border: 'none', 
-                fontSize: '2rem', 
+                fontSize: 'clamp(1.5rem, 4vw, 2rem)', 
                 color: '#6c63ff', 
                 cursor: 'pointer' 
               }}
