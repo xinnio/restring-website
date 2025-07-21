@@ -170,7 +170,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
           <h1>Markham Restring Studio</h1>
           <h2>Booking Details</h2>
           <p>Booking Number: #${booking.bookingNumber || 'N/A'}</p>
-          <p>Booking ID: ${booking._id}</p>
+          <p>Booking ID: ${booking.id}</p>
           <p>Created: ${booking.createdAt ? new Date(booking.createdAt).toLocaleString() : '-'}</p>
         </div>
 
@@ -481,7 +481,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
 
   // New email handlers for different email types
   async function handleSendEmail(booking, emailType) {
-    setSendingEmail(booking._id);
+    setSendingEmail(booking.id);
     setEmailDropdown(null); // Close dropdown
     
     try {
@@ -591,7 +591,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (emailDropdown && !event.target.closest('.email-dropdown-button') && !event.target.closest('.email-dropdown-content')) {
+      if (emailDropdown && !event.target.closest('[data-email-dropdown]')) {
+        console.log('Click outside detected, closing email dropdown');
         setEmailDropdown(null);
       }
     };
@@ -1067,7 +1068,11 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           </button>
                           <div style={{ position: 'relative' }} data-email-dropdown={b.id}>
                           <button 
-                              onClick={() => setEmailDropdown(emailDropdown === b.id ? null : b.id)}
+                              onClick={() => {
+                                console.log('Email button clicked for booking:', b.id);
+                                console.log('Current emailDropdown:', emailDropdown);
+                                setEmailDropdown(emailDropdown === b.id ? null : b.id);
+                              }}
                               disabled={sendingEmail === b.id || isCancelled || !b.email}
                               className="email-dropdown-button"
                             style={{ 
