@@ -810,11 +810,13 @@ export default function BookingForm() {
             <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', color: '#b45309', fontWeight: 600 }}>Same-Day Service: Book before 2:00 AM for same-day pick-up</span>
           </div>
           {/* Modern card selection for turnaround time */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
-            gap: 'clamp(0.75rem, 2vw, 1.25rem)', 
-            marginBottom: '2rem' 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'stretch',
+            gap: 'clamp(0.75rem, 2vw, 1.25rem)',
+            marginBottom: '2rem',
+            flexWrap: 'wrap',
           }}>
             {/* Same Day Service Card */}
             <div
