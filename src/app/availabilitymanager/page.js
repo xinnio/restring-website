@@ -269,10 +269,12 @@ export default function AvailabilityManager() {
             </div>
           )}
           <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: 'clamp(1rem, 3vw, 2rem)', 
-            alignItems: 'flex-start'
+            display: 'flex',
+            gap: 'clamp(1rem, 3vw, 2rem)',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            width: '100%',
+            justifyContent: 'center'
           }}>
             <div style={{ 
               backgroundColor: 'white', 
@@ -280,7 +282,10 @@ export default function AvailabilityManager() {
               borderRadius: '16px', 
               boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
               border: '1px solid #e9ecef',
-              minWidth: '280px'
+              minWidth: '320px',
+              maxWidth: '600px',
+              width: '100%',
+              flex: 1
             }}>
               <h2 style={{ 
                 marginBottom: 'clamp(1rem, 3vw, 1.5rem)', 
@@ -291,10 +296,15 @@ export default function AvailabilityManager() {
               <AvailabilityForm onSuccess={fetchAvailability} />
             </div>
             <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: 'clamp(1rem, 3vw, 2rem)',
-              minWidth: '280px'
+              backgroundColor: 'white', 
+              padding: 'clamp(1rem, 3vw, 2rem)', 
+              borderRadius: '16px', 
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
+              border: '1px solid #e9ecef',
+              minWidth: '320px',
+              maxWidth: '600px',
+              width: '100%',
+              flex: 1
             }}>
               {/* Calendar View */}
               <div style={{ 
@@ -498,16 +508,20 @@ export default function AvailabilityManager() {
                       <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1rem)' }}>Loading availability...</p>
                     </div>
                   ) : (
-                    <div style={{ overflowX: 'auto' }}>
+                    <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
                       <table style={{ 
-                        width: '100%', 
-                        borderCollapse: 'separate', 
-                        borderSpacing: 0, 
-                        background: 'white', 
-                        borderRadius: '16px', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                        width: '100%',
+                        maxWidth: '100vw',
+                        borderCollapse: 'separate',
+                        borderSpacing: 0,
+                        background: 'white',
+                        borderRadius: '16px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                         overflow: 'hidden',
-                        minWidth: '500px'
+                        minWidth: '500px',
+                        tableLayout: 'auto',
+                        wordBreak: 'break-word',
+                        whiteSpace: 'normal'
                       }}>
                         <thead>
                           <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
@@ -727,16 +741,20 @@ export default function AvailabilityManager() {
                       <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1rem)' }}>Loading availability...</p>
                     </div>
                   ) : (
-                    <div style={{ overflowX: 'auto' }}>
+                    <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
                       <table style={{ 
-                        width: '100%', 
-                        borderCollapse: 'separate', 
-                        borderSpacing: 0, 
-                        background: 'white', 
-                        borderRadius: '16px', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                        width: '100%',
+                        maxWidth: '100vw',
+                        borderCollapse: 'separate',
+                        borderSpacing: 0,
+                        background: 'white',
+                        borderRadius: '16px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                         overflow: 'hidden',
-                        minWidth: '500px'
+                        minWidth: '500px',
+                        tableLayout: 'auto',
+                        wordBreak: 'break-word',
+                        whiteSpace: 'normal'
                       }}>
                         <thead>
                           <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
