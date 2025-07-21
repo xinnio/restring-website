@@ -26,7 +26,7 @@ export async function PUT(request, { params }) {
     const tableName = process.env.BOOKINGS_TABLE;
     const { id } = params;
     const body = await request.json();
-    const { status, emailType } = body;
+    
     // Get the current booking
     const getCommand = new GetCommand({
       TableName: tableName,
@@ -37,23 +37,58 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
     const booking = getResult.Item;
+    
+    // Handle different types of updates
+    let updateExpression = 'SET updatedAt = :updatedAt';
+    let expressionAttributeNames = {};
+    let expressionAttributeValues = {
+      ':updatedAt': new Date().toISOString()
+    };
+    
+    // Handle status updates
+    if (body.status) {
+      updateExpression += ', #status = :status';
+      expressionAttributeNames['#status'] = 'status';
+      expressionAttributeValues[':status'] = body.status;
+    }
+    
+    // Handle payment status updates
+    if (body.paymentStatus) {
+      updateExpression += ', paymentStatus = :paymentStatus';
+      expressionAttributeValues[':paymentStatus'] = body.paymentStatus;
+      if (body.paymentStatus === 'Paid') {
+        updateExpression += ', paymentReceivedAt = :paymentReceivedAt';
+        expressionAttributeValues[':paymentReceivedAt'] = new Date().toISOString();
+      }
+    }
+    
+    // Handle pickup data updates
+    const pickupFields = [
+      'pickupTime', 'pickupLocation', 'pickupSlotId', 'pickupDate', 
+      'pickupStartTime', 'pickupEndTime', 'pickupScheduledAt', 
+      'pickupWindow', 'specialPickupRequest'
+    ];
+    
+    pickupFields.forEach(field => {
+      if (body[field] !== undefined) {
+        updateExpression += `, ${field} = :${field}`;
+        expressionAttributeValues[`:${field}`] = body[field];
+      }
+    });
+    
     // Update the booking
     const updateCommand = new UpdateCommand({
       TableName: tableName,
       Key: { id: id },
-      UpdateExpression: 'SET #status = :status, updatedAt = :updatedAt',
-      ExpressionAttributeNames: {
-        '#status': 'status'
-      },
-      ExpressionAttributeValues: {
-        ':status': status,
-        ':updatedAt': new Date().toISOString()
-      },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
       ReturnValues: 'ALL_NEW'
     });
+    
     const updateResult = await docClient.send(updateCommand);
     const updatedBooking = updateResult.Attributes;
-    // Optionally send email notification here
+    
     return NextResponse.json(updatedBooking);
   } catch (error) {
     console.error('Database error:', error);

@@ -79,7 +79,7 @@ export default function PickupBooking() {
       let pickupData = {};
       
       if (form.selectedTimeSlot) {
-        const selectedSlot = availability.find(slot => slot._id === form.selectedTimeSlot);
+        const selectedSlot = availability.find(slot => slot.id === form.selectedTimeSlot);
         if (selectedSlot) {
           // Format the pickup time as DD/MM/YYYY, HH:mm - HH:mm
           const date = new Date(selectedSlot.date);
@@ -109,8 +109,8 @@ export default function PickupBooking() {
         pickupData.specialPickupRequest = form.specialRequest.trim();
       }
 
-      const res = await fetch(`/api/bookings/${foundBooking._id}`, {
-        method: 'PATCH',
+      const res = await fetch(`/api/bookings/${foundBooking.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -120,7 +120,7 @@ export default function PickupBooking() {
       if (res.ok) {
         // Send schedule pickup email automatically
         try {
-          const selectedSlot = availability.find(slot => slot._id === form.selectedTimeSlot);
+          const selectedSlot = availability.find(slot => slot.id === form.selectedTimeSlot);
           const pickupTimeDisplay = selectedSlot ? 
             (form.selectedWindow || `${selectedSlot.startTime} - ${selectedSlot.endTime}`) : 
             'Special Request';
@@ -236,7 +236,7 @@ export default function PickupBooking() {
   };
 
   if (success) {
-    const selectedSlot = availability.find(slot => slot._id === form.selectedTimeSlot);
+    const selectedSlot = availability.find(slot => slot.id === form.selectedTimeSlot);
     return (
       <div style={{
         minHeight: '100vh',
@@ -606,7 +606,7 @@ export default function PickupBooking() {
                       >
                         <option value="">Select a time slot...</option>
                         {getSlotsForDate(form.selectedLocation, form.selectedDate).map(slot => (
-                          <option key={slot._id} value={slot._id}>
+                          <option key={slot.id} value={slot.id}>
                             {slot.startTime} - {slot.endTime}
                           </option>
                         ))}
@@ -617,7 +617,7 @@ export default function PickupBooking() {
 
                 {/* Step 4: 30-Minute Window Selection */}
                 {form.selectedTimeSlot && (() => {
-                  const slot = availability.find(s => s._id === form.selectedTimeSlot);
+                  const slot = availability.find(s => s.id === form.selectedTimeSlot);
                   if (!slot) return null;
                   const windows = getThirtyMinWindows(slot.startTime, slot.endTime);
                   return (

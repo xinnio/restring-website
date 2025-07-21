@@ -487,7 +487,7 @@ export default function BookingForm() {
     // Get formatted time strings for dropoff and pickup
     const getFormattedTime = (slotId, location) => {
       if (!slotId) return '';
-      const slot = getSlotsForLocation(location).find(s => s._id === slotId);
+      const slot = getSlotsForLocation(location).find(s => s.id === slotId);
       if (!slot) return '';
       
       // Format as DD/MM/YYYY, HH:mm - HH:mm
@@ -1104,7 +1104,7 @@ export default function BookingForm() {
                   <select name="dropoffSlotId" value={form.dropoffSlotId} onChange={handleChange} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}>
                     <option key="select-timeslot" value="">Select a time slot...</option>
                     {getSlotsForDate(form.dropoffLocation, form.dropoffDate).map(slot => (
-                      <option key={slot._id} value={slot._id}>{slot.startTime} - {slot.endTime}</option>
+                                              <option key={slot.id} value={slot.id}>{slot.startTime} - {slot.endTime}</option>
                     ))}
                   </select>
                 )
@@ -1115,7 +1115,7 @@ export default function BookingForm() {
           </div>
           {/* 30-min window selection (if needed) */}
           {form.dropoffSlotId && (() => {
-            const slot = getSlotsForLocation(form.dropoffLocation).find(s => s._id === form.dropoffSlotId);
+            const slot = getSlotsForLocation(form.dropoffLocation).find(s => s.id === form.dropoffSlotId);
             if (!slot) return null;
             const windows = getThirtyMinWindows(slot.startTime, slot.endTime);
             return (
