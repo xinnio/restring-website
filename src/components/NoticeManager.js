@@ -148,7 +148,7 @@ export default function NoticeManager() {
           </div>
         )}
 
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <label style={{ 
             display: 'block', 
             marginBottom: '0.5rem',
@@ -164,17 +164,19 @@ export default function NoticeManager() {
             rows={3}
             style={{
               width: '100%',
+              maxWidth: '500px',
               padding: '1rem',
               border: '2px solid #e9ecef',
               borderRadius: '8px',
               fontSize: '0.875rem',
-              resize: 'vertical'
+              resize: 'vertical',
+              boxSizing: 'border-box'
             }}
             placeholder="Enter your banner message here..."
           />
         </div>
 
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <label style={{ 
             display: 'flex', 
             alignItems: 'center',
@@ -198,7 +200,10 @@ export default function NoticeManager() {
           backgroundColor: '#f8f9fa',
           padding: '1.5rem',
           borderRadius: '12px',
-          marginBottom: '2rem'
+          marginBottom: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
         }}>
           <h3 style={{ 
             fontSize: '1.25rem',
@@ -209,7 +214,7 @@ export default function NoticeManager() {
             💰 Discount Settings
           </h3>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '500px' }}>
             <label style={{ 
               display: 'block', 
               marginBottom: '0.5rem',
@@ -224,11 +229,13 @@ export default function NoticeManager() {
               onChange={handleChange}
               style={{
                 width: '100%',
+                maxWidth: '500px',
                 padding: '0.75rem',
                 border: '2px solid #e9ecef',
                 borderRadius: '8px',
                 fontSize: '0.875rem',
-                backgroundColor: 'white'
+                backgroundColor: 'white',
+                boxSizing: 'border-box'
               }}
             >
               <option value="percentage">Percentage Discount (%)</option>
@@ -238,7 +245,7 @@ export default function NoticeManager() {
           </div>
 
           {notice.discountType === 'percentage' && (
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '500px' }}>
               <label style={{ 
                 display: 'block', 
                 marginBottom: '0.5rem',
@@ -256,10 +263,12 @@ export default function NoticeManager() {
                 max="100"
                 style={{
                   width: '100%',
+                  maxWidth: '500px',
                   padding: '0.75rem',
                   border: '2px solid #e9ecef',
                   borderRadius: '8px',
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
+                  boxSizing: 'border-box'
                 }}
                 placeholder="e.g., 10 for 10% off"
               />
@@ -267,7 +276,7 @@ export default function NoticeManager() {
           )}
 
           {notice.discountType === 'fixed' && (
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '500px' }}>
               <label style={{ 
                 display: 'block', 
                 marginBottom: '0.5rem',
@@ -285,10 +294,12 @@ export default function NoticeManager() {
                 step="0.01"
                 style={{
                   width: '100%',
+                  maxWidth: '500px',
                   padding: '0.75rem',
                   border: '2px solid #e9ecef',
                   borderRadius: '8px',
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
+                  boxSizing: 'border-box'
                 }}
                 placeholder="e.g., 5 for $5 off"
               />
@@ -297,7 +308,7 @@ export default function NoticeManager() {
 
           {notice.discountType === 'threshold' && (
             <>
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '500px' }}>
                 <label style={{ 
                   display: 'block', 
                   marginBottom: '0.5rem',
@@ -315,15 +326,17 @@ export default function NoticeManager() {
                   step="0.01"
                   style={{
                     width: '100%',
+                    maxWidth: '500px',
                     padding: '0.75rem',
                     border: '2px solid #e9ecef',
                     borderRadius: '8px',
-                    fontSize: '0.875rem'
+                    fontSize: '0.875rem',
+                    boxSizing: 'border-box'
                   }}
                   placeholder="e.g., 50 for orders over $50"
                 />
               </div>
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '500px' }}>
                 <label style={{ 
                   display: 'block', 
                   marginBottom: '0.5rem',
@@ -341,10 +354,12 @@ export default function NoticeManager() {
                   step="0.01"
                   style={{
                     width: '100%',
+                    maxWidth: '500px',
                     padding: '0.75rem',
                     border: '2px solid #e9ecef',
                     borderRadius: '8px',
-                    fontSize: '0.875rem'
+                    fontSize: '0.875rem',
+                    boxSizing: 'border-box'
                   }}
                   placeholder="e.g., 5 for $5 off"
                 />
@@ -352,7 +367,7 @@ export default function NoticeManager() {
             </>
           )}
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '500px' }}>
             <label style={{ 
               display: 'block', 
               marginBottom: '0.5rem',
@@ -368,10 +383,12 @@ export default function NoticeManager() {
               onChange={handleChange}
               style={{
                 width: '100%',
+                maxWidth: '500px',
                 padding: '0.75rem',
                 border: '2px solid #e9ecef',
                 borderRadius: '8px',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
+                boxSizing: 'border-box'
               }}
               placeholder="e.g., SUMMER10, SAVE5"
             />
@@ -407,7 +424,7 @@ export default function NoticeManager() {
           )}
         </div>
 
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <label style={{ 
             display: 'block', 
             marginBottom: '0.5rem',
@@ -423,10 +440,12 @@ export default function NoticeManager() {
             onChange={handleChange}
             style={{
               width: '100%',
+              maxWidth: '500px',
               padding: '0.75rem',
               border: '2px solid #e9ecef',
               borderRadius: '8px',
-              fontSize: '0.875rem'
+              fontSize: '0.875rem',
+              boxSizing: 'border-box'
             }}
           />
         </div>
