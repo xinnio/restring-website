@@ -19,9 +19,11 @@ export default function Sidebar() {
       gap: '1rem', 
       padding: '1.5rem', 
       borderRight: '1px solid #dee2e6', 
-      minWidth: 250,
+      minWidth: 220,
+      maxWidth: 280,
       backgroundColor: 'white',
-      boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
+      boxShadow: '2px 0 4px rgba(0,0,0,0.1)',
+      flexShrink: 0
     }}>
       <div style={{ marginBottom: '1rem' }}>
         <h3 style={{ color: '#333', margin: '0 0 0.5rem 0' }}>Admin Panel</h3>

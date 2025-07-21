@@ -52,10 +52,24 @@ function AdminDashboardContent() {
   const stats = getStats();
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+    <div style={{ 
+      display: 'flex', 
+      minHeight: '100vh', 
+      backgroundColor: '#f8f9fa',
+      overflow: 'hidden'
+    }}>
       <Sidebar />
-      <main style={{ flex: 1, padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <main style={{ 
+        flex: 1, 
+        padding: '2rem', 
+        overflow: 'auto',
+        minWidth: 0 // Allow main content to shrink
+      }}>
+        <div style={{ 
+          width: '100%', 
+          boxSizing: 'border-box',
+          maxWidth: '100%'
+        }}>
           {/* Header */}
           <div style={{ marginBottom: '2rem' }}>
             <h1 style={{ 
@@ -74,7 +88,7 @@ function AdminDashboardContent() {
           {/* Stats Cards */}
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
             gap: '1.5rem',
             marginBottom: '2rem'
           }}>
