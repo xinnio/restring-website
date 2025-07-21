@@ -9,6 +9,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
     type: string?.type || '',
     description: string?.description || '',
     imageUrl: string?.imageUrl || '',
+    imageUrl2: string?.imageUrl2 || '', // Second image URL
     stringBrand: string?.stringBrand || '',
     stringModel: string?.stringModel || ''
   });
@@ -27,7 +28,9 @@ export default function StringEditForm({ string, variants, onSuccess }) {
   const [variantForms, setVariantForms] = useState([]);
   const [status, setStatus] = useState(null);
   const [imagePreview, setImagePreview] = useState(string?.imageUrl || '');
+  const [imagePreview2, setImagePreview2] = useState(string?.imageUrl2 || '');
   const [uploading, setUploading] = useState(false);
+  const [uploading2, setUploading2] = useState(false);
 
   // Initialize variant forms when component mounts
   useEffect(() => {
@@ -70,7 +73,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
     setVariantForms(prev => prev.filter((_, i) => i !== index));
   }
 
-  async function handleImageUpload(e) {
+  async function handleImageUpload(e, imageNumber = 1) {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -84,7 +87,12 @@ export default function StringEditForm({ string, variants, onSuccess }) {
       return;
     }
 
-    setUploading(true);
+    if (imageNumber === 1) {
+      setUploading(true);
+    } else {
+      setUploading2(true);
+    }
+
     try {
       const formData = new FormData();
       formData.append('image', file);
@@ -96,8 +104,13 @@ export default function StringEditForm({ string, variants, onSuccess }) {
 
       if (res.ok) {
         const data = await res.json();
-        setForm(f => ({ ...f, imageUrl: data.url }));
-        setImagePreview(data.url);
+        if (imageNumber === 1) {
+          setForm(f => ({ ...f, imageUrl: data.url }));
+          setImagePreview(data.url);
+        } else {
+          setForm(f => ({ ...f, imageUrl2: data.url }));
+          setImagePreview2(data.url);
+        }
       } else {
         const error = await res.json();
         alert(error.error || 'Upload failed');
@@ -106,7 +119,11 @@ export default function StringEditForm({ string, variants, onSuccess }) {
       console.error('Upload error:', error);
       alert('Upload failed');
     } finally {
-      setUploading(false);
+      if (imageNumber === 1) {
+        setUploading(false);
+      } else {
+        setUploading2(false);
+      }
     }
   }
 
@@ -144,6 +161,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
               type: form.type,
               description: form.description,
               imageUrl: form.imageUrl,
+              imageUrl2: form.imageUrl2,
               color: variant.color,
               quantity: parseInt(variant.quantity) || 0,
               stringBrand: variant.stringBrand,
@@ -160,6 +178,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
               type: form.type,
               description: form.description,
               imageUrl: form.imageUrl,
+              imageUrl2: form.imageUrl2,
               color: variant.color,
               quantity: parseInt(variant.quantity) || 0,
               stringBrand: variant.stringBrand,
@@ -198,104 +217,248 @@ export default function StringEditForm({ string, variants, onSuccess }) {
       
       {/* Image Upload Section */}
       <div>
-        
-        {imagePreview && (
-          <div style={{ 
-            marginBottom: '1rem', 
-            textAlign: 'center',
-            position: 'relative'
-          }}>
-            <Image 
-              src={imagePreview} 
-              alt="String preview" 
-              width={400}
-              height={150}
-              style={{ 
-                maxWidth: '100%', 
-                maxHeight: '150px', 
-                borderRadius: '8px',
-                border: '2px solid #e9ecef',
-                objectFit: 'cover'
-              }} 
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setImagePreview('');
-                setForm(f => ({ ...f, imageUrl: '' }));
-              }}
-              style={{
-                position: 'absolute',
-                top: '5px',
-                right: '5px',
-                background: '#dc3545',
-                color: 'white',
-                border: 'none',
-                borderRadius: '50%',
-                width: '24px',
-                height: '24px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              ×
-            </button>
-          </div>
-        )}
-        
-        <div style={{
-          border: '2px dashed #dee2e6',
-          borderRadius: '8px',
-          padding: '1rem',
-          textAlign: 'center',
-          backgroundColor: 'white',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          position: 'relative'
+        <h4 style={{ 
+          margin: '0 0 1rem 0', 
+          color: '#333', 
+          fontSize: '1.1rem', 
+          fontWeight: '600' 
         }}>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            disabled={uploading}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              opacity: 0,
-              cursor: 'pointer'
-            }}
-          />
-          <div style={{ pointerEvents: 'none' }}>
-            {uploading ? (
-              <div>
-                <div style={{ 
-                  width: '20px', 
-                  height: '20px', 
-                  border: '2px solid #f3f3f3', 
-                  borderTop: '2px solid #667eea', 
-                  borderRadius: '50%', 
-                  animation: 'spin 1s linear infinite',
-                  margin: '0 auto 0.5rem'
-                }}></div>
-                <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>Uploading...</p>
-              </div>
-            ) : (
-              <div>
-                <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>📷</div>
-                <p style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>
-                  {imagePreview ? 'Click to change image' : 'Click to upload image'}
-                </p>
-                <p style={{ color: '#999', fontSize: '0.7rem', margin: 0 }}>
-                  JPG, PNG, GIF up to 5MB
-                </p>
+          String Images
+        </h4>
+        
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+          {/* First Image */}
+          <div style={{ flex: 1 }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontWeight: '500', 
+              color: '#333', 
+              fontSize: '0.9rem' 
+            }}>
+              Primary Image
+            </label>
+            
+            {imagePreview && (
+              <div style={{ 
+                marginBottom: '1rem', 
+                textAlign: 'center',
+                position: 'relative'
+              }}>
+                <Image 
+                  src={imagePreview} 
+                  alt="String preview 1" 
+                  width={200}
+                  height={120}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '120px', 
+                    borderRadius: '8px',
+                    border: '2px solid #e9ecef',
+                    objectFit: 'cover'
+                  }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview('');
+                    setForm(f => ({ ...f, imageUrl: '' }));
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    background: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    cursor: 'pointer',
+                    fontSize: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ×
+                </button>
               </div>
             )}
+            
+            <div style={{
+              border: '2px dashed #dee2e6',
+              borderRadius: '8px',
+              padding: '0.75rem',
+              textAlign: 'center',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              position: 'relative',
+              minHeight: '80px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, 1)}
+                disabled={uploading}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0,
+                  cursor: 'pointer'
+                }}
+              />
+              <div style={{ pointerEvents: 'none' }}>
+                {uploading ? (
+                  <div>
+                    <div style={{ 
+                      width: '16px', 
+                      height: '16px', 
+                      border: '2px solid #f3f3f3', 
+                      borderTop: '2px solid #667eea', 
+                      borderRadius: '50%', 
+                      animation: 'spin 1s linear infinite',
+                      margin: '0 auto 0.25rem'
+                    }}></div>
+                    <p style={{ color: '#666', margin: 0, fontSize: '0.8rem' }}>Uploading...</p>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>📷</div>
+                    <p style={{ color: '#666', margin: '0 0 0.25rem 0', fontSize: '0.8rem' }}>
+                      {imagePreview ? 'Change image' : 'Upload image'}
+                    </p>
+                    <p style={{ color: '#999', fontSize: '0.65rem', margin: 0 }}>
+                      JPG, PNG, GIF up to 5MB
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Second Image */}
+          <div style={{ flex: 1 }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontWeight: '500', 
+              color: '#333', 
+              fontSize: '0.9rem' 
+            }}>
+              Secondary Image (Optional)
+            </label>
+            
+            {imagePreview2 && (
+              <div style={{ 
+                marginBottom: '1rem', 
+                textAlign: 'center',
+                position: 'relative'
+              }}>
+                <Image 
+                  src={imagePreview2} 
+                  alt="String preview 2" 
+                  width={200}
+                  height={120}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '120px', 
+                    borderRadius: '8px',
+                    border: '2px solid #e9ecef',
+                    objectFit: 'cover'
+                  }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview2('');
+                    setForm(f => ({ ...f, imageUrl2: '' }));
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    background: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    cursor: 'pointer',
+                    fontSize: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            
+            <div style={{
+              border: '2px dashed #dee2e6',
+              borderRadius: '8px',
+              padding: '0.75rem',
+              textAlign: 'center',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              position: 'relative',
+              minHeight: '80px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, 2)}
+                disabled={uploading2}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0,
+                  cursor: 'pointer'
+                }}
+              />
+              <div style={{ pointerEvents: 'none' }}>
+                {uploading2 ? (
+                  <div>
+                    <div style={{ 
+                      width: '16px', 
+                      height: '16px', 
+                      border: '2px solid #f3f3f3', 
+                      borderTop: '2px solid #667eea', 
+                      borderRadius: '50%', 
+                      animation: 'spin 1s linear infinite',
+                      margin: '0 auto 0.25rem'
+                    }}></div>
+                    <p style={{ color: '#666', margin: 0, fontSize: '0.8rem' }}>Uploading...</p>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>📦</div>
+                    <p style={{ color: '#666', margin: '0 0 0.25rem 0', fontSize: '0.8rem' }}>
+                      {imagePreview2 ? 'Change image' : 'Upload image'}
+                    </p>
+                    <p style={{ color: '#999', fontSize: '0.65rem', margin: 0 }}>
+                      JPG, PNG, GIF up to 5MB
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
