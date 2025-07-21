@@ -47,6 +47,11 @@ export default function InventoryManager() {
       const normalized = data.map(s => ({
         ...s,
         id: s.id || s._id,
+        // Normalize all variants to have an id property
+        variants: (s.variants || []).map(v => ({
+          ...v,
+          id: v.id || v._id,
+        })),
       }));
       setStrings(normalized);
       // Generate presigned URLs for all images on demand
