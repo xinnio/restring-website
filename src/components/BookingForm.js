@@ -810,17 +810,16 @@ export default function BookingForm() {
             <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', color: '#b45309', fontWeight: 600 }}>Same-Day Service: Book before 2:00 AM for same-day pick-up</span>
           </div>
           {/* Modern card selection for turnaround time */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
-            gap: 'clamp(0.75rem, 2vw, 1.25rem)', 
-            marginBottom: '2rem' 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))',
+            gap: '0.8rem',
+            marginBottom: '2rem'
           }}>
             {/* Same Day Service Card */}
             <div
               onClick={() => setForm(f => ({ ...f, turnaroundTime: 'sameDay' }))}
               style={{
-                cursor: 'pointer',
                 border: form.turnaroundTime === 'sameDay' ? '2.5px solid #6c63ff' : '1.5px solid #e9ecef',
                 borderRadius: '18px',
                 background: form.turnaroundTime === 'sameDay'
@@ -829,7 +828,7 @@ export default function BookingForm() {
                 boxShadow: form.turnaroundTime === 'sameDay'
                   ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)'
                   : '0 1.5px 8px rgba(0,0,0,0.06)',
-                padding: 'clamp(1rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem)',
+                padding: '0.5rem 0.3rem 0.4rem 0.3rem',
                 position: 'relative',
                 transition: 'border 0.18s, background 0.18s, box-shadow 0.18s, transform 0.12s',
                 textAlign: 'center',
@@ -840,15 +839,17 @@ export default function BookingForm() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
+                zIndex: form.turnaroundTime === 'sameDay' ? 2 : 1,
+                cursor: 'pointer',
               }}
               tabIndex={0}
               onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setForm(f => ({ ...f, turnaroundTime: 'sameDay' }))}
-              onMouseOver={e => e.currentTarget.style.boxShadow = '0 4px 18px rgba(102,99,255,0.18), 0 2px 10px rgba(108,99,255,0.10)'}
+              onMouseOver={e => e.currentTarget.style.boxShadow = '0 2px 6px rgba(102,99,255,0.15), 0 1px 3px rgba(108,99,255,0.10)'}
               onMouseOut={e => e.currentTarget.style.boxShadow = form.turnaroundTime === 'sameDay' ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)' : '0 1.5px 8px rgba(0,0,0,0.06)'}
             >
-              <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.3rem' }}>⚡</span>
-              <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: '0.18rem', letterSpacing: '0.01em' }}>Same Day Service</div>
-              <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.28rem', marginBottom: '0.18rem' }}>$35</div>
+              <span style={{ fontSize: '1.1rem', display: 'block', marginBottom: '0.15rem' }}>⚡</span>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '0.12rem', letterSpacing: '0.01em' }}>Same Day Service</div>
+              <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.05rem', marginBottom: '0.12rem' }}>$35</div>
               {/* Most Popular Badge */}
               <div style={{
                 position: 'absolute',
@@ -882,7 +883,7 @@ export default function BookingForm() {
                 boxShadow: form.turnaroundTime === 'nextDay'
                   ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)'
                   : '0 1.5px 8px rgba(0,0,0,0.06)',
-                padding: 'clamp(1rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem)',
+                padding: '0.5rem 0.3rem 0.4rem 0.3rem',
                 position: 'relative',
                 transition: 'border 0.18s, background 0.18s, box-shadow 0.18s, transform 0.12s',
                 textAlign: 'center',
@@ -899,9 +900,9 @@ export default function BookingForm() {
               onMouseOver={e => e.currentTarget.style.boxShadow = '0 4px 18px rgba(102,99,255,0.18), 0 2px 10px rgba(108,99,255,0.10)'}
               onMouseOut={e => e.currentTarget.style.boxShadow = form.turnaroundTime === 'nextDay' ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)' : '0 1.5px 8px rgba(0,0,0,0.06)'}
             >
-              <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.3rem' }}>🚀</span>
-              <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: '0.18rem', letterSpacing: '0.01em' }}>Next Day Service</div>
-              <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.28rem', marginBottom: '0.18rem' }}>$30</div>
+              <span style={{ fontSize: '1.1rem', display: 'block', marginBottom: '0.15rem' }}>🚀</span>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '0.12rem', letterSpacing: '0.01em' }}>Next Day Service</div>
+              <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.05rem', marginBottom: '0.12rem' }}>$30</div>
             </div>
             {/* 3-5 Day Service Card */}
             <div
@@ -916,7 +917,7 @@ export default function BookingForm() {
                 boxShadow: form.turnaroundTime === '3-5days'
                   ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)'
                   : '0 1.5px 8px rgba(0,0,0,0.06)',
-                padding: 'clamp(1rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem)',
+                padding: '0.5rem 0.3rem 0.4rem 0.3rem',
                 position: 'relative',
                 transition: 'border 0.18s, background 0.18s, box-shadow 0.18s, transform 0.12s',
                 textAlign: 'center',
@@ -933,9 +934,9 @@ export default function BookingForm() {
               onMouseOver={e => e.currentTarget.style.boxShadow = '0 4px 18px rgba(102,99,255,0.18), 0 2px 10px rgba(108,99,255,0.10)'}
               onMouseOut={e => e.currentTarget.style.boxShadow = form.turnaroundTime === '3-5days' ? '0 4px 16px rgba(102,99,255,0.13), 0 1.5px 8px rgba(108,99,255,0.08)' : '0 1.5px 8px rgba(0,0,0,0.06)'}
             >
-              <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.3rem' }}>📅</span>
-              <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: '0.18rem', letterSpacing: '0.01em' }}>3-5 Day Service</div>
-              <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.28rem', marginBottom: '0.18rem' }}>$25</div>
+              <span style={{ fontSize: '1.1rem', display: 'block', marginBottom: '0.15rem' }}>📅</span>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '0.12rem', letterSpacing: '0.01em' }}>3-5 Day Service</div>
+              <div style={{ color: '#6c63ff', fontWeight: 700, fontSize: '1.05rem', marginBottom: '0.12rem' }}>$25</div>
             </div>
           </div>
           {/* Grommet Replacement Option */}

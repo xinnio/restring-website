@@ -436,10 +436,14 @@ export default function AvailabilityManager() {
                 )}
               </div>
               {/* Side by Side Tables */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                gap: 'clamp(1rem, 3vw, 2rem)'
+              <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 'clamp(1.5rem, 4vw, 2.5rem)',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                flexWrap: 'wrap',
+                width: '100%',
               }}>
                 {/* Current Availability Table */}
                 <div style={{ 
