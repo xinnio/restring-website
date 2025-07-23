@@ -66,7 +66,8 @@ export async function PUT(request, { params }) {
     const pickupFields = [
       'pickupTime', 'pickupLocation', 'pickupSlotId', 'pickupDate', 
       'pickupStartTime', 'pickupEndTime', 'pickupScheduledAt', 
-      'pickupWindow', 'specialPickupRequest'
+      'pickupWindow', 'specialPickupRequest',
+      'autoPickupTime', 'actualPickupTime' // Add these two fields
     ];
     
     pickupFields.forEach(field => {

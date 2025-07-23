@@ -10,6 +10,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
   const [viewing, setViewing] = useState(null); // booking object or null
   const [filterRange, setFilterRange] = useState('all'); // 'all', 'week', 'month'
   const [emailDropdown, setEmailDropdown] = useState(null); // booking ID or null for email dropdown
+  const [pickupTimeModal, setPickupTimeModal] = useState({ open: false, booking: null });
+  const [actualPickupTime, setActualPickupTime] = useState('');
 
   // Helper function to format string name to Brand-Model display
   const formatStringDisplay = (racket) => {
@@ -53,6 +55,25 @@ export default function BookingTable({ bookings = [], onUpdate }) {
     // If it's a slot ID, return a placeholder
     return `Slot ID: ${slotId}`;
   };
+
+  // Helper to format tension display
+  function formatTension(r) {
+    if (r.stringTensionLabel) {
+      // If label contains a number (e.g., 'Beginner (50-54)'), show only the label
+      if (/\d/.test(r.stringTensionLabel)) {
+        return r.stringTensionLabel;
+      }
+      // If label does not contain a number but stringTension is present, show 'label (X lbs)'
+      if (r.stringTension) {
+        return `${r.stringTensionLabel} (${r.stringTension} lbs)`;
+      }
+      return r.stringTensionLabel;
+    }
+    if (r.stringTension) {
+      return `${r.stringTension} lbs`;
+    }
+    return '-';
+  }
 
   // Function to generate print-friendly content
   function generatePrintContent(booking) {
@@ -600,6 +621,52 @@ export default function BookingTable({ bookings = [], onUpdate }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [emailDropdown]);
 
+  function handleSaveActualPickupTime() {
+    if (!pickupTimeModal.booking || !actualPickupTime) {
+      setPickupTimeModal({ open: false, booking: null });
+      setActualPickupTime('');
+      return;
+    }
+    setUpdating(pickupTimeModal.booking.id);
+    fetch(`/api/bookings/${pickupTimeModal.booking.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ actualPickupTime }),
+    }).then(() => {
+      setPickupTimeModal({ open: false, booking: null });
+      setActualPickupTime('');
+      // Update the local viewing object if it matches
+      if (viewing && viewing.id === pickupTimeModal.booking.id) {
+        setViewing({ ...viewing, actualPickupTime });
+      }
+      if (onUpdate) onUpdate();
+      setUpdating(null);
+    }).catch(() => {
+      setPickupTimeModal({ open: false, booking: null });
+      setActualPickupTime('');
+      setUpdating(null);
+    });
+  }
+
+  async function handleCompleteWithPickupTime(booking) {
+    setUpdating(booking.id);
+    try {
+      const now = new Date().toISOString();
+      const res = await fetch(`/api/bookings/${booking.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'Completed', autoPickupTime: now }),
+      });
+      if (res.ok && onUpdate) {
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Error completing booking:', error);
+    } finally {
+      setUpdating(null);
+    }
+  }
+
   return (
     <div style={{ width: '100%', maxWidth: '100vw', boxSizing: 'border-box', overflowX: 'auto' }}>
       {/* Dashboard Header */}
@@ -607,690 +674,234 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        backgroundColor: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.08)',
+        marginBottom: '1rem',
+        padding: '0.75rem 1.25rem',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+        border: '1px solid #e0e0e0',
         flexWrap: 'wrap',
         gap: '1rem'
       }}>
         <div>
-        <h2 style={{ 
-            fontSize: '2rem', 
-          fontWeight: '700', 
-          color: '#1a1a1a',
-            margin: '0 0 0.5rem 0'
-        }}>
-          📋 Bookings Management
-        </h2>
-          <p style={{ 
-            color: '#666', 
+          <span style={{ 
+            display: 'inline-block',
+            background: '#e8f5e8',
+            color: '#2e7d32',
+            borderRadius: '8px',
+            fontWeight: 600,
             fontSize: '1rem',
-            margin: 0
-          }}>
-            Manage and track all customer bookings efficiently
-          </p>
-        </div>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '1.5rem',
-          flexWrap: 'wrap'
-        }}>
-          <div style={{ 
-            padding: '0.75rem 1.25rem', 
-            backgroundColor: '#e8f5e8', 
-            color: '#2e7d32', 
-            borderRadius: '12px', 
-            fontSize: '0.95rem', 
-            fontWeight: '600',
+            padding: '0.5rem 1rem',
+            marginRight: '1rem',
             border: '1px solid #c8e6c9'
           }}>
             📊 {filteredBookings.length} Bookings
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <label style={{ 
-              fontWeight: 600, 
-              color: '#495057',
-              fontSize: '0.9rem'
-            }}>
-              Time Filter:
-            </label>
-            <select 
-              value={filterRange} 
-              onChange={e => setFilterRange(e.target.value)} 
-              style={{ 
-                padding: '0.6rem 1rem', 
-                borderRadius: '8px', 
-                border: '2px solid #e9ecef', 
-                fontSize: '0.9rem',
-                backgroundColor: 'white',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'border-color 0.2s ease'
-              }}
-            >
-              <option value="all">All Time</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-          </div>
+          </span>
+          <label style={{ fontWeight: 600, color: '#495057', fontSize: '0.95rem', marginRight: 8 }}>
+            Time Filter:
+          </label>
+          <select 
+            value={filterRange} 
+            onChange={e => setFilterRange(e.target.value)} 
+            style={{ 
+              padding: '0.4rem 0.8rem', 
+              borderRadius: '6px', 
+              border: '1px solid #e0e0e0', 
+              fontSize: '0.95rem',
+              backgroundColor: 'white',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginRight: 8
+            }}
+          >
+            <option value="all">All Time</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
         </div>
       </div>
-      
       {/* Bookings Table */}
       <div style={{ 
         backgroundColor: 'white',
-        borderRadius: '16px',
+        borderRadius: '8px',
         overflow: 'auto',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.08)',
+        border: '1px solid #e0e0e0',
         width: '100%',
-        maxWidth: '100%', // changed from 100vw to 100%
+        maxWidth: '100%',
         minWidth: 0,
-        padding: '0.5rem 0.5rem 1.5rem 0.5rem', // add padding for better fit
         boxSizing: 'border-box',
+        marginTop: '0.5rem',
       }}>
-        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
-          <table style={{ 
-            width: '100%', 
-            maxWidth: '100vw',
-            borderCollapse: 'collapse',
-            fontSize: '0.95rem',
-            minWidth: '900px',
-            tableLayout: 'auto',
-            wordBreak: 'break-word',
-            whiteSpace: 'normal'
-          }}>
-            <thead>
-              <tr style={{ 
-                backgroundColor: '#f8f9fa',
-                borderBottom: '2px solid #e9ecef'
-              }}>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '80px',
-                  maxWidth: '120px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Booking #</th>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '120px',
-                  maxWidth: '180px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Customer</th>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '180px',
-                  maxWidth: '260px',
-                  whiteSpace: 'normal',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Racket Details</th>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '110px',
-                  maxWidth: '140px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Status</th>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '110px',
-                  maxWidth: '140px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Payment</th>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '100px',
-                  maxWidth: '120px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Total Price</th>
-                <th style={{ 
-                  padding: '1.25rem 1rem', 
-                  textAlign: 'left', 
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  minWidth: '180px',
-                  maxWidth: '260px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>Actions</th>
+        <table style={{ 
+          width: '100%', 
+          borderCollapse: 'collapse',
+          fontSize: '0.98rem',
+          minWidth: '900px',
+          background: 'white',
+        }}>
+          <thead>
+            <tr style={{ background: '#f4f6f8', borderBottom: '2px solid #e0e0e0' }}>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Booking #</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Customer</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Racket Details</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Status</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Payment</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Total</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBookings.length === 0 ? (
+              <tr>
+                <td colSpan="7" style={{ padding: '2.5rem', textAlign: 'center', color: '#888' }}>
+                  No bookings found.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredBookings.length === 0 ? (
-                <tr>
-                  <td colSpan="7" style={{ 
-                    padding: '4rem 2rem', 
-                    textAlign: 'center', 
-                    color: '#6c757d',
-                    backgroundColor: 'white'
-                  }}>
-                    <div style={{ 
-                      width: '80px', 
-                      height: '80px', 
-                      margin: '0 auto 1.5rem',
-                      backgroundColor: '#f8f9fa',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '2.5rem'
-                    }}>
-                      📋
-                    </div>
-                    <h3 style={{ 
-                      fontSize: '1.5rem', 
-                      fontWeight: '700', 
-                      marginBottom: '0.75rem', 
-                      color: '#1a1a1a' 
-                    }}>
-                      No bookings found
-                    </h3>
-                    <p style={{ 
-                      color: '#666', 
-                      fontSize: '1rem',
-                      maxWidth: '400px',
-                      margin: '0 auto'
-                    }}>
-                      {filterRange === 'all' 
-                        ? 'No bookings have been created yet. They will appear here once customers start using your service.'
-                        : `No bookings found for ${filterRange === 'week' ? 'this week' : 'this month'}. Try adjusting your time filter.`
-                      }
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                filteredBookings.map((b, index) => {
-                  // --- ADDED CONSOLE LOG FOR DEBUGGING ---
-                  console.log('Rendering booking row:', { id: b.id, bookingNumber: b.bookingNumber, fullName: b.fullName });
-                  const isCancelled = b.status === 'Cancelled';
-                  console.log('Rendering booking:', b.id, b.bookingNumber, b.fullName);
-                  const statusColors = getStatusColor(b.status || 'Pending');
-                  const paymentColors = getPaymentStatusColor(b.paymentStatus || 'Pending');
-                  
-                  return (
-                    <tr key={b.id} style={{ 
-                      borderBottom: '1px solid #e9ecef',
-                      transition: 'all 0.2s ease',
-                      backgroundColor: isCancelled ? '#f8d7da' : 'white',
-                      color: isCancelled ? '#888' : '#1a1a1a',
-                      ':hover': {
-                        backgroundColor: isCancelled ? '#f8d7da' : '#f8f9fa'
-                      }
-                    }}>
-                      <td style={{ padding: '1.25rem 1rem' }}>
-                        <div style={{ 
-                          fontWeight: '700', 
-                          color: '#667eea',
-                          fontSize: '1.1rem',
-                          textAlign: 'center',
-                          padding: '0.5rem',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e9ecef'
-                        }}>
-                          #{b.bookingNumber || 'N/A'}
-                        </div>
-                      </td>
-                      <td style={{ padding: '1.25rem 1rem' }}>
-                        <div>
-                          <div style={{ 
-                            fontWeight: '700', 
-                            color: '#1a1a1a',
-                            marginBottom: '0.5rem',
-                            fontSize: '1rem'
-                          }}>
-                            {b.fullName}
-                          </div>
-                          <div style={{ 
-                            color: '#666', 
-                            fontSize: '0.9rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            padding: '0.25rem 0.5rem',
-                            backgroundColor: '#f8f9fa',
-                            borderRadius: '6px',
-                            width: 'fit-content'
-                          }}>
-                            📞 {b.phone || b.contactInfo || 'No contact info'}
-                          </div>
-                          {b.email && (
-                            <div style={{ 
-                              color: '#667eea', 
-                              fontSize: '0.85rem',
-                              marginTop: '0.25rem'
+            ) : (
+              filteredBookings.map((b, idx) => {
+                const statusColors = getStatusColor(b.status || 'Pending');
+                const paymentColors = getPaymentStatusColor(b.paymentStatus || 'Pending');
+                return (
+                  <tr key={b.id} style={{ background: idx % 2 === 0 ? '#fff' : '#f7f7fa', borderBottom: '1px solid #e0e0e0' }}>
+                    <td style={{ padding: '0.7rem', fontWeight: 600, color: '#667eea', textAlign: 'center', borderRight: '1px solid #e0e0e0' }}>#{b.bookingNumber || 'N/A'}</td>
+                    <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
+                      <div style={{ fontWeight: 600 }}>{b.fullName}</div>
+                      <div style={{ color: '#888', fontSize: '0.93em' }}>{b.phone || b.contactInfo || '-'}</div>
+                      {b.email && <div style={{ color: '#667eea', fontSize: '0.92em' }}>{b.email}</div>}
+                    </td>
+                    <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
+                      {(b.rackets && Array.isArray(b.rackets)) ? (
+                        <ul style={{ margin: 0, paddingLeft: 16 }}>
+                          {b.rackets.map((r, i) => (
+                            <li key={i} style={{ fontSize: '0.95em', color: '#333', marginBottom: 2 }}>
+                              {r.racketType === 'tennis' ? '🎾' : '🏸'} {b.ownString ? 'Own String' : formatStringDisplay(r)} | {b.ownString ? 'N/A' : (r.stringColor || '-')} | {formatTension(r)} | Qty: {r.quantity || 1}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span style={{ color: '#888' }}>-</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
+                      <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                        <select 
+                          value={b.status || 'Pending'}
+                          onChange={e => handleStatusUpdate(b.id, e.target.value)}
+                          disabled={updating === b.id}
+                          style={{
+                            background: statusColors.bg,
+                            color: statusColors.color,
+                            border: `1.5px solid ${statusColors.border}`,
+                            borderRadius: 6,
+                            fontWeight: 600,
+                            fontSize: '0.95em',
+                            padding: '0.3em 2em 0.3em 0.7em',
+                            minWidth: 110,
+                            textAlign: 'center',
+                            cursor: updating === b.id ? 'not-allowed' : 'pointer',
+                            outline: 'none',
+                            appearance: 'none',
+                            transition: 'border-color 0.2s',
+                            margin: '0 2px',
+                          }}
+                          onFocus={e => e.target.style.borderColor = '#667eea'}
+                          onBlur={e => e.target.style.borderColor = statusColors.border}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <span style={{
+                          position: 'absolute',
+                          right: 10,
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          pointerEvents: 'none',
+                          fontSize: '1.1em',
+                          color: '#333',
+                          fontWeight: 700
+                        }}>▼</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
+                      <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                        <select 
+                          value={b.paymentStatus || 'Pending'}
+                          onChange={e => handlePaymentUpdate(b.id, e.target.value)}
+                          disabled={updating === b.id}
+                          style={{
+                            background: paymentColors.bg,
+                            color: paymentColors.color,
+                            border: `1.5px solid ${paymentColors.border}`,
+                            borderRadius: 6,
+                            fontWeight: 600,
+                            fontSize: '0.95em',
+                            padding: '0.3em 2em 0.3em 0.7em',
+                            minWidth: 90,
+                            textAlign: 'center',
+                            cursor: updating === b.id ? 'not-allowed' : 'pointer',
+                            outline: 'none',
+                            appearance: 'none',
+                            transition: 'border-color 0.2s',
+                            margin: '0 2px',
+                          }}
+                          onFocus={e => e.target.style.borderColor = '#28a745'}
+                          onBlur={e => e.target.style.borderColor = paymentColors.border}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Paid">Paid</option>
+                        </select>
+                        <span style={{
+                          position: 'absolute',
+                          right: 10,
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          pointerEvents: 'none',
+                          fontSize: '1.1em',
+                          color: '#333',
+                          fontWeight: 700
+                        }}>▼</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.7rem', fontWeight: 700, color: '#2e7d32', textAlign: 'center', borderRight: '1px solid #e0e0e0' }}>
+                      ${calculateBookingTotal(b).toFixed(2)}
+                    </td>
+                    <td style={{ padding: '0.7rem', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <button onClick={() => setViewing(b)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#e3e3e3', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>View</button>
+                        <button onClick={() => handleCompleteWithPickupTime(b)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#d4edda', color: '#155724', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Complete</button>
+                        <div style={{ position: 'relative', display: 'inline-block' }} data-email-dropdown={b.id}>
+                          <button onClick={() => setEmailDropdown(emailDropdown === b.id ? null : b.id)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#e3f2fd', color: '#1976d2', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Email ▼</button>
+                          {emailDropdown === b.id && (
+                            <div style={{
+                              position: 'fixed',
+                              top: `${window.scrollY + (document.querySelector(`[data-email-dropdown='${b.id}']`)?.getBoundingClientRect().bottom || 0)}px`,
+                              left: `${Math.min(window.innerWidth - 140, (document.querySelector(`[data-email-dropdown='${b.id}']`)?.getBoundingClientRect().left || 0))}px`,
+                              background: 'white',
+                              border: '1px solid #e0e0e0',
+                              borderRadius: 6,
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                              zIndex: 9999,
+                              minWidth: 120
                             }}>
-                              ✉️ {b.email}
+                              <button onClick={() => handleSendConfirmationEmail(b)} style={{ width: '100%', padding: '0.5em 1em', background: 'white', color: '#495057', border: 'none', borderBottom: '1px solid #f4f6f8', cursor: 'pointer', fontSize: '0.92em', textAlign: 'left' }}>Confirmation</button>
+                              <button onClick={() => handleSendCompletionEmail(b)} style={{ width: '100%', padding: '0.5em 1em', background: 'white', color: '#495057', border: 'none', borderBottom: '1px solid #f4f6f8', cursor: 'pointer', fontSize: '0.92em', textAlign: 'left' }}>Completion</button>
+                              <button onClick={() => handleSendPickupEmail(b)} style={{ width: '100%', padding: '0.5em 1em', background: 'white', color: '#495057', border: 'none', cursor: 'pointer', fontSize: '0.92em', textAlign: 'left' }}>Pickup</button>
                             </div>
                           )}
                         </div>
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        <div>
-                          {(b.rackets && Array.isArray(b.rackets)) ? (
-                            <ul style={{ margin: 0, paddingLeft: 18 }}>
-                              {b.rackets.map((r, idx) => (
-                                <li key={`${b.id}-racket-${idx}`} style={{ marginBottom: 6, listStyle: 'disc', color: '#333', fontSize: '0.95rem' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span style={{
-                                      padding: '0.25rem 0.5rem',
-                                      backgroundColor: r.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5',
-                                      color: r.racketType === 'tennis' ? '#1976d2' : '#7b1fa2',
-                                      borderRadius: '12px',
-                                      fontSize: '0.8rem',
-                                      fontWeight: '500',
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: 4
-                                    }}>
-                                      {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
-                                    </span>
-                                    <span style={{ color: '#333', fontSize: '0.92rem' }}>
-                                      <strong>String:</strong> {b.ownString ? 'Own String' : formatStringDisplay(r)} | <strong>Color:</strong> {b.ownString ? 'N/A' : (r.stringColor || '-')} | <strong>Tension:</strong> {r.stringTension || '-'} | <strong>Qty:</strong> {r.quantity || 1}
-                                    </span>
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <ul style={{ margin: 0, paddingLeft: 18 }}>
-                              <li style={{ marginBottom: 6, listStyle: 'disc', color: '#333', fontSize: '0.95rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <span style={{
-                                    padding: '0.25rem 0.5rem',
-                                    backgroundColor: b.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5',
-                                    color: b.racketType === 'tennis' ? '#1976d2' : '#7b1fa2',
-                                    borderRadius: '12px',
-                                    fontSize: '0.8rem',
-                                    fontWeight: '500',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 4
-                                  }}>
-                                    {b.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
-                                  </span>
-                                  <span style={{ color: '#333', fontSize: '0.92rem' }}>
-                                    <strong>String:</strong> {b.ownString ? 'Own String' : formatStringDisplay(b)} | <strong>Color:</strong> {b.ownString ? 'N/A' : (b.stringColor || '-')} | <strong>Tension:</strong> {b.stringTension || '-'} | <strong>Qty:</strong> {b.quantity || 1}
-                                  </span>
-                                </div>
-                              </li>
-                            </ul>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ padding: '1.25rem 1rem' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <select 
-                          value={b.status || 'Pending'} 
-                            onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
-                          disabled={updating === b.id}
-                          style={{ 
-                            backgroundColor: statusColors.bg,
-                            color: statusColors.color,
-                              border: `2px solid ${statusColors.border}`,
-                              padding: '0.75rem 1rem',
-                              borderRadius: '8px',
-                            fontSize: '0.9rem',
-                              fontWeight: '600',
-                            cursor: isCancelled ? 'not-allowed' : 'pointer',
-                              minWidth: '140px',
-                              transition: 'all 0.2s ease'
-                          }}
-                        >
-                          <option value="Pending">⏳ Pending</option>
-                          <option value="In Progress">🔄 In Progress</option>
-                          <option value="Completed">✅ Completed</option>
-                          <option value="Cancelled">❌ Cancelled</option>
-                        </select>
-                          {updating === b.id && (
-                          <div style={{ 
-                            fontSize: '0.8rem',
-                              color: '#666',
-                              textAlign: 'center',
-                              padding: '0.25rem',
-                              backgroundColor: '#f8f9fa',
-                              borderRadius: '4px'
-                            }}>
-                              ⏳ Updating...
-                          </div>
-                        )}
-                        </div>
-                      </td>
-                      <td style={{ padding: '1.25rem 1rem' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <select 
-                          value={b.paymentStatus || 'Pending'} 
-                            onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
-                          disabled={updating === b.id}
-                          style={{ 
-                            backgroundColor: paymentColors.bg,
-                            color: paymentColors.color,
-                              border: `2px solid ${paymentColors.border}`,
-                              padding: '0.75rem 1rem',
-                              borderRadius: '8px',
-                            fontSize: '0.9rem',
-                              fontWeight: '600',
-                            cursor: isCancelled ? 'not-allowed' : 'pointer',
-                              minWidth: '120px',
-                              transition: 'all 0.2s ease'
-                          }}
-                        >
-                          <option value="Pending">⏳ Pending</option>
-                          <option value="Paid">💰 Paid</option>
-                        </select>
-                        {b.paymentReceivedAt && (
-                          <div style={{ 
-                            fontSize: '0.8rem', 
-                              color: '#28a745', 
-                              textAlign: 'center',
-                              padding: '0.25rem',
-                              backgroundColor: '#d4edda',
-                              borderRadius: '4px',
-                              fontWeight: '500'
-                            }}>
-                              💰 {new Date(b.paymentReceivedAt).toLocaleDateString()}
-                          </div>
-                        )}
-                        </div>
-                      </td>
-                      <td style={{ padding: '1.25rem 1rem' }}>
-                        <div style={{ 
-                          fontWeight: '700', 
-                          color: '#2e7d32',
-                          fontSize: '1.1rem',
-                          textAlign: 'center',
-                          padding: '0.75rem',
-                          backgroundColor: '#e8f5e8',
-                          borderRadius: '8px',
-                          border: '2px solid #c8e6c9'
-                        }}>
-                        ${calculateBookingTotal(b).toFixed(2)}
-                        </div>
-                      </td>
-                      <td style={{ padding: '1.25rem 1rem' }}>
-                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                          <button
-                            onClick={() => setViewing(b)}
-                            // disabled={isCancelled}
-                            style={{
-                              fontSize: '0.85rem',
-                              padding: '0.75rem 1rem',
-                              backgroundColor: '#667eea',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              cursor: 'pointer',
-                              fontWeight: '600',
-                              opacity: 1,
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
-                              minWidth: '80px'
-                            }}
-                          >
-                            👁️ View
-                          </button>
-                          <button 
-                            onClick={() => handleStatusUpdate(b.id, 'Completed')}
-                            disabled={updating === b.id}
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '0.75rem 1rem',
-                              backgroundColor: '#28a745',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              cursor: updating === b.id ? 'not-allowed' : 'pointer',
-                              fontWeight: '600',
-                              opacity: 1,
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 8px rgba(40, 167, 69, 0.3)',
-                              minWidth: '100px'
-                            }}
-                          >
-                            ✅ Complete
-                          </button>
-                          <div style={{ position: 'relative' }} data-email-dropdown={b.id}>
-                          <button 
-                              onClick={() => {
-                                console.log('Email button clicked for booking:', b.id);
-                                console.log('Current emailDropdown:', emailDropdown);
-                                setEmailDropdown(emailDropdown === b.id ? null : b.id);
-                              }}
-                              disabled={sendingEmail === b.id || !b.email}
-                              className="email-dropdown-button"
-                            style={{ 
-                                fontSize: '0.85rem', 
-                                padding: '0.75rem 1rem',
-                                backgroundColor: sendingEmail === b.id ? '#6c757d' : '#ff6b35',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: sendingEmail === b.id || !b.email ? 'not-allowed' : 'pointer',
-                                fontWeight: '600',
-                                opacity: !b.email ? 0.5 : 1,
-                                transition: 'all 0.2s ease',
-                                boxShadow: sendingEmail === b.id ? 'none' : '0 2px 8px rgba(255, 107, 53, 0.3)',
-                                minWidth: '90px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                              title={!b.email ? 'No email address available' : 'Send email to customer'}
-                            >
-                              {sendingEmail === b.id ? '📧 Sending...' : '📧 Email'}
-                              <span style={{ fontSize: '0.75rem' }}>▼</span>
-                            </button>
-                            
-                            {emailDropdown === b.id && (
-                              <div style={{
-                                position: 'absolute',
-                                top: '100%',
-                                left: 0,
-                                right: 0,
-                                backgroundColor: 'white',
-                                border: '1px solid #e9ecef',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                zIndex: 1000,
-                                marginTop: '0.25rem',
-                                overflow: 'hidden'
-                              }}>
-                                <button
-                                  onClick={() => handleSendConfirmationEmail(b)}
-                                  disabled={sendingEmail === b.id}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.75rem 1rem',
-                                    backgroundColor: 'white',
-                                    color: '#495057',
-                                    border: 'none',
-                                    borderBottom: '1px solid #f8f9fa',
-                                    cursor: sendingEmail === b.id ? 'not-allowed' : 'pointer',
-                                    fontSize: '0.85rem',
-                                    textAlign: 'left',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    transition: 'background-color 0.2s ease'
-                                  }}
-                                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                                >
-                                  ✅ Confirmation Email
-                                </button>
-                                <button
-                                  onClick={() => handleSendCompletionEmail(b)}
-                                  disabled={sendingEmail === b.id}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.75rem 1rem',
-                                    backgroundColor: 'white',
-                                    color: '#495057',
-                                    border: 'none',
-                                    borderBottom: '1px solid #f8f9fa',
-                                    cursor: sendingEmail === b.id ? 'not-allowed' : 'pointer',
-                                    fontSize: '0.85rem',
-                                    textAlign: 'left',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    transition: 'background-color 0.2s ease'
-                                  }}
-                                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                                >
-                                  🎾 Completion Email
-                                </button>
-                                <button
-                                  onClick={() => handleSendPickupEmail(b)}
-                                  disabled={sendingEmail === b.id}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.75rem 1rem',
-                                    backgroundColor: 'white',
-                                    color: '#495057',
-                                    border: 'none',
-                                    cursor: sendingEmail === b.id ? 'not-allowed' : 'pointer',
-                                    fontSize: '0.85rem',
-                                    textAlign: 'left',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    transition: 'background-color 0.2s ease'
-                                  }}
-                                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                                >
-                                  📅 Pickup Email
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                          <button 
-                            onClick={() => handlePaymentUpdate(b.id, 'Paid')}
-                            disabled={updating === b.id || b.paymentStatus === 'Paid'}
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '0.75rem 1rem',
-                              backgroundColor: b.paymentStatus === 'Paid' ? '#6c757d' : '#17a2b8',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              cursor: updating === b.id || b.paymentStatus === 'Paid' ? 'not-allowed' : 'pointer',
-                              fontWeight: '600',
-                              opacity: 1,
-                              transition: 'all 0.2s ease',
-                              boxShadow: b.paymentStatus === 'Paid' ? 'none' : '0 2px 8px rgba(23, 162, 184, 0.3)',
-                              minWidth: '100px'
-                            }}
-                          >
-                            💰 Mark Paid
-                          </button>
-                          <button 
-                            onClick={() => handleStatusUpdate(b.id, 'Cancelled')}
-                            disabled={updating === b.id}
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '0.75rem 1rem',
-                              backgroundColor: '#dc3545',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              cursor: updating === b.id ? 'not-allowed' : 'pointer',
-                              fontWeight: '600',
-                              opacity: 1,
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)',
-                              minWidth: '90px'
-                            }}
-                          >
-                            {isCancelled ? '❌ Cancelled' : '❌ Cancel'}
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(b.id)}
-                            disabled={deleting === b.id}
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '0.75rem 1rem',
-                              backgroundColor: '#6c757d',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              cursor: deleting === b.id ? 'not-allowed' : 'pointer',
-                              fontWeight: '600',
-                              opacity: deleting === b.id ? 0.5 : 1,
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 8px rgba(108, 117, 125, 0.3)',
-                              minWidth: '90px'
-                            }}
-                          >
-                            {deleting === b.id ? '🗑️ Deleting...' : '🗑️ Delete'}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                        <button onClick={() => handleDelete(b.id)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#f8d7da', color: '#721c24', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Delete</button>
+                        <button onClick={() => setPickupTimeModal({ open: true, booking: b })} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#fffbe6', color: '#b8860b', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Set Actual Pickup</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
-
+      {/* Ensure the booking detail view modal is always rendered when viewing is set */}
       {viewing && (
         <div style={{
           position: 'fixed',
@@ -1315,31 +926,6 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             <button onClick={() => setViewing(null)} style={{ position: 'absolute', top: 18, right: 24, background: 'none', border: 'none', fontSize: '2rem', color: '#6c63ff', cursor: 'pointer' }}>&times;</button>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a1a1a', margin: 0 }}>Booking Details</h2>
-              <button
-                onClick={() => {
-                  const printWindow = window.open('', '_blank');
-                  const printContent = generatePrintContent(viewing);
-                  printWindow.document.write(printContent);
-                  printWindow.document.close();
-                  printWindow.print();
-                }}
-                style={{
-                  background: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  marginRight: '2rem'
-                }}
-              >
-                🖨️ Print
-              </button>
             </div>
             {/* Personal Info */}
             <div style={{ marginBottom: '1.25rem' }}>
@@ -1384,7 +970,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <strong>Color:</strong> {viewing.ownString ? 'N/A' : (r.stringColor || '-')}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>Tension:</strong> {r.stringTension || '-'}
+                        <strong>Tension:</strong> {formatTension(r)}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
                         <strong>Qty:</strong> {r.quantity || 1}
@@ -1414,7 +1000,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                     <strong>Color:</strong> {viewing.ownString ? 'N/A' : (viewing.stringColor || '-')}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
-                    <strong>Tension:</strong> {viewing.stringTension || '-'}
+                    <strong>Tension:</strong> {formatTension(viewing)}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
                     <strong>Qty:</strong> {viewing.quantity || 1}
@@ -1510,72 +1096,63 @@ export default function BookingTable({ bookings = [], onUpdate }) {
               textAlign: 'center',
               color: '#2e7d32'
             }}>
-              {(() => {
-                // --- Per-racket price calculation ---
-                const rackets = viewing.rackets || [
-                  {
-                    racketType: viewing.racketType,
-                    stringName: viewing.stringName,
-                    stringColor: viewing.stringColor,
-                    stringTension: viewing.stringTension,
-                    quantity: viewing.quantity || 1,
-                    turnaroundTime: viewing.turnaroundTime
-                  }
-                ];
-                // If turnaroundTime can differ per racket, use r.turnaroundTime, else fallback to booking
-                function getBasePrice(r) {
-                  const t = r.turnaroundTime || viewing.turnaroundTime;
-                  switch (t) {
-                    case 'sameDay': return 35;
-                    case 'nextDay': return 30;
-                    case '3-5days': return 25;
-                    default: return 0;
-                  }
-                }
-                let racketsSubtotal = 0;
-                let breakdownLines = rackets.map((r, idx) => {
-                  const basePrice = getBasePrice(r);
-                  const qty = parseInt(r.quantity) || 1;
-                  racketsSubtotal += basePrice * qty;
-                  return (
-                    <li key={`${viewing.id}-breakdown-${idx}`}>
-                      {qty} × ${basePrice} ({r.racketType === 'tennis' ? 'Tennis' : 'Badminton'}
-                      {r.stringName ? `, ${r.stringName}` : ''}
-                      {r.stringColor ? `, ${r.stringColor}` : ''}
-                      {r.stringTension ? `, ${r.stringTension}` : ''}
-                      )
-                    </li>
-                  );
-                });
-                let extras = 0;
-                if (viewing.ownString) extras -= 5; // $5 discount for own string
-                if (viewing.grommetReplacement) extras += 0.25;
-                let deliveryFee = 0;
-                const dropoffDelivery = viewing.dropoffLocation === 'Door-to-Door (Delivery)';
-                const pickupDelivery = viewing.pickupLocation === 'Door-to-Door (Delivery)';
-                if (dropoffDelivery) deliveryFee += 12;
-                if (pickupDelivery) deliveryFee += 12;
-                if (dropoffDelivery && pickupDelivery) deliveryFee -= 4;
-                const total = racketsSubtotal + extras + deliveryFee;
-                return (
-                  <>
-                    <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: 8 }}>
-                      Estimated Total: ${total.toFixed(2)}
-                    </div>
-                    <div style={{ color: '#2e7d32', fontSize: '0.98rem', textAlign: 'left', maxWidth: 350, margin: '0 auto' }}>
-                      <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                        {breakdownLines}
-                        <li><strong>Subtotal:</strong> ${racketsSubtotal.toFixed(2)}</li>
-                        {viewing.ownString && <li>Own string: -$5.00 discount</li>}
-                        {viewing.grommetReplacement && <li>Grommet replacement: 4 FREE per racket, +$0.25 each additional</li>}
-                        {dropoffDelivery && <li>Drop-off Delivery: +$12.00</li>}
-                        {pickupDelivery && <li>Pick-up Delivery: +$12.00</li>}
-                        {dropoffDelivery && pickupDelivery && <li>Both Delivery Discount: -$4.00</li>}
-                      </ul>
-                    </div>
-                  </>
-                );
-              })()}
+              <div>
+                <strong>Price Breakdown:</strong><br/>
+                <span>Rackets Subtotal: ${calculateBookingTotal(viewing).toFixed(2)}</span><br/>
+                {viewing.ownString && <span>Own String Discount: -$5.00<br/></span>}
+                {viewing.grommetReplacement && <span>Grommet Replacement: 4 FREE per racket, +$0.25 each additional<br/></span>}
+                {viewing.dropoffLocation === 'Door-to-Door (Delivery)' && <span>Drop-off Delivery: +$12.00<br/></span>}
+                {viewing.pickupLocation === 'Door-to-Door (Delivery)' && <span>Pick-up Delivery: +$12.00<br/></span>}
+                {viewing.dropoffLocation === 'Door-to-Door (Delivery)' && viewing.pickupLocation === 'Door-to-Door (Delivery)' && <span>Both Delivery Discount: -$4.00<br/></span>}
+                <strong>Total: ${(calculateBookingTotal(viewing) - (viewing.ownString ? 5 : 0) + (viewing.grommetReplacement ? 0.25 * (viewing.rackets.length - 1) : 0) + (viewing.dropoffLocation === 'Door-to-Door (Delivery)' ? 12 : 0) + (viewing.pickupLocation === 'Door-to-Door (Delivery)' ? 12 : 0) - (viewing.dropoffLocation === 'Door-to-Door (Delivery)' && viewing.pickupLocation === 'Door-to-Door (Delivery)' ? 4 : 0)).toFixed(2)}</strong>
+              </div>
+            </div>
+            {viewing?.actualPickupTime && (
+              <div style={{ marginBottom: '1.25rem', color: '#155724', background: '#e8f5e8', padding: '0.75rem 1.25rem', borderRadius: 8 }}>
+                <strong>Actual Pickup Time:</strong> {new Date(viewing.actualPickupTime).toLocaleString()}
+              </div>
+            )}
+            {(viewing?.autoPickupTime || viewing?.actualPickupTime) && (
+              <div style={{ marginBottom: '1.25rem', color: '#155724', background: '#e8f5e8', padding: '0.75rem 1.25rem', borderRadius: 8 }}>
+                <div><strong>Auto-logged Pickup Time:</strong> {viewing.autoPickupTime ? new Date(viewing.autoPickupTime).toLocaleString() : '-'}</div>
+                <div><strong>Manually Entered Pickup Time:</strong> {viewing.actualPickupTime ? new Date(viewing.actualPickupTime).toLocaleString() : '-'}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {/* Keep the rest of the component (view modal, etc.) unchanged */}
+      {pickupTimeModal.open && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.25)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            padding: '2.5rem',
+            minWidth: '350px',
+            maxWidth: '95vw',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            position: 'relative'
+          }}>
+            <h2 style={{ marginBottom: 16 }}>Set Actual Pickup Time</h2>
+            <input
+              type="datetime-local"
+              value={actualPickupTime}
+              onChange={e => setActualPickupTime(e.target.value)}
+              style={{ width: '100%', padding: '0.75em', fontSize: '1em', borderRadius: 8, border: '1.5px solid #e0e0e0', marginBottom: 24 }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button onClick={() => setPickupTimeModal({ open: false, booking: null })} style={{ background: '#eee', color: '#333', border: 'none', borderRadius: 6, padding: '0.5em 1.2em', fontWeight: 600 }}>Cancel</button>
+              <button onClick={() => handleSaveActualPickupTime()} style={{ background: '#4caf50', color: 'white', border: 'none', borderRadius: 6, padding: '0.5em 1.2em', fontWeight: 600 }}>Save</button>
             </div>
           </div>
         </div>

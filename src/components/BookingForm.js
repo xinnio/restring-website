@@ -1082,7 +1082,7 @@ export default function BookingForm() {
                   value={form.dropoffDate || ''}
                   onChange={handleChange}
                   required
-                  min={getAvailableDatesForLocation(form.dropoffLocation)[0]}
+                  min={new Date().toISOString().split('T')[0]}
                   max={getAvailableDatesForLocation(form.dropoffLocation).slice(-1)[0]}
                   style={{ width: '100%', padding: '0.875rem', border: '2px solid #e9ecef', borderRadius: '8px', fontSize: '0.875rem', backgroundColor: 'white' }}
                   list="available-dates"

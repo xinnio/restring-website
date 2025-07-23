@@ -3,8 +3,21 @@
 import React, { useState } from 'react';
 
 export default function AvailabilityForm({ slot = null, onSuccess }) {
+  // Helper to normalize date to YYYY-MM-DD
+  function normalizeDate(dateStr) {
+    if (!dateStr) return '';
+    // If already in YYYY-MM-DD, return as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    // If in DD/MM/YYYY, convert to YYYY-MM-DD
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const [d, m, y] = dateStr.split('/');
+      return `${y}-${m}-${d}`;
+    }
+    return dateStr;
+  }
+
   const [form, setForm] = useState({
-    date: slot?.date || '',
+    date: normalizeDate(slot?.date) || '',
     startTime: slot?.startTime || '',
     endTime: slot?.endTime || '',
     location: slot?.location || '',
