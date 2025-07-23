@@ -36,6 +36,58 @@ function calculateTotal(booking) {
   return (racketsSubtotal + extras + deliveryFee).toFixed(2);
 }
 
+// Add this helper function above the emailTemplates object:
+function renderBookingDetails(booking) {
+  const formatSlotTime = (slotId, formattedTime) => {
+    if (formattedTime) return formattedTime;
+    if (!slotId) return '-';
+    if (typeof slotId === 'string' && slotId.includes('/') && slotId.includes(',')) {
+      return slotId;
+    }
+    return `Slot ID: ${slotId}`;
+  };
+  return `
+    <div style="margin-top: 2rem; background: #f8f9fa; padding: 1.5rem; border-radius: 12px; border: 1.5px solid #e0e0e0; color: #333; font-size: 1rem;">
+      <h3 style="color: #667eea; margin-top: 0;">Full Booking Details</h3>
+      <div><strong>Booking Number:</strong> #${booking.bookingNumber || 'N/A'}</div>
+      <div><strong>Customer:</strong> ${booking.fullName}</div>
+      <div><strong>Email:</strong> ${booking.email || '-'}</div>
+      <div><strong>Phone:</strong> ${booking.phone || '-'}</div>
+      <div><strong>Status:</strong> ${booking.status || '-'}</div>
+      <div><strong>Payment:</strong> ${booking.paymentStatus || '-'}</div>
+      <div><strong>Turnaround:</strong> ${booking.turnaroundTime === 'sameDay' ? 'Same Day' : booking.turnaroundTime === 'nextDay' ? 'Next Day' : booking.turnaroundTime === '3-5days' ? '3-5 Days' : '-'}</div>
+      <div><strong>Own String:</strong> ${booking.ownString ? 'Yes' : 'No'}</div>
+      <div><strong>Grommet Replacement:</strong> ${booking.grommetReplacement ? 'Yes' : 'No'}</div>
+      <div><strong>Drop-Off Location:</strong> ${booking.dropoffLocation || '-'}</div>
+      <div><strong>Drop-Off Time:</strong> ${formatSlotTime(booking.dropoffSlotId, booking.dropoffTime)}</div>
+      <div><strong>Pick-up Location:</strong> ${booking.pickupLocation || '-'}</div>
+      <div><strong>Pick-up Time:</strong> ${formatSlotTime(booking.pickupSlotId, booking.pickupTime)}</div>
+      ${booking.pickupDate ? `<div><strong>Pick-up Date:</strong> ${new Date(booking.pickupDate).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>` : ''}
+      ${booking.pickupStartTime && booking.pickupEndTime ? `<div><strong>Pick-up Time Range:</strong> ${booking.pickupStartTime} - ${booking.pickupEndTime}</div>` : ''}
+      ${booking.pickupWindow ? `<div><strong>Pick-up Window:</strong> ${booking.pickupWindow}</div>` : ''}
+      ${booking.specialPickupRequest ? `<div><strong>Special Pickup Request:</strong> ${booking.specialPickupRequest}</div>` : ''}
+      ${booking.deliveryAddress ? `<div><strong>Delivery Address:</strong> ${booking.deliveryAddress}</div>` : ''}
+      ${booking.pickupScheduledAt ? `<div><strong>Pickup Scheduled:</strong> ${new Date(booking.pickupScheduledAt).toLocaleString()}</div>` : ''}
+      <div><strong>Terms & Conditions:</strong> <span style="color: ${booking.agreeToTerms ? '#28a745' : '#dc3545'}; font-weight: 600;">${booking.agreeToTerms ? '✅ Agreed' : '❌ Not Agreed'}</span></div>
+      ${booking.notes ? `<div><strong>Notes:</strong> ${booking.notes}</div>` : ''}
+      <div style="margin-top: 1rem; background: #e8f5e8; padding: 1rem; border-radius: 8px; border: 1.5px solid #4caf50; color: #2e7d32;">
+        <strong>Price Breakdown:</strong><br/>
+        <span>Rackets Subtotal: $${calculateTotal(booking)}</span><br/>
+        ${booking.ownString ? '<span>Own String Discount: -$5.00<br/></span>' : ''}
+        ${booking.grommetReplacement ? '<span>Grommet Replacement: 4 FREE per racket, +$0.25 each additional<br/></span>' : ''}
+        ${booking.dropoffLocation === 'Door-to-Door (Delivery)' ? '<span>Drop-off Delivery: +$12.00<br/></span>' : ''}
+        ${booking.pickupLocation === 'Door-to-Door (Delivery)' ? '<span>Pick-up Delivery: +$12.00<br/></span>' : ''}
+        ${(booking.dropoffLocation === 'Door-to-Door (Delivery)' && booking.pickupLocation === 'Door-to-Door (Delivery)') ? '<span>Both Delivery Discount: -$4.00<br/></span>' : ''}
+        <strong>Total: $${calculateTotal(booking)}</strong>
+      </div>
+      <div style="margin-top: 1rem; color: #155724; background: #e8f5e8; padding: 0.75rem 1.25rem; border-radius: 8px;">
+        <div><strong>Auto-logged Pickup Time:</strong> ${booking.autoPickupTime ? new Date(booking.autoPickupTime).toLocaleString() : '-'}</div>
+        <div><strong>Manually Entered Pickup Time:</strong> ${booking.actualPickupTime ? new Date(booking.actualPickupTime).toLocaleString() : '-'}</div>
+      </div>
+    </div>
+  `;
+}
+
 // Email templates
 const emailTemplates = {
   bookingSubmission: (booking) => ({
@@ -91,6 +143,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
+      ${renderBookingDetails(booking)}
     `
   }),
 
@@ -141,6 +194,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
+      ${renderBookingDetails(booking)}
     `
   }),
 
@@ -201,6 +255,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
+      ${renderBookingDetails(booking)}
     `
   }),
 
@@ -261,6 +316,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
+      ${renderBookingDetails(booking)}
     `
   }),
 
@@ -327,6 +383,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
+      ${renderBookingDetails(booking)}
     `
   })
 };
