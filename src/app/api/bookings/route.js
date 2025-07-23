@@ -79,7 +79,11 @@ export async function POST(request) {
     
     // Send email notifications
     try {
-      await sendBookingEmails(booking);
+      // Robust base URL for email API
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+        || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
+        || 'http://localhost:3000';
+      await sendBookingEmails(booking, baseUrl);
     } catch (emailError) {
       console.error('Email notification failed:', emailError);
       // Don't fail the booking if email fails
@@ -97,7 +101,7 @@ export async function POST(request) {
 }
 
 // Email notification function - sends emails for different booking stages
-async function sendBookingEmails(booking) {
+async function sendBookingEmails(booking, baseUrl) {
   try {
     // Validate booking data
     if (!booking) {
@@ -112,7 +116,7 @@ async function sendBookingEmails(booking) {
 
     // 1. Send booking submission email to customer (ONLY this email is sent automatically)
     try {
-      const customerEmailResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/email`, {
+      const customerEmailResponse = await fetch(`${baseUrl}/api/email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -295,7 +299,7 @@ Status: ${booking.status}
 Created: ${new Date(booking.createdAt).toLocaleString()}
       `;
 
-      const adminEmailResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/email`, {
+      const adminEmailResponse = await fetch(`${baseUrl}/api/email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
