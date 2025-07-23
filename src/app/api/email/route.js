@@ -97,7 +97,7 @@ function renderBookingDetailView(booking) {
             <div style="border: 1px solid #e3e3e3; border-radius: 10px; padding: 0.75rem 1.25rem; background: #f8f9fa; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03)">
               <span style="padding: 0.25rem 0.75rem; background-color: ${r.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5'}; color: ${r.racketType === 'tennis' ? '#1976d2' : '#7b1fa2'}; border-radius: 12px; font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">${r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}</span>
               <span style="color: #333; font-size: 1rem;"><strong>String:</strong> ${booking.ownString ? 'Own String' : formatStringDisplay(r)}</span>
-              <span style="color: #333; font-size: 1rem;"><strong>Color:</strong> ${booking.ownString ? 'N/A' : (r.stringColor || '-')}</span>
+              <span style="color: #333; font-size: 1rem;"><strong>Color:</strong> ${(r.stringColor || '-')}</span>
               <span style="color: #333; font-size: 1rem;"><strong>Tension:</strong> ${formatTension(r)}</span>
               <span style="color: #333; font-size: 1rem;"><strong>Qty:</strong> ${r.quantity || 1}</span>
             </div>
@@ -138,41 +138,6 @@ const emailTemplates = {
             <strong>Thank you for submitting your booking!</strong><br/>
             We have received your request. <b>We will contact you soon to confirm your booking and arrange pickup/drop-off.</b><br/>
             You will receive a separate confirmation email once your booking is confirmed.
-          </div>
-          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-            <h3 style="color: #667eea; margin-top: 0;">Booking Details</h3>
-            <p><strong>Name:</strong> ${booking.fullName}</p>
-            <p><strong>Email:</strong> ${booking.email}</p>
-            <p><strong>Phone:</strong> ${booking.phone}</p>
-            <p><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;">${booking.status}</span></p>
-            <p><strong>Turnaround Time:</strong> ${booking.turnaroundTime}</p>
-          </div>
-          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="color: #667eea; margin-top: 0;">Racket Details</h3>
-            ${booking.rackets.map((racket, index) => `
-              <div style="border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 10px;">
-                <h4 style="margin: 0 0 10px 0; color: #495057;">Racket ${index + 1}</h4>
-                <p><strong>Type:</strong> ${racket.racketType}</p>
-                <p><strong>String Brand:</strong> ${racket.stringBrand}</p>
-                <p><strong>String Model:</strong> ${racket.stringModel}</p>
-                <p><strong>Tension:</strong> ${racket.stringTensionLabel ? racket.stringTensionLabel : (racket.stringTension || '-')}</p>
-                <p><strong>Method:</strong> ${racket.tensionMethod}</p>
-              </div>
-            `).join('')}
-          </div>
-          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="color: #667eea; margin-top: 0;">Pickup & Dropoff</h3>
-            <p><strong>Dropoff Location:</strong> ${booking.dropoffLocation}</p>
-            <p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>
-            ${booking.notes ? `<p><strong>Notes:</strong> ${booking.notes}</p>` : ''}
-          </div>
-          <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="color: #28a745; margin-top: 0;">Receipt</h3>
-            <p style="font-size: 1.15em; font-weight: bold; color: #2e7d32;">Receipt: $${calculateTotal(booking)}</p>
-          </div>
-          <div style="text-align: center; margin-top: 30px;">
-            <p style="color: #6c757d; font-size: 14px;">We'll notify you when your racket is ready for pickup!</p>
-            <p style="color: #6c757d; font-size: 12px;">Thank you for choosing Markham Restring Studio</p>
           </div>
         </div>
       </div>
