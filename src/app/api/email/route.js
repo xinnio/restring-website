@@ -36,51 +36,84 @@ function calculateTotal(booking) {
   return (racketsSubtotal + extras + deliveryFee).toFixed(2);
 }
 
-// Add this helper function above the emailTemplates object:
-function renderBookingDetails(booking) {
+// Replace the booking detail section in all email templates with a new HTML block matching the booking detail view
+function renderBookingDetailView(booking) {
+  // Helper functions for formatting
+  const formatStringDisplay = (r) => {
+    if (!r.stringName) return '-';
+    if (r.stringBrand && r.stringModel) return `${r.stringBrand}-${r.stringModel}`;
+    return r.stringName;
+  };
+  const formatTension = (r) => {
+    if (r.stringTensionLabel) {
+      if (/\d/.test(r.stringTensionLabel)) return r.stringTensionLabel;
+      if (r.stringTension) return `${r.stringTensionLabel} (${r.stringTension} lbs)`;
+      return r.stringTensionLabel;
+    }
+    if (r.stringTension) return `${r.stringTension} lbs`;
+    return '-';
+  };
   const formatSlotTime = (slotId, formattedTime) => {
     if (formattedTime) return formattedTime;
     if (!slotId) return '-';
-    if (typeof slotId === 'string' && slotId.includes('/') && slotId.includes(',')) {
-      return slotId;
-    }
+    if (typeof slotId === 'string' && slotId.includes('/') && slotId.includes(',')) return slotId;
     return `Slot ID: ${slotId}`;
   };
+  const rackets = booking.rackets || [
+    {
+      racketType: booking.racketType,
+      stringName: booking.stringName,
+      stringColor: booking.stringColor,
+      stringTension: booking.stringTension,
+      quantity: booking.quantity || 1
+    }
+  ];
+  // Price calculation (reuse logic from view)
+  let basePrice = 0;
+  switch (booking.turnaroundTime) {
+    case 'sameDay': basePrice = 35; break;
+    case 'nextDay': basePrice = 30; break;
+    case '3-5days': basePrice = 25; break;
+    default: basePrice = 0;
+  }
+  let racketsSubtotal = rackets.reduce((sum, r) => sum + (basePrice * (parseInt(r.quantity) || 1)), 0);
+  let extras = 0;
+  if (booking.ownString) extras += 3;
+  if (booking.grommetReplacement) extras += 0.25;
+  let deliveryFee = 0;
+  const dropoffDelivery = booking.dropoffLocation === 'Door-to-Door (Delivery)';
+  const pickupDelivery = booking.pickupLocation === 'Door-to-Door (Delivery)';
+  if (dropoffDelivery) deliveryFee += 12;
+  if (pickupDelivery) deliveryFee += 12;
+  if (dropoffDelivery && pickupDelivery) deliveryFee -= 4;
+  const total = racketsSubtotal + extras + deliveryFee;
   return `
-    <div style="margin-top: 2rem; background: #f8f9fa; padding: 1.5rem; border-radius: 12px; border: 1.5px solid #e0e0e0; color: #333; font-size: 1rem;">
-      <h3 style="color: #667eea; margin-top: 0;">Full Booking Details</h3>
-      <div><strong>Booking Number:</strong> #${booking.bookingNumber || 'N/A'}</div>
-      <div><strong>Customer:</strong> ${booking.fullName}</div>
-      <div><strong>Email:</strong> ${booking.email || '-'}</div>
-      <div><strong>Phone:</strong> ${booking.phone || '-'}</div>
-      <div><strong>Status:</strong> ${booking.status || '-'}</div>
-      <div><strong>Payment:</strong> ${booking.paymentStatus || '-'}</div>
-      <div><strong>Turnaround:</strong> ${booking.turnaroundTime === 'sameDay' ? 'Same Day' : booking.turnaroundTime === 'nextDay' ? 'Next Day' : booking.turnaroundTime === '3-5days' ? '3-5 Days' : '-'}</div>
-      <div><strong>Own String:</strong> ${booking.ownString ? 'Yes' : 'No'}</div>
-      <div><strong>Grommet Replacement:</strong> ${booking.grommetReplacement ? 'Yes' : 'No'}</div>
-      <div><strong>Drop-Off Location:</strong> ${booking.dropoffLocation || '-'}</div>
-      <div><strong>Drop-Off Time:</strong> ${formatSlotTime(booking.dropoffSlotId, booking.dropoffTime)}</div>
-      <div><strong>Pick-up Location:</strong> ${booking.pickupLocation || '-'}</div>
-      <div><strong>Pick-up Time:</strong> ${formatSlotTime(booking.pickupSlotId, booking.pickupTime)}</div>
-      ${booking.pickupDate ? `<div><strong>Pick-up Date:</strong> ${new Date(booking.pickupDate).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>` : ''}
-      ${booking.pickupStartTime && booking.pickupEndTime ? `<div><strong>Pick-up Time Range:</strong> ${booking.pickupStartTime} - ${booking.pickupEndTime}</div>` : ''}
-      ${booking.pickupWindow ? `<div><strong>Pick-up Window:</strong> ${booking.pickupWindow}</div>` : ''}
-      ${booking.specialPickupRequest ? `<div><strong>Special Pickup Request:</strong> ${booking.specialPickupRequest}</div>` : ''}
-      ${booking.deliveryAddress ? `<div><strong>Delivery Address:</strong> ${booking.deliveryAddress}</div>` : ''}
-      ${booking.pickupScheduledAt ? `<div><strong>Pickup Scheduled:</strong> ${new Date(booking.pickupScheduledAt).toLocaleString()}</div>` : ''}
-      <div><strong>Terms & Conditions:</strong> <span style="color: ${booking.agreeToTerms ? '#28a745' : '#dc3545'}; font-weight: 600;">${booking.agreeToTerms ? '✅ Agreed' : '❌ Not Agreed'}</span></div>
-      ${booking.notes ? `<div><strong>Notes:</strong> ${booking.notes}</div>` : ''}
-      <div style="margin-top: 1rem; background: #e8f5e8; padding: 1rem; border-radius: 8px; border: 1.5px solid #4caf50; color: #2e7d32;">
-        <strong>Price Breakdown:</strong><br/>
-        <span>Rackets Subtotal: $${calculateTotal(booking)}</span><br/>
-        ${booking.ownString ? '<span>Own String Discount: -$5.00<br/></span>' : ''}
-        ${booking.grommetReplacement ? '<span>Grommet Replacement: 4 FREE per racket, +$0.25 each additional<br/></span>' : ''}
-        ${booking.dropoffLocation === 'Door-to-Door (Delivery)' ? '<span>Drop-off Delivery: +$12.00<br/></span>' : ''}
-        ${booking.pickupLocation === 'Door-to-Door (Delivery)' ? '<span>Pick-up Delivery: +$12.00<br/></span>' : ''}
-        ${(booking.dropoffLocation === 'Door-to-Door (Delivery)' && booking.pickupLocation === 'Door-to-Door (Delivery)') ? '<span>Both Delivery Discount: -$4.00<br/></span>' : ''}
-        <strong>Total: $${calculateTotal(booking)}</strong>
+    <div style="background: #fff; border-radius: 10px; padding: 24px; margin-top: 24px; border: 1.5px solid #e0e0e0; color: #222; font-size: 1rem;">
+      <h2 style="color: #667eea; margin-top: 0;">Booking Details</h2>
+      <div style="margin-bottom: 1.25rem;"><strong>Booking Number:</strong> #${booking.bookingNumber || 'N/A'}<br/><strong>Customer:</strong> ${booking.fullName}<br/><strong>Email:</strong> ${booking.email || '-'}<br/><strong>Phone:</strong> ${booking.phone || '-'}</div>
+      <div style="margin-bottom: 1.25rem;"><strong>Racket & String Details:</strong>
+        <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 1rem;">
+          ${rackets.map((r, idx) => `
+            <div style="border: 1px solid #e3e3e3; border-radius: 10px; padding: 0.75rem 1.25rem; background: #f8f9fa; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03)">
+              <span style="padding: 0.25rem 0.75rem; background-color: ${r.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5'}; color: ${r.racketType === 'tennis' ? '#1976d2' : '#7b1fa2'}; border-radius: 12px; font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">${r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}</span>
+              <span style="color: #333; font-size: 1rem;"><strong>String:</strong> ${booking.ownString ? 'Own String' : formatStringDisplay(r)}</span>
+              <span style="color: #333; font-size: 1rem;"><strong>Color:</strong> ${booking.ownString ? 'N/A' : (r.stringColor || '-')}</span>
+              <span style="color: #333; font-size: 1rem;"><strong>Tension:</strong> ${formatTension(r)}</span>
+              <span style="color: #333; font-size: 1rem;"><strong>Qty:</strong> ${r.quantity || 1}</span>
+            </div>
+          `).join('')}
+        </div>
       </div>
-      <div style="margin-top: 1rem; color: #155724; background: #e8f5e8; padding: 0.75rem 1.25rem; border-radius: 8px;">
+      <div style="margin-bottom: 1.25rem;"><strong>Service Options:</strong><br/>Turnaround: ${booking.turnaroundTime === 'sameDay' ? 'Same Day' : booking.turnaroundTime === 'nextDay' ? 'Next Day' : booking.turnaroundTime === '3-5days' ? '3-5 Days' : '-'}<br/>Own String: ${booking.ownString ? 'Yes' : 'No'}<br/>Grommet Replacement: ${booking.grommetReplacement ? 'Yes' : 'No'}</div>
+      <div style="margin-bottom: 1.25rem;"><strong>Scheduling:</strong><br/>Drop-Off Location: ${booking.dropoffLocation || '-'}<br/>Drop-Off Time: ${formatSlotTime(booking.dropoffSlotId, booking.dropoffTime)}<br/>Pick-up Location: ${booking.pickupLocation || '-'}<br/>Pick-up Time: ${formatSlotTime(booking.pickupSlotId, booking.pickupTime)}<br/>${booking.pickupDate ? `Pick-up Date: ${new Date(booking.pickupDate).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br/>` : ''}${booking.pickupStartTime && booking.pickupEndTime ? `Pick-up Time Range: ${booking.pickupStartTime} - ${booking.pickupEndTime}<br/>` : ''}${booking.pickupWindow ? `Pick-up Window: ${booking.pickupWindow}<br/>` : ''}${booking.specialPickupRequest ? `Special Pickup Request: ${booking.specialPickupRequest}<br/>` : ''}${booking.deliveryAddress ? `Delivery Address: ${booking.deliveryAddress}<br/>` : ''}${booking.pickupScheduledAt ? `Pickup Scheduled: ${new Date(booking.pickupScheduledAt).toLocaleString()}<br/>` : ''}</div>
+      <div style="margin-bottom: 1.25rem;"><strong>Status:</strong> ${booking.status || '-'}<br/><strong>Payment:</strong> ${booking.paymentStatus || '-'}</div>
+      <div style="margin-bottom: 1.25rem;"><strong>Terms & Conditions:</strong> <span style="color: ${booking.agreeToTerms ? '#28a745' : '#dc3545'}; font-weight: 600;">${booking.agreeToTerms ? '✅ Agreed' : '❌ Not Agreed'}</span>${booking.agreeToTerms ? `<div style=\"margin-top: 0.5rem; font-size: 0.9rem; color: #666; font-style: italic;\">Customer has agreed to all terms and conditions including booking, service, liability, and cancellation policies.</div>` : ''}</div>
+      ${booking.notes ? `<div style=\"margin-bottom: 1.25rem;\"><strong>Notes:</strong> ${booking.notes}</div>` : ''}
+      <div style="margin-top: 1.5rem; color: #666; font-size: 0.95rem;"><em>Created: ${booking.createdAt ? new Date(booking.createdAt).toLocaleString() : '-'}</em></div>
+      <div style="margin-top: 2rem; background: #e8f5e8; padding: 1.25rem; border-radius: 12px; border: 2px solid #4caf50; text-align: center; color: #2e7d32;">
+        <div><strong>Price Breakdown:</strong><br/><span>Rackets Subtotal: $${racketsSubtotal.toFixed(2)}</span><br/>${booking.ownString ? '<span>Own String Discount: -$5.00<br/></span>' : ''}${booking.grommetReplacement ? '<span>Grommet Replacement: 4 FREE per racket, +$0.25 each additional<br/></span>' : ''}${dropoffDelivery ? '<span>Drop-off Delivery: +$12.00<br/></span>' : ''}${pickupDelivery ? '<span>Pick-up Delivery: +$12.00<br/></span>' : ''}${dropoffDelivery && pickupDelivery ? '<span>Both Delivery Discount: -$4.00<br/></span>' : ''}<strong>Total: $${total.toFixed(2)}</strong></div>
+      </div>
+      <div style="margin-bottom: 1.25rem; color: #155724; background: #e8f5e8; padding: 0.75rem 1.25rem; border-radius: 8px; margin-top: 1.5rem;">
         <div><strong>Auto-logged Pickup Time:</strong> ${booking.autoPickupTime ? new Date(booking.autoPickupTime).toLocaleString() : '-'}</div>
         <div><strong>Manually Entered Pickup Time:</strong> ${booking.actualPickupTime ? new Date(booking.actualPickupTime).toLocaleString() : '-'}</div>
       </div>
@@ -122,7 +155,7 @@ const emailTemplates = {
                 <p><strong>Type:</strong> ${racket.racketType}</p>
                 <p><strong>String Brand:</strong> ${racket.stringBrand}</p>
                 <p><strong>String Model:</strong> ${racket.stringModel}</p>
-                <p><strong>Tension:</strong> ${racket.stringTension}</p>
+                <p><strong>Tension:</strong> ${racket.stringTensionLabel ? racket.stringTensionLabel : (racket.stringTension || '-')}</p>
                 <p><strong>Method:</strong> ${racket.tensionMethod}</p>
               </div>
             `).join('')}
@@ -143,7 +176,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
-      ${renderBookingDetails(booking)}
+      ${renderBookingDetailView(booking)}
     `
   }),
 
@@ -194,7 +227,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
-      ${renderBookingDetails(booking)}
+      ${renderBookingDetailView(booking)}
     `
   }),
 
@@ -255,7 +288,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
-      ${renderBookingDetails(booking)}
+      ${renderBookingDetailView(booking)}
     `
   }),
 
@@ -286,7 +319,7 @@ const emailTemplates = {
                 <h4 style="margin: 0 0 10px 0; color: #856404;">Racket ${index + 1}</h4>
                 <p><strong>Type:</strong> ${racket.racketType}</p>
                 <p><strong>String:</strong> ${racket.stringBrand} ${racket.stringModel}</p>
-                <p><strong>Tension:</strong> ${racket.stringTension}</p>
+                <p><strong>Tension:</strong> ${racket.stringTensionLabel ? racket.stringTensionLabel : (racket.stringTension || '-')}</p>
                 <p><strong>Method:</strong> ${racket.tensionMethod}</p>
               </div>
             `).join('')}
@@ -316,7 +349,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
-      ${renderBookingDetails(booking)}
+      ${renderBookingDetailView(booking)}
     `
   }),
 
@@ -353,7 +386,7 @@ const emailTemplates = {
                 <h4 style="margin: 0 0 10px 0; color: #856404;">Racket ${index + 1}</h4>
                 <p><strong>Type:</strong> ${racket.racketType}</p>
                 <p><strong>String:</strong> ${racket.stringBrand} ${racket.stringModel}</p>
-                <p><strong>Tension:</strong> ${racket.stringTension}</p>
+                <p><strong>Tension:</strong> ${racket.stringTensionLabel ? racket.stringTensionLabel : (racket.stringTension || '-')}</p>
                 <p><strong>Method:</strong> ${racket.tensionMethod}</p>
                 <p><strong>Qty:</strong> ${racket.quantity || 1}</p>
               </div>
@@ -383,7 +416,7 @@ const emailTemplates = {
           </div>
         </div>
       </div>
-      ${renderBookingDetails(booking)}
+      ${renderBookingDetailView(booking)}
     `
   })
 };
