@@ -41,7 +41,7 @@ function renderBookingDetailView(booking) {
   // Helper functions for formatting
   const formatStringDisplay = (r) => {
     if (!r.stringName) return '-';
-    if (r.stringBrand && r.stringModel) return `${r.stringBrand}-${r.stringModel}`;
+    if (r.stringBrand && r.stringModel) return `${r.stringBrand} ${r.stringModel}`;
     return r.stringName;
   };
   const formatTension = (r) => {
@@ -94,12 +94,12 @@ function renderBookingDetailView(booking) {
       <div style="margin-bottom: 1.25rem;"><strong>Racket & String Details:</strong>
         <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 1rem;">
           ${rackets.map((r, idx) => `
-            <div style="border: 1px solid #e3e3e3; border-radius: 10px; padding: 0.75rem 1.25rem; background: #f8f9fa; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03)">
-              <span style="padding: 0.25rem 0.75rem; background-color: ${r.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5'}; color: ${r.racketType === 'tennis' ? '#1976d2' : '#7b1fa2'}; border-radius: 12px; font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">${r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}</span>
-              <span style="color: #333; font-size: 1rem;"><strong>String:</strong> ${booking.ownString ? 'Own String' : formatStringDisplay(r)}</span>
-              <span style="color: #333; font-size: 1rem;"><strong>Color:</strong> ${(r.stringColor || '-')}</span>
-              <span style="color: #333; font-size: 1rem;"><strong>Tension:</strong> ${formatTension(r)}</span>
-              <span style="color: #333; font-size: 1rem;"><strong>Qty:</strong> ${r.quantity || 1}</span>
+            <div style="display: flex; align-items: center; gap: 1.5rem; background: #f8f9fa; border: 1px solid #e3e3e3; border-radius: 12px; padding: 0.75rem 1.25rem; font-size: 1.08rem; font-weight: 500;">
+              <span style="padding: 0.25rem 0.85rem; background-color: ${r.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5'}; color: ${r.racketType === 'tennis' ? '#1976d2' : '#7b1fa2'}; border-radius: 12px; font-size: 1.08rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">${r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}</span>
+              <span><strong>String:</strong> ${booking.ownString ? 'Own String' : formatStringDisplay(r)}</span>
+              <span><strong>Color:</strong> ${(r.stringColor || '-')}</span>
+              <span><strong>Tension:</strong> ${formatTension(r)}</span>
+              <span><strong>Qty:</strong> ${r.quantity || 1}</span>
             </div>
           `).join('')}
         </div>
