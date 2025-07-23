@@ -49,7 +49,11 @@ const emailTemplates = {
         
         <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
           <h2 style="color: #333; margin-bottom: 20px;">Booking #${booking.bookingNumber} Received!</h2>
-          
+          <div style="background: #fff3cd; padding: 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107; color: #856404; font-size: 1.1em;">
+            <strong>Thank you for submitting your booking!</strong><br/>
+            We have received your request. <b>We will contact you soon to confirm your booking and arrange pickup/drop-off.</b><br/>
+            You will receive a separate confirmation email once your booking is confirmed.
+          </div>
           <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
             <h3 style="color: #667eea; margin-top: 0;">Booking Details</h3>
             <p><strong>Name:</strong> ${booking.fullName}</p>

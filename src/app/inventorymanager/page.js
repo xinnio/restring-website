@@ -212,13 +212,13 @@ export default function InventoryManager() {
               ) : (
                 <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100vw' }}>
                   <table style={{ 
-                    width: '100%',
+                    width: '100%', 
                     maxWidth: '100vw',
-                    borderCollapse: 'separate',
-                    borderSpacing: 0,
-                    background: 'white',
-                    borderRadius: '16px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                    borderCollapse: 'separate', 
+                    borderSpacing: 0, 
+                    background: 'white', 
+                    borderRadius: '16px', 
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
                     overflow: 'hidden',
                     minWidth: '700px',
                     tableLayout: 'auto',

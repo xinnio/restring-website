@@ -976,7 +976,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <select 
                           value={b.status || 'Pending'} 
-                          onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
+                            onChange={(e) => handleStatusUpdate(b.id, e.target.value)}
                           disabled={updating === b.id}
                           style={{ 
                             backgroundColor: statusColors.bg,
@@ -1014,7 +1014,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <select 
                           value={b.paymentStatus || 'Pending'} 
-                          onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
+                            onChange={(e) => handlePaymentUpdate(b.id, e.target.value)}
                           disabled={updating === b.id}
                           style={{ 
                             backgroundColor: paymentColors.bg,

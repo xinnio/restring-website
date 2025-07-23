@@ -293,52 +293,52 @@ export default function Strings() {
                   }}>
                     {/* First Image */}
                     <div style={{ 
-                      borderRadius: '12px',
-                      overflow: 'hidden',
-                      backgroundColor: '#f8f9fa',
-                      border: '1px solid #e9ecef',
-                      width: '120px',
-                      height: '120px',
-                      display: 'flex',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #e9ecef',
+                    width: '120px',
+                    height: '120px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      flexShrink: 0
+                  }}>
+                    {first.imageUrl ? (
+                      <Image 
+                        src={imageUrls[first.id] || first.imageUrl} 
+                          alt={`${name} string - Image 1`} 
+                        fill
+                        unoptimized={true}
+                        style={{ 
+                          objectFit: 'cover',
+                          borderRadius: '12px'
+                        }} 
+                        onError={(e) => {
+                            console.log('Image 1 failed to load:', first.imageUrl);
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                        onLoad={() => {
+                            console.log('Image 1 loaded successfully:', first.imageUrl);
+                        }}
+                      />
+                    ) : null}
+                    <div style={{ 
+                      display: first.imageUrl ? 'none' : 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      position: 'relative',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                      flexShrink: 0
+                      color: '#999',
+                      fontSize: '2rem',
+                      width: '100%',
+                      height: '100%',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0
                     }}>
-                      {first.imageUrl ? (
-                        <Image 
-                          src={imageUrls[first.id] || first.imageUrl} 
-                          alt={`${name} string - Image 1`} 
-                          fill
-                          unoptimized={true}
-                          style={{ 
-                            objectFit: 'cover',
-                            borderRadius: '12px'
-                          }} 
-                          onError={(e) => {
-                            console.log('Image 1 failed to load:', first.imageUrl);
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                          onLoad={() => {
-                            console.log('Image 1 loaded successfully:', first.imageUrl);
-                          }}
-                        />
-                      ) : null}
-                      <div style={{ 
-                        display: first.imageUrl ? 'none' : 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#999',
-                        fontSize: '2rem',
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0
-                      }}>
                         <span style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>📷</span>
                         <span style={{ fontSize: '0.7rem', color: '#666' }}>No image</span>
                       </div>

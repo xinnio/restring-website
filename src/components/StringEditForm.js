@@ -88,7 +88,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
     }
 
     if (imageNumber === 1) {
-      setUploading(true);
+    setUploading(true);
     } else {
       setUploading2(true);
     }
@@ -105,8 +105,8 @@ export default function StringEditForm({ string, variants, onSuccess }) {
       if (res.ok) {
         const data = await res.json();
         if (imageNumber === 1) {
-          setForm(f => ({ ...f, imageUrl: data.url }));
-          setImagePreview(data.url);
+        setForm(f => ({ ...f, imageUrl: data.url }));
+        setImagePreview(data.url);
         } else {
           setForm(f => ({ ...f, imageUrl2: data.url }));
           setImagePreview2(data.url);
@@ -120,7 +120,7 @@ export default function StringEditForm({ string, variants, onSuccess }) {
       alert('Upload failed');
     } finally {
       if (imageNumber === 1) {
-        setUploading(false);
+      setUploading(false);
       } else {
         setUploading2(false);
       }
@@ -238,108 +238,108 @@ export default function StringEditForm({ string, variants, onSuccess }) {
             }}>
               Primary Image
             </label>
-            
-            {imagePreview && (
-              <div style={{ 
-                marginBottom: '1rem', 
-                textAlign: 'center',
-                position: 'relative'
-              }}>
-                <Image 
-                  src={imagePreview} 
+        
+        {imagePreview && (
+          <div style={{ 
+            marginBottom: '1rem', 
+            textAlign: 'center',
+            position: 'relative'
+          }}>
+            <Image 
+              src={imagePreview} 
                   alt="String preview 1" 
                   width={200}
                   height={120}
-                  style={{ 
-                    maxWidth: '100%', 
+              style={{ 
+                maxWidth: '100%', 
                     maxHeight: '120px', 
-                    borderRadius: '8px',
-                    border: '2px solid #e9ecef',
-                    objectFit: 'cover'
-                  }} 
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImagePreview('');
-                    setForm(f => ({ ...f, imageUrl: '' }));
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    right: '5px',
-                    background: '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
+                borderRadius: '8px',
+                border: '2px solid #e9ecef',
+                objectFit: 'cover'
+              }} 
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setImagePreview('');
+                setForm(f => ({ ...f, imageUrl: '' }));
+              }}
+              style={{
+                position: 'absolute',
+                top: '5px',
+                right: '5px',
+                background: '#dc3545',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
                     width: '20px',
                     height: '20px',
-                    cursor: 'pointer',
+                cursor: 'pointer',
                     fontSize: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            
-            <div style={{
-              border: '2px dashed #dee2e6',
-              borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        
+        <div style={{
+          border: '2px dashed #dee2e6',
+          borderRadius: '8px',
               padding: '0.75rem',
-              textAlign: 'center',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
+          textAlign: 'center',
+          backgroundColor: 'white',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
               position: 'relative',
               minHeight: '80px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
-            }}>
-              <input
-                type="file"
-                accept="image/*"
+        }}>
+          <input
+            type="file"
+            accept="image/*"
                 onChange={(e) => handleImageUpload(e, 1)}
-                disabled={uploading}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  opacity: 0,
-                  cursor: 'pointer'
-                }}
-              />
-              <div style={{ pointerEvents: 'none' }}>
-                {uploading ? (
-                  <div>
-                    <div style={{ 
+            disabled={uploading}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0,
+              cursor: 'pointer'
+            }}
+          />
+          <div style={{ pointerEvents: 'none' }}>
+            {uploading ? (
+              <div>
+                <div style={{ 
                       width: '16px', 
                       height: '16px', 
-                      border: '2px solid #f3f3f3', 
-                      borderTop: '2px solid #667eea', 
-                      borderRadius: '50%', 
-                      animation: 'spin 1s linear infinite',
+                  border: '2px solid #f3f3f3', 
+                  borderTop: '2px solid #667eea', 
+                  borderRadius: '50%', 
+                  animation: 'spin 1s linear infinite',
                       margin: '0 auto 0.25rem'
-                    }}></div>
+                }}></div>
                     <p style={{ color: '#666', margin: 0, fontSize: '0.8rem' }}>Uploading...</p>
-                  </div>
-                ) : (
-                  <div>
+              </div>
+            ) : (
+              <div>
                     <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>📷</div>
                     <p style={{ color: '#666', margin: '0 0 0.25rem 0', fontSize: '0.8rem' }}>
                       {imagePreview ? 'Change image' : 'Upload image'}
-                    </p>
+                </p>
                     <p style={{ color: '#999', fontSize: '0.65rem', margin: 0 }}>
-                      JPG, PNG, GIF up to 5MB
-                    </p>
-                  </div>
-                )}
+                  JPG, PNG, GIF up to 5MB
+                </p>
+              </div>
+            )}
               </div>
             </div>
           </div>
