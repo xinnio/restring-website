@@ -747,7 +747,12 @@ export default function BookingForm() {
                       <select 
                         name="stringTension" 
                         value={r.stringTension} 
-                        onChange={e => handleRacketChange(idx, e)} 
+                        onChange={e => {
+                          const value = e.target.value;
+                          const label = getTensionOptions(r.racketType).find(opt => opt.value === value)?.label || value;
+                          handleRacketChange(idx, { target: { name: 'stringTension', value } });
+                          handleRacketChange(idx, { target: { name: 'stringTensionLabel', value: label } });
+                        }} 
                         required
                         style={{ 
                           width: '100%', 
@@ -766,7 +771,7 @@ export default function BookingForm() {
                             {option.label}
                           </option>
                         ))}
-                  </select>
+                      </select>
                       {r.stringTension && (
                         <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
                           {getTensionOptions(r.racketType).find(opt => opt.value === r.stringTension)?.description}

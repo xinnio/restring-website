@@ -273,45 +273,48 @@ export default function AvailabilityManager() {
               </div>
             </div>
           )}
-          <div style={{ 
+          {/* ROW 1: Add New Time Slot | Calendar View */}
+          <div style={{
             display: 'flex',
             gap: 'clamp(1rem, 3vw, 2rem)',
             alignItems: 'flex-start',
             flexWrap: 'wrap',
             width: '100%',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            marginBottom: '2rem',
           }}>
-            <div style={{ 
-              backgroundColor: 'white', 
-              padding: 'clamp(1rem, 3vw, 2rem)', 
-              borderRadius: '16px', 
-              boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
+            {/* Add New Time Slot (LEFT) */}
+            <div style={{
+              backgroundColor: 'white',
+              padding: 'clamp(1rem, 3vw, 2rem)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)',
               border: '1px solid #e9ecef',
               minWidth: '320px',
               maxWidth: '600px',
               width: '100%',
               flex: 1
             }}>
-              <h2 style={{ 
-                marginBottom: 'clamp(1rem, 3vw, 1.5rem)', 
-                color: '#333', 
-                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
-                fontWeight: 600 
+              <h2 style={{
+                marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
+                color: '#333',
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                fontWeight: 600
               }}>Add New Time Slot</h2>
               <AvailabilityForm onSuccess={fetchAvailability} />
             </div>
-            <div style={{ 
-              backgroundColor: 'white', 
-              padding: 'clamp(1rem, 3vw, 2rem)', 
-              borderRadius: '16px', 
-              boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
+            {/* Calendar View (RIGHT) */}
+            <div style={{
+              backgroundColor: 'white',
+              padding: 'clamp(1rem, 3vw, 2rem)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)',
               border: '1px solid #e9ecef',
               minWidth: '320px',
               maxWidth: '600px',
               width: '100%',
               flex: 1
             }}>
-              {/* Calendar View */}
               <div style={{ 
                 backgroundColor: 'white', 
                 borderRadius: '16px', 
@@ -405,56 +408,33 @@ export default function AvailabilityManager() {
                     ];
                   })()}
                 </div>
-                {/* Modal/Inline Form for slot creation/editing */}
-                {showForm && (
-                  <div style={{ 
-                    position: 'absolute', 
-                    top: 40, 
-                    left: 0, 
-                    right: 0, 
-                    zIndex: 10, 
-                    background: 'rgba(255,255,255,0.98)', 
-                    borderRadius: '16px', 
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)', 
-                    padding: 'clamp(1rem, 3vw, 2rem)', 
-                    border: '2px solid #667eea' 
-                  }}>
-                    <button onClick={handleFormClose} style={{ 
-                      position: 'absolute', 
-                      top: 12, 
-                      right: 18, 
-                      background: 'none', 
-                      border: 'none', 
-                      fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
-                      color: '#667eea', 
-                      cursor: 'pointer' 
-                    }}>&times;</button>
-                    {/* LOG SLOT PASSED TO AVAILABILITYFORM */}
-                    {formSlot && console.log('Passing slot to AvailabilityForm:', formSlot)}
-                    <AvailabilityForm slot={formSlot ? formSlot : (formDate ? { date: formDate } : null)} onSuccess={handleFormSuccess} />
-                  </div>
-                )}
               </div>
-              {/* Side by Side Tables */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: 'clamp(1.5rem, 4vw, 2.5rem)',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                flexWrap: 'wrap',
-                width: '100%',
-              }}>
-                {/* Current Availability Table */}
-                <div style={{ 
-                  backgroundColor: 'white', 
-                  padding: 'clamp(1rem, 3vw, 2rem)', 
-                  borderRadius: '16px', 
-                  boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
-                  border: '1px solid #e9ecef',
-                  minWidth: '280px'
-                }}>
-                  <div style={{ 
+            </div>
+          </div>
+
+          {/* ROW 2: Current Availability | Select a Date */}
+          <div style={{
+            display: 'flex',
+            gap: 'clamp(1rem, 3vw, 2rem)',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            width: '100%',
+            justifyContent: 'center',
+            marginBottom: '2rem',
+          }}>
+            {/* Current Availability (LEFT) */}
+            <div style={{
+              backgroundColor: 'white',
+              padding: 'clamp(1rem, 3vw, 2rem)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)',
+              border: '1px solid #e9ecef',
+              minWidth: '320px',
+              maxWidth: '600px',
+              width: '100%',
+              flex: 1
+            }}>
+              <div style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
@@ -694,17 +674,19 @@ export default function AvailabilityManager() {
                     </div>
                   )}
                 </div>
-
-                {/* Selected Date Availability Table */}
-                <div style={{ 
-                  backgroundColor: 'white', 
-                  padding: 'clamp(1rem, 3vw, 2rem)', 
-                  borderRadius: '16px', 
-                  boxShadow: '0 4px 24px rgba(102,126,234,0.08)', 
-                  border: '1px solid #e9ecef',
-                  minWidth: '280px'
-                }}>
-                  <div style={{ 
+            {/* Select a Date (RIGHT) */}
+            <div style={{
+              backgroundColor: 'white',
+              padding: 'clamp(1rem, 3vw, 2rem)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 24px rgba(102,126,234,0.08)',
+              border: '1px solid #e9ecef',
+              minWidth: '320px',
+              maxWidth: '600px',
+              width: '100%',
+              flex: 1
+            }}>
+              <div style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
@@ -941,10 +923,8 @@ export default function AvailabilityManager() {
                     </div>
                   )}
                 </div>
-              </div>
             </div>
           </div>
-        </div>
 
         {/* Weekly View Availability Calendar */}
         <div style={{ 
@@ -1139,6 +1119,45 @@ export default function AvailabilityManager() {
             </div>
           </div>
         </div>
+        {/* Global Edit Modal for AvailabilityForm */}
+        {showForm && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.25)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+              padding: 'clamp(1.5rem, 4vw, 2.5rem)',
+              minWidth: '320px',
+              maxWidth: '95vw',
+              width: '100%',
+              position: 'relative',
+            }}>
+              <button onClick={handleFormClose} style={{
+                position: 'absolute',
+                top: 12,
+                right: 18,
+                background: 'none',
+                border: 'none',
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                color: '#667eea',
+                cursor: 'pointer',
+                zIndex: 1001,
+              }}>&times;</button>
+              <AvailabilityForm slot={formSlot ? formSlot : (formDate ? { date: formDate } : null)} onSuccess={handleFormSuccess} />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

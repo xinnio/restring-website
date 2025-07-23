@@ -4,7 +4,7 @@ import { docClient } from '../../../../lib/dynamodb';
 
 export async function GET(request, { params }) {
   try {
-    const tableName = process.env.BOOKINGS_TABLE;
+    const tableName = process.env.DYNAMODB_AVAILABILITY_TABLE;
     const { id } = params;
     const getCommand = new GetCommand({
       TableName: tableName,
@@ -23,7 +23,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    const tableName = process.env.BOOKINGS_TABLE;
+    const tableName = process.env.DYNAMODB_AVAILABILITY_TABLE;
     const { id } = params;
     const body = await request.json();
     
@@ -54,7 +54,8 @@ export async function PUT(request, { params }) {
     
     // Handle payment status updates
     if (body.paymentStatus) {
-      updateExpression += ', paymentStatus = :paymentStatus';
+      updateExpression += ', #paymentStatus = :paymentStatus';
+      expressionAttributeNames['#paymentStatus'] = 'paymentStatus';
       expressionAttributeValues[':paymentStatus'] = body.paymentStatus;
       if (body.paymentStatus === 'Paid') {
         updateExpression += ', paymentReceivedAt = :paymentReceivedAt';
@@ -99,7 +100,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const tableName = process.env.BOOKINGS_TABLE;
+    const tableName = process.env.DYNAMODB_AVAILABILITY_TABLE;
     const { id } = params;
     const deleteCommand = new DeleteCommand({
       TableName: tableName,

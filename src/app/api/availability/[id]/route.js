@@ -16,7 +16,7 @@ export async function DELETE(request, { params }) {
       }, { status: 400 });
     }
     
-    const tableName = process.env.AVAILABILITY_TABLE;
+    const tableName = process.env.DYNAMODB_AVAILABILITY_TABLE;
     console.log('Attempting to delete from table:', tableName, 'with key:', { id });
 
     const deleteCommand = new DeleteCommand({
@@ -73,7 +73,7 @@ export async function PUT(request, { params }) {
       }, { status: 400 });
     }
     
-    const tableName = process.env.AVAILABILITY_TABLE;
+    const tableName = process.env.DYNAMODB_AVAILABILITY_TABLE;
     console.log('Attempting to update in table:', tableName, 'with key:', { id });
 
     const updateCommand = new UpdateCommand({

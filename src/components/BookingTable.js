@@ -874,9 +874,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           <button onClick={() => setEmailDropdown(emailDropdown === b.id ? null : b.id)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#e3f2fd', color: '#1976d2', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Email ▼</button>
                             {emailDropdown === b.id && (
                               <div style={{
-                              position: 'fixed',
-                              top: `${window.scrollY + (document.querySelector(`[data-email-dropdown='${b.id}']`)?.getBoundingClientRect().bottom || 0)}px`,
-                              left: `${Math.min(window.innerWidth - 140, (document.querySelector(`[data-email-dropdown='${b.id}']`)?.getBoundingClientRect().left || 0))}px`,
+                              position: 'absolute',
+                              top: '100%',
+                              left: 0,
                               background: 'white',
                               border: '1px solid #e0e0e0',
                               borderRadius: 6,

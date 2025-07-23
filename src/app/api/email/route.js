@@ -395,12 +395,12 @@ export async function POST(request) {
     const isCustomerEmail = emailData.to !== 'markhamrestring@gmail.com';
     
     // In development mode, send customer emails to admin instead
-    let redirected = false;
-    if (process.env.NODE_ENV === 'development' && isCustomerEmail) {
-      console.log(`📧 Development mode: ${type || 'custom'} email redirected from ${emailData.to} to markhamrestring@gmail.com`);
-      emailData.to = 'markhamrestring@gmail.com';
-      redirected = true;
-    }
+    // let redirected = false;
+    // if (process.env.NODE_ENV === 'development' && isCustomerEmail) {
+    //   console.log(`📧 Development mode: ${type || 'custom'} email redirected from ${emailData.to} to markhamrestring@gmail.com`);
+    //   emailData.to = 'markhamrestring@gmail.com';
+    //   redirected = true;
+    // }
 
     // Send email via Resend
     const result = await resend.emails.send({
@@ -463,7 +463,7 @@ export async function POST(request) {
         type: type,
         to: emailData.to,
         adminNotified: !!adminResult,
-        redirected: redirected
+        // redirected: redirected
       },
       { status: 200 }
     );

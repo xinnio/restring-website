@@ -49,11 +49,12 @@ export default function AvailabilityForm({ slot = null, onSuccess }) {
     try {
       const url = normalizedSlot?.id ? `/api/availability/${normalizedSlot.id}` : '/api/availability';
       const method = normalizedSlot?.id ? 'PUT' : 'POST';
-      
+      // Normalize date before sending
+      const formToSend = { ...form, date: normalizeDate(form.date) };
       const res = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formToSend),
       });
       if (res.ok) {
         setStatus('success');
