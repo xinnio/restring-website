@@ -742,7 +742,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             <tr style={{ background: '#f4f6f8', borderBottom: '2px solid #e0e0e0' }}>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Booking #</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Customer</th>
-              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Racket Details</th>
+              <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Racket & String Details</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Status</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Payment</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Total</th>
@@ -773,11 +773,16 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         <ul style={{ margin: 0, paddingLeft: 16 }}>
                           {b.rackets.map((r, i) => (
                             <li key={i} style={{ fontSize: '0.95em', color: '#333', marginBottom: 2 }}>
-                              {r.racketType === 'tennis' ? '🎾' : '🏸'} {b.ownString ? 'Own String' : formatStringDisplay(r)} | {b.ownString ? 'N/A' : (r.stringColor || '-')} | {formatTension(r)} | Qty: {r.quantity || 1}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
+                              {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'} | 
+                              <strong>String:</strong> {b.ownString ? 'Own String' : (r.stringBrand && r.stringModel ? `${r.stringBrand} ${r.stringModel}` : r.stringName || '-')} | 
+                              <strong>Color:</strong> {r.stringColor || '-'} | 
+                              <strong>Tension:</strong> {formatTension(r)} | 
+                              <strong>Qty:</strong> {r.quantity || 1}
+                              {r.tensionMethod && <> | <strong>Method:</strong> {r.tensionMethod}</>}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
                         <span style={{ color: '#888' }}>-</span>
                       )}
                       </td>
