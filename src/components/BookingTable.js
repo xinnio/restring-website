@@ -686,7 +686,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
           <span style={{ 
             display: 'inline-block',
             background: '#e8f5e8',
-            color: '#2e7d32',
+            color: '#2e7d32', 
             borderRadius: '8px',
             fontWeight: 600,
             fontSize: '1rem',
@@ -697,28 +697,28 @@ export default function BookingTable({ bookings = [], onUpdate }) {
             📊 {filteredBookings.length} Bookings
           </span>
           <label style={{ fontWeight: 600, color: '#495057', fontSize: '0.95rem', marginRight: 8 }}>
-            Time Filter:
-          </label>
-          <select 
-            value={filterRange} 
-            onChange={e => setFilterRange(e.target.value)} 
-            style={{ 
+              Time Filter:
+            </label>
+            <select 
+              value={filterRange} 
+              onChange={e => setFilterRange(e.target.value)} 
+              style={{ 
               padding: '0.4rem 0.8rem', 
               borderRadius: '6px', 
               border: '1px solid #e0e0e0', 
               fontSize: '0.95rem',
-              backgroundColor: 'white',
-              fontWeight: '500',
-              cursor: 'pointer',
+                backgroundColor: 'white',
+                fontWeight: '500',
+                cursor: 'pointer',
               marginRight: 8
-            }}
-          >
-            <option value="all">All Time</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
+              }}
+            >
+              <option value="all">All Time</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+          </div>
         </div>
-      </div>
       {/* Bookings Table */}
       <div style={{ 
         backgroundColor: 'white',
@@ -731,14 +731,14 @@ export default function BookingTable({ bookings = [], onUpdate }) {
         boxSizing: 'border-box',
         marginTop: '0.5rem',
       }}>
-        <table style={{ 
-          width: '100%', 
-          borderCollapse: 'collapse',
+          <table style={{ 
+            width: '100%', 
+            borderCollapse: 'collapse',
           fontSize: '0.98rem',
           minWidth: '900px',
           background: 'white',
-        }}>
-          <thead>
+          }}>
+            <thead>
             <tr style={{ background: '#f4f6f8', borderBottom: '2px solid #e0e0e0' }}>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Booking #</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Customer</th>
@@ -747,47 +747,47 @@ export default function BookingTable({ bookings = [], onUpdate }) {
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Payment</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem', borderRight: '1px solid #e0e0e0' }}>Total</th>
               <th style={{ padding: '0.75rem', fontWeight: 700, fontSize: '0.95rem' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBookings.length === 0 ? (
-              <tr>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBookings.length === 0 ? (
+                <tr>
                 <td colSpan="7" style={{ padding: '2.5rem', textAlign: 'center', color: '#888' }}>
                   No bookings found.
-                </td>
-              </tr>
-            ) : (
+                  </td>
+                </tr>
+              ) : (
               filteredBookings.map((b, idx) => {
-                const statusColors = getStatusColor(b.status || 'Pending');
-                const paymentColors = getPaymentStatusColor(b.paymentStatus || 'Pending');
-                return (
+                  const statusColors = getStatusColor(b.status || 'Pending');
+                  const paymentColors = getPaymentStatusColor(b.paymentStatus || 'Pending');
+                  return (
                   <tr key={b.id} style={{ background: idx % 2 === 0 ? '#fff' : '#f7f7fa', borderBottom: '1px solid #e0e0e0' }}>
                     <td style={{ padding: '0.7rem', fontWeight: 600, color: '#667eea', textAlign: 'center', borderRight: '1px solid #e0e0e0' }}>#{b.bookingNumber || 'N/A'}</td>
                     <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
                       <div style={{ fontWeight: 600 }}>{b.fullName}</div>
                       <div style={{ color: '#888', fontSize: '0.93em' }}>{b.phone || b.contactInfo || '-'}</div>
                       {b.email && <div style={{ color: '#667eea', fontSize: '0.92em' }}>{b.email}</div>}
-                    </td>
+                      </td>
                     <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
-                      {(b.rackets && Array.isArray(b.rackets)) ? (
+                          {(b.rackets && Array.isArray(b.rackets)) ? (
                         <ul style={{ margin: 0, paddingLeft: 16 }}>
                           {b.rackets.map((r, i) => (
                             <li key={i} style={{ fontSize: '0.95em', color: '#333', marginBottom: 2 }}>
                               {r.racketType === 'tennis' ? '🎾' : '🏸'} {b.ownString ? 'Own String' : formatStringDisplay(r)} | {b.ownString ? 'N/A' : (r.stringColor || '-')} | {formatTension(r)} | Qty: {r.quantity || 1}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
                         <span style={{ color: '#888' }}>-</span>
                       )}
-                    </td>
+                      </td>
                     <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
                       <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
                         <select 
-                          value={b.status || 'Pending'}
+                          value={b.status || 'Pending'} 
                           onChange={e => handleStatusUpdate(b.id, e.target.value)}
                           disabled={updating === b.id}
-                          style={{
+                          style={{ 
                             background: statusColors.bg,
                             color: statusColors.color,
                             border: `1.5px solid ${statusColors.border}`,
@@ -821,15 +821,15 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           color: '#333',
                           fontWeight: 700
                         }}>▼</span>
-                      </div>
-                    </td>
+                        </div>
+                      </td>
                     <td style={{ padding: '0.7rem', borderRight: '1px solid #e0e0e0' }}>
                       <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
                         <select 
-                          value={b.paymentStatus || 'Pending'}
+                          value={b.paymentStatus || 'Pending'} 
                           onChange={e => handlePaymentUpdate(b.id, e.target.value)}
                           disabled={updating === b.id}
-                          style={{
+                          style={{ 
                             background: paymentColors.bg,
                             color: paymentColors.color,
                             border: `1.5px solid ${paymentColors.border}`,
@@ -861,19 +861,19 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                           color: '#333',
                           fontWeight: 700
                         }}>▼</span>
-                      </div>
-                    </td>
+                        </div>
+                      </td>
                     <td style={{ padding: '0.7rem', fontWeight: 700, color: '#2e7d32', textAlign: 'center', borderRight: '1px solid #e0e0e0' }}>
-                      ${calculateBookingTotal(b).toFixed(2)}
-                    </td>
+                        ${calculateBookingTotal(b).toFixed(2)}
+                      </td>
                     <td style={{ padding: '0.7rem', textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
                         <button onClick={() => setViewing(b)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#e3e3e3', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>View</button>
                         <button onClick={() => handleCompleteWithPickupTime(b)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#d4edda', color: '#155724', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Complete</button>
                         <div style={{ position: 'relative', display: 'inline-block' }} data-email-dropdown={b.id}>
                           <button onClick={() => setEmailDropdown(emailDropdown === b.id ? null : b.id)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#e3f2fd', color: '#1976d2', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Email ▼</button>
-                          {emailDropdown === b.id && (
-                            <div style={{
+                            {emailDropdown === b.id && (
+                              <div style={{
                               position: 'fixed',
                               top: `${window.scrollY + (document.querySelector(`[data-email-dropdown='${b.id}']`)?.getBoundingClientRect().bottom || 0)}px`,
                               left: `${Math.min(window.innerWidth - 140, (document.querySelector(`[data-email-dropdown='${b.id}']`)?.getBoundingClientRect().left || 0))}px`,
@@ -887,20 +887,20 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                               <button onClick={() => handleSendConfirmationEmail(b)} style={{ width: '100%', padding: '0.5em 1em', background: 'white', color: '#495057', border: 'none', borderBottom: '1px solid #f4f6f8', cursor: 'pointer', fontSize: '0.92em', textAlign: 'left' }}>Confirmation</button>
                               <button onClick={() => handleSendCompletionEmail(b)} style={{ width: '100%', padding: '0.5em 1em', background: 'white', color: '#495057', border: 'none', borderBottom: '1px solid #f4f6f8', cursor: 'pointer', fontSize: '0.92em', textAlign: 'left' }}>Completion</button>
                               <button onClick={() => handleSendPickupEmail(b)} style={{ width: '100%', padding: '0.5em 1em', background: 'white', color: '#495057', border: 'none', cursor: 'pointer', fontSize: '0.92em', textAlign: 'left' }}>Pickup</button>
-                            </div>
-                          )}
-                        </div>
+                              </div>
+                            )}
+                          </div>
                         <button onClick={() => handleDelete(b.id)} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#f8d7da', color: '#721c24', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Delete</button>
                         <button onClick={() => setPickupTimeModal({ open: true, booking: b })} style={{ fontSize: '0.92em', padding: '0.3em 0.8em', background: '#fffbe6', color: '#b8860b', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Set Actual Pickup</button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       {/* Ensure the booking detail view modal is always rendered when viewing is set */}
       {viewing && (
         <div style={{
@@ -1105,19 +1105,13 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                 {viewing.pickupLocation === 'Door-to-Door (Delivery)' && <span>Pick-up Delivery: +$12.00<br/></span>}
                 {viewing.dropoffLocation === 'Door-to-Door (Delivery)' && viewing.pickupLocation === 'Door-to-Door (Delivery)' && <span>Both Delivery Discount: -$4.00<br/></span>}
                 <strong>Total: ${(calculateBookingTotal(viewing) - (viewing.ownString ? 5 : 0) + (viewing.grommetReplacement ? 0.25 * (viewing.rackets.length - 1) : 0) + (viewing.dropoffLocation === 'Door-to-Door (Delivery)' ? 12 : 0) + (viewing.pickupLocation === 'Door-to-Door (Delivery)' ? 12 : 0) - (viewing.dropoffLocation === 'Door-to-Door (Delivery)' && viewing.pickupLocation === 'Door-to-Door (Delivery)' ? 4 : 0)).toFixed(2)}</strong>
-              </div>
+                    </div>
+                    </div>
+            {/* In the booking detail view modal, always show both pickup times */}
+            <div style={{ marginBottom: '1.25rem', color: '#155724', background: '#e8f5e8', padding: '0.75rem 1.25rem', borderRadius: 8 }}>
+              <div><strong>Auto-logged Pickup Time:</strong> {viewing.autoPickupTime ? new Date(viewing.autoPickupTime).toLocaleString() : '-'}</div>
+              <div><strong>Manually Entered Pickup Time:</strong> {viewing.actualPickupTime ? new Date(viewing.actualPickupTime).toLocaleString() : '-'}</div>
             </div>
-            {viewing?.actualPickupTime && (
-              <div style={{ marginBottom: '1.25rem', color: '#155724', background: '#e8f5e8', padding: '0.75rem 1.25rem', borderRadius: 8 }}>
-                <strong>Actual Pickup Time:</strong> {new Date(viewing.actualPickupTime).toLocaleString()}
-              </div>
-            )}
-            {(viewing?.autoPickupTime || viewing?.actualPickupTime) && (
-              <div style={{ marginBottom: '1.25rem', color: '#155724', background: '#e8f5e8', padding: '0.75rem 1.25rem', borderRadius: 8 }}>
-                <div><strong>Auto-logged Pickup Time:</strong> {viewing.autoPickupTime ? new Date(viewing.autoPickupTime).toLocaleString() : '-'}</div>
-                <div><strong>Manually Entered Pickup Time:</strong> {viewing.actualPickupTime ? new Date(viewing.actualPickupTime).toLocaleString() : '-'}</div>
-              </div>
-            )}
           </div>
         </div>
       )}
