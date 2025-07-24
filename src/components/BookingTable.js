@@ -775,10 +775,9 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                             <li key={i} style={{ fontSize: '0.95em', color: '#333', marginBottom: 2 }}>
                               {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'} | 
                               <strong>String:</strong> {b.ownString ? 'Own String' : (r.stringBrand && r.stringModel ? `${r.stringBrand} ${r.stringModel}` : r.stringName || '-')} | 
-                              <strong>Color:</strong> {r.stringColor || '-'} | 
+                              <strong>Colour:</strong> <span style={{ display: 'inline-block', width: 16, height: 16, backgroundColor: r.stringColour ? r.stringColour.toLowerCase() : (r.stringColor ? r.stringColor.toLowerCase() : '#ccc'), borderRadius: '50%', margin: '0 6px -3px 4px', border: '1px solid #bbb', verticalAlign: 'middle' }}></span>{r.stringColour || r.stringColor || '-'} | 
                               <strong>Tension:</strong> {formatTension(r)} | 
-                              <strong>Qty:</strong> {r.quantity || 1}
-                              {r.tensionMethod && <> | <strong>Method:</strong> {r.tensionMethod}</>}
+                              <strong>Qty:</strong> <span style={{ fontWeight: 700, color: '#1976d2', marginLeft: 4 }}>{r.quantity || 1}</span>
                             </li>
                           ))}
                         </ul>
@@ -957,8 +956,8 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                     }}>
                       <span style={{
                         padding: '0.25rem 0.75rem',
-                        backgroundColor: r.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5',
-                        color: r.racketType === 'tennis' ? '#1976d2' : '#7b1fa2',
+                        backgroundColor: viewing.racketType === 'tennis' ? '#e3f2fd' : '#f3e5f5',
+                        color: viewing.racketType === 'tennis' ? '#1976d2' : '#7b1fa2',
                         borderRadius: '12px',
                         fontSize: '1rem',
                         fontWeight: '600',
@@ -966,19 +965,19 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                         alignItems: 'center',
                         gap: 4
                       }}>
-                        {r.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
+                        {viewing.racketType === 'tennis' ? '🎾 Tennis' : '🏸 Badminton'}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>String:</strong> {viewing.ownString ? 'Own String' : formatStringDisplay(r)}
+                        <strong>String:</strong> {viewing.ownString ? 'Own String' : formatStringDisplay(viewing)}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>Color:</strong> {viewing.ownString ? 'N/A' : (r.stringColor || '-')}
+                        <strong>Colour:</strong> {viewing.ownString ? 'N/A' : (viewing.stringColour || viewing.stringColor || '-')}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>Tension:</strong> {formatTension(r)}
+                        <strong>Tension:</strong> {formatTension(viewing)}
                       </span>
                       <span style={{ color: '#333', fontSize: '1rem' }}>
-                        <strong>Qty:</strong> {r.quantity || 1}
+                        <strong>Qty:</strong> {viewing.quantity || 1}
                       </span>
                     </div>
                   ))}
@@ -1002,7 +1001,7 @@ export default function BookingTable({ bookings = [], onUpdate }) {
                     <strong>String:</strong> {viewing.ownString ? 'Own String' : formatStringDisplay(viewing)}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
-                    <strong>Color:</strong> {viewing.ownString ? 'N/A' : (viewing.stringColor || '-')}
+                    <strong>Colour:</strong> {viewing.ownString ? 'N/A' : (viewing.stringColour || viewing.stringColor || '-')}
                   </span>
                   <span style={{ color: '#333', fontSize: '1rem' }}>
                     <strong>Tension:</strong> {formatTension(viewing)}
